@@ -1,0 +1,1 @@
+metabolicEP(metnet::MetNet; kwargs...) = metabolicEP(metnet.S, metnet.b, metnet.lb, metnet.ub; kwargs...)

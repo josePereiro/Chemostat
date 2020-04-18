@@ -1,5 +1,9 @@
 module Chemostat
 
-greet() = print("Hello World!")
+#TODO Reference this package
+import MetabolicEP
+export MetabolicEP
+
+include("Utils/Utils.jl")
 
 end # module
