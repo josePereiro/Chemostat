@@ -4,3 +4,6 @@
 .DS_Store
 /Manifest.toml
 /dev/
+.vscode
+/data/*
+!/data/test
