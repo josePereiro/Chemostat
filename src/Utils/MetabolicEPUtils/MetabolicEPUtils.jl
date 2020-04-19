@@ -1,6 +1,7 @@
-import MetabolicEP: MetNet, preprocess, metabolicEP
-import MetabolicEP.HitAndRun: hrsample
-import SparseArrays: SparseMatrixCSC
+"""
+    This utilities are a simple interface 
+    to some methods from MetabolicEP
+"""
 
 include("MetNets.jl")
 include("preprocess.jl")

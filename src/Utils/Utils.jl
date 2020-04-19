@@ -18,7 +18,12 @@
     Common utilities
 """
 module Utils
-    include("General/General.jl")
-    include("TestUtils/TestModels.jl")
+    import MetabolicEP: MetNet, preprocess, metabolicEP
+    import MetabolicEP.HitAndRun: hrsample
+    import SparseArrays: SparseMatrixCSC
+    
     include("MetabolicEPUtils/MetabolicEPUtils.jl")
+
+    include("General/General.jl")
+    include("TestUtils/TetsUtils.jl")
 end
