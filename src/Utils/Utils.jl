@@ -20,10 +20,10 @@
 module Utils
     import MetabolicEP: MetNet, preprocess, metabolicEP
     import MetabolicEP.HitAndRun: hrsample
-    import SparseArrays: SparseMatrixCSC
+    import SparseArrays: SparseMatrixCSC, spzeros
     
-    include("MetabolicEPUtils/MetabolicEPUtils.jl")
-
     include("General/General.jl")
+    include("MetabolicEPUtils/MetabolicEPUtils.jl")
+    include("MetNetUtils/MetNetUtils.jl")
     include("TestUtils/TetsUtils.jl")
 end

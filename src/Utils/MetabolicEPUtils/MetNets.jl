@@ -30,6 +30,6 @@ function MetNet(S, b, lb, ub, rxns = fake_rxnsid(size(S,2));
         metNames, # metabolites long-names M elements
         metFormulas, # metabolites formula M elements
         rxnNames, # reactions long-name N elements
-        (lb .!= 0.0) .& (ub .!= 0.0), # reversibility of reactions N elements
+        (lb .< 0.0) .& (ub .> 0.0), # reversibility of reactions N elements
         ["IN"]) # cellular component of fluxes N elements
 end
