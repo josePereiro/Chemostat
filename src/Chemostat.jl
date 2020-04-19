@@ -5,5 +5,6 @@ import MetabolicEP
 export MetabolicEP
 
 include("Utils/Utils.jl")
+using .Utils
 
 end # module

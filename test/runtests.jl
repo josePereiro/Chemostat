@@ -3,6 +3,6 @@ using Test
 
 @testset "Chemostat.jl" begin
     
-    include("utils.jl")
+    include("utils_tests.jl")
 
 end
