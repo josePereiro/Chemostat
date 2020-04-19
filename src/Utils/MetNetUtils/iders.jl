@@ -4,7 +4,6 @@ metindex(metnet::MetNet, ider::Int) =
 metindex(metnet::MetNet, ider::AbstractString) = 
     (indx = findfirst(isequal(ider), metnet.mets); 
     isnothing(indx) ? error("ider ($ider) not found!!!") : indx)
-export metindex
 
 rxnindex(metnet::MetNet, ider::Int) = 
     0 < ider <= length(metnet.rxns) ? ider : 
@@ -12,4 +11,3 @@ rxnindex(metnet::MetNet, ider::Int) =
 rxnindex(metnet::MetNet, ider::AbstractString) = 
     (indx = findfirst(isequal(ider), metnet.rxns); 
     isnothing(indx) ? error("ider ($ider) not found!!!") : indx)
-export rxnindex

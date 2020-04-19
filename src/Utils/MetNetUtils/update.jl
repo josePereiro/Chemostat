@@ -1,0 +1,1 @@
+update_rev!(metnet::MetNet) = metnet.rev .= ((metnet.lb .< 0.0) .& (metnet.ub .> 0.0))

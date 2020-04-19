@@ -2,12 +2,11 @@
     Print useful info about the given metnet.
 """
 function summary(metnet::MetNet)
+    printstyled("model size: $(size(metnet))", "\n", color = :blue)
     summary_rxn_bounds(metnet)
 end
 
 function summary_rxn_bounds(metnet::MetNet)
-    println("Bounds")
-
     length(metnet.lb) != metnet.N && (printstyled(
         "lb ($(length(metnet.lb))) != N ($(metnet.N)), dimention missmatch", 
         "\n", color = :red); return)
@@ -32,8 +31,11 @@ function summary_rxn_bounds(metnet::MetNet)
             "\n", color = :blue);  
         lb == ub && printstyled("rxn($i): ($rxn), lb ($lb) == ub ($ub)", 
             "\n", color = :blue); 
-        ((lb < 0.0 && ub > 0.0) ⊻ metnet.rev[i]) && printstyled("rxn($i): ($rxn), rev and bounds missmatch", 
+        (isrev(metnet, i) ⊻ metnet.rev[i]) && printstyled("rxn($i): ($rxn), rev and bounds missmatch", 
             "\n", color = :red)
         flush(stdout)
     end
+
+    printstyled("revscount: $(revscount(metnet))", "\n", color = :blue)
+
 end

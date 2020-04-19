@@ -18,12 +18,13 @@
     Common utilities
 """
 module Utils
-    import MetabolicEP: MetNet, preprocess, metabolicEP
+    import MetabolicEP: MetNet, preprocess, metabolicEP, EPout
     import MetabolicEP.HitAndRun: hrsample
     import SparseArrays: SparseMatrixCSC, spzeros
     
     include("General/General.jl")
     include("MetabolicEPUtils/MetabolicEPUtils.jl")
     include("MetNetUtils/MetNetUtils.jl")
+    include("EPoutUtils/EPoutUtils.jl")
     include("TestUtils/TetsUtils.jl")
 end

@@ -1,5 +1,5 @@
 const fwd_prefix = "_fwd"
-const bkwd_prefix = "_bfwd"
+const bkwd_prefix = "_bkwd"
 
 using SparseArrays
 """
@@ -16,9 +16,7 @@ function split_revs(metnet)
     c_ = copy(metnet.c)
     lb_ = copy(metnet.lb)
     ub_ = copy(metnet.ub)
-    #TODO
     genes_ = copy(metnet.genes)
-    rev_ = Bool.(zeros(N))
     rxnGeneMat_ = copy(metnet.rxnGeneMat)
     grRules_ = copy(metnet.grRules)
     mets_ = copy(metnet.mets)
@@ -26,7 +24,7 @@ function split_revs(metnet)
     metNames_ = copy(metnet.metNames)
     metFormulas_ = copy(metnet.metFormulas)
     rxnNames_ = copy(metnet.rxnNames)
-    revs_ = Bool.(zeros(N_))
+    rev_ = Bool.(zeros(N_))
     subSystems_ = copy(metnet.subSystems)
     
     # I only need to update the rev reactions
@@ -37,10 +35,6 @@ function split_revs(metnet)
         orig_rxn = metnet.rxns[fwd_idx]
         orig_lb = metnet.lb[fwd_idx]
         
-        println(orig_rxn)
-        println(i)
-        
-        
         # foward reaction
         rxns_[fwd_idx] = "$(orig_rxn)$(fwd_prefix)"
         lb_[fwd_idx] = 0.0
@@ -49,8 +43,9 @@ function split_revs(metnet)
         S_[:,bkwd_idx] .= -S_[:,fwd_idx]
         push!(rxns_, "$(orig_rxn)$(bkwd_prefix)")
         push!(rxnNames_, rxnNames_[fwd_idx])
-        push!(grRules_, grRules_[fwd_idx])
-        push!(subSystems_, subSystems_[fwd_idx])
+        # TODO handle correctly all non FBA, EP esential fields
+        # push!(grRules_, grRules_[fwd_idx])
+        # push!(subSystems_, subSystems_[fwd_idx])
         push!(lb_, 0.0)
         push!(ub_, -orig_lb)
         push!(c_, 0.0) # The objective, if splitted, will be the fwd reaction
