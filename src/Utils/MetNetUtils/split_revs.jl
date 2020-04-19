@@ -52,6 +52,8 @@ function split_revs(metnet)
         
         
     end
+
+    N_ != N && (@warn("Only use this method after MetabolicEP.preprocess!!!"); flush(stdout))
     
     return MetNet(N_,M_,S_,b_, c_, lb_, ub_, 
         genes_, rxnGeneMat_, grRules_, mets_, rxns_, 
