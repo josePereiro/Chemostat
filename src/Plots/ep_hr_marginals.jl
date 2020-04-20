@@ -13,3 +13,6 @@ end
 
 plot_marginals(epout, hrsamples, model, iders) = 
     [plot_marginal(epout, hrsamples, model, ider) for ider in iders]
+
+plot_marginals(epout, hrsamples, model) = 
+    plot_marginals(epout, hrsamples, model, model.rxns)
