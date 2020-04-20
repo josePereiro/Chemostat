@@ -5,7 +5,7 @@ using SparseArrays
 """
     Retiurns a new MetNet with no reversible reactions.
 """
-function split_revs(metnet)
+function split_revs(metnet::MetNet)
     M,N = metnet.M, metnet.N
     revs = [isrev(metnet, i) for i in 1:N]
     

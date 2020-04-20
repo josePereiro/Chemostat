@@ -9,7 +9,7 @@
     - metName: the long name of the metabolite
     - metFormula: what do you think?
 """
-function add_met(metnet, metid::AbstractString; kwargs...)
+function add_met(metnet::MetNet, metid::AbstractString; kwargs...)
     metid in metnet.mets && error("met ($metid) already in the model!!!")
     kwargs = Dict(kwargs)
     
