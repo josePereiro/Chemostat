@@ -29,7 +29,8 @@ function add_rxn(metnet, rxnid; kwargs...)
     end
     
     push!(rxns_, rxnid)
-    push!(c_, 0.0)
+    push!(rxnNames_, get(kwargs, :rxnName, rxnNames_default))
+    push!(c_, get(kwargs, :c, c_default))
     push!(lb_, get(kwargs, :lb, lb_default))
     push!(ub_, get(kwargs, :ub, ub_default))
     push!(grRules_, get(kwargs, :grRule, grRules_default))
