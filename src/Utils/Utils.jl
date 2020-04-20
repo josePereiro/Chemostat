@@ -18,7 +18,8 @@
     Common utilities
 """
 module Utils
-    import MetabolicEP: MetNet, preprocess, metabolicEP, EPout
+    import MetabolicEP
+    import MetabolicEP: MetNet, preprocess, metabolicEP
     import MetabolicEP.HitAndRun: hrsample
     import SparseArrays: SparseMatrixCSC, spzeros
     
