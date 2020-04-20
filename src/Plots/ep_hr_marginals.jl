@@ -1,7 +1,7 @@
 function plot_marginal(epout, hrsamples, model, ider::Union{Int, AbstractString})
     ider = Utils.rxnindex(model, ider)
     p_ = plot(xlabel = "flx", ylabel = "pdf", legend = false)
-    histogram!(p_, hrsamples[:,ider], normalize = :pdf)
+    histogram!(p_, hrsamples[:,ider], normalize = :pdf, color = :black)
     lb = model.lb[ider]
     ub = model.ub[ider]
     dist_ = Truncated(Normal(epout.μ[ider], sqrt(epout.σ[ider])), lb, ub)
