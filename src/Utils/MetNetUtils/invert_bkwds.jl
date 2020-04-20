@@ -2,7 +2,6 @@ function invert_bkwds!(metnet)
     revscount(metnet) > 0 && error("All reactions must be irreversibles!!!")
 
     for bkwd_rxn in bkwds(model)
-        println(bkwd_rxn)
         metnet.S[:,bkwd_rxn] .*= -1
         lb_ = abs(metnet.ub[bkwd_rxn])
         ub_ = abs(metnet.lb[bkwd_rxn])

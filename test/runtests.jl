@@ -4,6 +4,6 @@ using Random
 
 @testset "Chemostat.jl" begin
     
-    include("utils_tests.jl")
+    include("Utils_tests/Utils_tests.jl")
 
 end
