@@ -24,7 +24,7 @@ function split_revs(metnet)
     metNames_ = copy(metnet.metNames)
     metFormulas_ = copy(metnet.metFormulas)
     rxnNames_ = copy(metnet.rxnNames)
-    rev_ = Bool.(zeros(N_))
+    rev_ = falses(N_)
     subSystems_ = copy(metnet.subSystems)
     
     # I only need to update the rev reactions
