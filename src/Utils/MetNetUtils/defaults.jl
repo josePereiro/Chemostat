@@ -1,0 +1,11 @@
+b_default = 0.0;
+c_default = 0;
+lb_default = 0.0;
+ub_default = 0.0;
+genes_default = ""
+rxnGeneMat_default = 0.0
+grRules_default = ""
+metNames_default = ""
+metFormulas_default = ""
+rxnNames_default = ""
+subSystems_default = ""
