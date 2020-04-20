@@ -1,4 +1,3 @@
-
 function simple_toy_MetNet()
     # rxns: gt    ferm  resp  ldh   lt   biom    atpm  # mets
     S = [   1.0  -1.0   0.0   0.0   0.0   0.0    0.0;  #  G
@@ -22,4 +21,10 @@ function simple_toy_MetNet()
         metNames = metNames, rxnNames = rxnNames)
 end
 
-model = simple_toy_MetNet();
+function  toy_model(;resp_cost = -0.1, E_demand = 5.0)
+    model = simple_toy_MetNet()
+    lb!(model, "atpm", E_demand)
+    model = invert_bkwds(model);
+    model = add_costs(model, Dict("resp" => resp_cost))
+    return preprocess(model)
+end
