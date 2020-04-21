@@ -5,7 +5,8 @@ import MetabolicEP
 export MetabolicEP
 
 include("Utils/Utils.jl")
-include("Plots/Plots.jl")
 include("MaxEnt/MaxEnt.jl")
+include("SteadyState/SteadyState.jl")
+include("Plots/Plots.jl")
 
 end # module
