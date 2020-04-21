@@ -6,5 +6,6 @@ export MetabolicEP
 
 include("Utils/Utils.jl")
 include("Plots/Plots.jl")
+include("MaxEnt/MaxEnt.jl")
 
 end # module
