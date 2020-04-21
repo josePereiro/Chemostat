@@ -3,3 +3,4 @@
 """
 
 include("trunc_normal.jl")
+include("getters.jl")
