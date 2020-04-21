@@ -2,7 +2,8 @@
     A few useful plot methods
 """
 module Plots
-    using Chemostat.Utils
+    import Chemostat.Utils: rxnindex
+    import MetabolicEP: EPout, MetNet
     using Distributions
     import Plots: plot, plot!, scatter, scatter!, histogram, histogram!
 
