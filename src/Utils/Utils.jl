@@ -19,9 +19,11 @@
 """
 module Utils
     import MetabolicEP
-    import MetabolicEP: MetNet, preprocess, metabolicEP
+    import MetabolicEP: MetNet, preprocess, metabolicEP, EPout
     import MetabolicEP.HitAndRun: hrsample
     import SparseArrays: SparseMatrixCSC, spzeros
+    import Distributions: Normal, Truncated, mean, var
+    
     
     include("General/General.jl")
     include("MetabolicEPUtils/MetabolicEPUtils.jl")

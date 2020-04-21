@@ -3,7 +3,7 @@ const bkwd_prefix = "_bkwd"
 
 using SparseArrays
 """
-    Retiurns a new MetNet with no reversible reactions.
+    Returns a new MetNet with no reversible reactions.
 """
 function split_revs(metnet::MetNet)
     M,N = metnet.M, metnet.N

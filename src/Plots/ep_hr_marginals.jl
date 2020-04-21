@@ -22,14 +22,14 @@ plot_marginals(model::MetNet, hrsamples::AbstractArray, iders; kwargs...) =
 # EPuot marginal
 function plot_marginal!(p, model::MetNet, epout::EPout, ider::Union{Int, AbstractString}; kwargs...)
     ider = rxnindex(model, ider)
-    lb = model.lb[ider]
-    ub = model.ub[ider]
-    tn = Truncated(Normal(epout.μ[ider], sqrt(epout.σ[ider])), lb, ub)
+    tn = trunc_normal(model, epout, ider)
     av = round(mean(tn), digits = 2)
     va = round(var(tn), digits = 2)
     p = plot!(p, xlabel = "flx", ylabel = "pdf",
         legend = get(kwargs, :legend, false), 
         title = get(kwargs, :title, "$(model.rxns[ider]) ~ tN(av: $av, va: $va)"))
+    
+    lb = model.lb[ider]; ub = model.ub[ider]
     return plot!(p, x-> pdf(tn, x), lb - ub/10, ub + ub/10, 
         lw = get(kwargs, :lw, 10), 
         color = get(kwargs, :color, :red),
