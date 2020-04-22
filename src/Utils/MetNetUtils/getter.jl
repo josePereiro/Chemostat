@@ -8,7 +8,10 @@ rxns(metnet::MetNet, ider) = metnet.rxns[rxnindex(metnet, ider)]
 
 rxnscount(model) = length(model.rxns)
 
+ub(metnet::MetNet) = metnet.ub
 ub(metnet::MetNet, ider) = metnet.ub[rxnindex(metnet, ider)]
+
+lb(metnet::MetNet) = metnet.lb
 lb(metnet::MetNet, ider) = metnet.lb[rxnindex(metnet, ider)]
 
 S(metnet::MetNet, metider, rxnider) = 

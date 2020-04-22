@@ -22,13 +22,14 @@ module Utils
     import MetabolicEP: MetNet, preprocess, metabolicEP, EPout
     import MetabolicEP.HitAndRun: hrsample
     import SparseArrays: SparseMatrixCSC, spzeros
-    import Distributions: Normal, Truncated, mean, var
-    
+    import StatsBase: AbstractHistogram, Histogram, fit
+    import Distributions: Normal, Truncated, mean, var, pdf
+    import LinearAlgebra: normalize
     
     include("General/General.jl")
+    include("Types/Types.jl")
     include("MetabolicEPUtils/MetabolicEPUtils.jl")
     include("MetNetUtils/MetNetUtils.jl")
-    include("EPoutUtils/EPoutUtils.jl")
+    include("OutUtils/OutUtils.jl")
     include("TestUtils/TetsUtils.jl")
-    include("HRUtils/HRUtils.jl")
 end
