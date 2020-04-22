@@ -2,11 +2,13 @@
 module MaxEnt
 
 import Chemostat.Utils: rxnindex
-import MetabolicEP: EPout, MetNet
+import MetabolicEP: EPout, MetNet, EPMatT0, AbstractEPMat
 import MetabolicEP.HitAndRun: hrsample
-
-using Distributions
+import SparseArrays: spzeros
+import LinearAlgebra: diag
+import Distributions: Truncated, Normal, mean, var
 
 include("maxent_hrsample.jl")
+include("maxent_metabolicEP.jl")
 
 end
