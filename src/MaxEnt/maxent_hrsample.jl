@@ -14,7 +14,7 @@ end
     P ~ exp(beta * biomass)
     Returns the sub samples indexs
 """
-function maxent_hrsamples_idxs(metnet, hrsamples, β, biomider; divs = 1_000_000)
+function maxent_hrsamples_idxs(metnet, hrsamples, biomider, β; divs = 1_000_000)
     biom_idx = rxnindex(metnet, biomider)
     
     biom_ub = metnet.ub[biom_idx]
@@ -32,6 +32,9 @@ function maxent_hrsamples_idxs(metnet, hrsamples, β, biomider; divs = 1_000_000
     return maxent_samples_idxs
 end
 
+maxent_hrsamples(metnet, hrsamples, biomider, β; divs = 1_000_000) =
+    hrsamples[maxent_hrsamples_idxs(metnet, hrsamples, biomider, β; divs = divs),:]
+    
 function maxent_hrsamples(metnet, biomider, β; 
     niter::Integer = 1, nsamples_per_iter::Integer = 1_000_000)
     M, N = size(metnet)
@@ -42,7 +45,7 @@ function maxent_hrsamples(metnet, biomider, β;
     # TODO parallelize this loop, then set the default value of niter to something bigger
     for it in 1:niter
         hrsamples = hrsample(metnet; nsamples = nsamples_per_iter)
-        samples_idxs = maxent_hrsamples_idxs(metnet, hrsamples, β, biomider;)
+        samples_idxs = maxent_hrsamples_idxs(metnet, hrsamples, biomider, β)
 
         curr_range = next_sample_pos:(next_sample_pos + length(samples_idxs) - 1)
         

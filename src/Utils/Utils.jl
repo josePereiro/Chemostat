@@ -30,4 +30,5 @@ module Utils
     include("MetNetUtils/MetNetUtils.jl")
     include("EPoutUtils/EPoutUtils.jl")
     include("TestUtils/TetsUtils.jl")
+    include("HRUtils/HRUtils.jl")
 end

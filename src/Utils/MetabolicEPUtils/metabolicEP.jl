@@ -1,6 +1,6 @@
-function metabolicEP(metnet::MetNet; include_epmat = false, kwargs...)
+function metabolicEP(metnet::MetNet; return_epmat = false, kwargs...)
     epout, epmat = metabolicEP(metnet.S, metnet.b, metnet.lb, metnet.ub; kwargs...)
-    return include_epmat ? (epout, epmat) : epout;
+    return return_epmat ? (epout, epmat) : epout;
 end
 
 #TODO make pull request about inconcistence with name K -> S and Y -> b
