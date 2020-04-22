@@ -2,10 +2,11 @@
     A few useful plot methods
 """
 module Plots
-    import Chemostat.Utils: rxnindex, trunc_normal
+    import ..Utils: rxnindex, marginal, rxns, lb, ub, HRout, hists, μ, FBAout, pdf_maxval
     import MetabolicEP: EPout, MetNet
     import Distributions: mean, var, pdf
+    import LinearAlgebra: normalize
     import Plots: plot, plot!, scatter, scatter!, histogram, histogram!
 
-    include("ep_hr_marginals.jl")
+    include("plot_marginal.jl")
 end

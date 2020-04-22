@@ -1,6 +1,6 @@
 module SteadyState
 
-import Chemostat.Utils: rxnindex, lb!, ub!, rxns
+import ..Utils: rxnindex, lb!, ub!, rxns
 import MetabolicEP: MetNet
 
 include("stst_bound.jl")

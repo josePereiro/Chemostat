@@ -1,7 +1,7 @@
 #TODO reference Cossios MaxEnt paper
 module MaxEnt
 
-import Chemostat.Utils: rxnindex
+import ..Utils: rxnindex
 import MetabolicEP: EPout, MetNet, EPMatT0, AbstractEPMat
 import MetabolicEP.HitAndRun: hrsample
 import SparseArrays: spzeros
