@@ -1,11 +1,9 @@
 function pdf_maxval(model::MetNet, out::Union{FBAout, EPout}, ider)
-    ider = rxnindex(model, ider)
-    D = marginal(model, out, ider)
-    return pdf(D, mean(D))
+    tN = marginal(model, out, ider)
+    return max(pdf(tN, mean(tN)), pdf(tN, lb(model, ider)), pdf(tN, ub(model, ider)))
 end
 
 function pdf_maxval(model::MetNet, out::HRout, ider)
-    ider = rxnindex(model, ider)
     hist = hists(model, out, ider)
     hist = normalize(hist, mode = :pdf)
     return maximum(hist.weights)
