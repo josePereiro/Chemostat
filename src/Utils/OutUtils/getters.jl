@@ -7,8 +7,8 @@ va(fbaout::FBAout) = zeros(length(fbaout.v))
 # EPout
 av(epout::EPout) = epout.av
 va(epout::EPout) = epout.va
-μ(epout::EPout) = epout.av
-σ(epout::EPout) = epout.av
+μ(epout::EPout) = epout.μ
+σ(epout::EPout) = epout.σ
 
 # HRout
 av(hrout::HRout) = hrout.av
