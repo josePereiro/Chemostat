@@ -6,6 +6,7 @@ export MetabolicEP
 
 include("Utils/Utils.jl")
 include("MaxEnt/MaxEnt.jl")
+include("FBA/FBA.jl")
 include("SteadyState/SteadyState.jl")
 include("Plots/Plots.jl")
 
