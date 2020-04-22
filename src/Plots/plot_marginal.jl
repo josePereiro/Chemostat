@@ -43,3 +43,28 @@ function plot_marginal!(p, metnet::MetNet,
     plot_marginal!(p, metnet, fbaout, ider; h = pdf_maxval_ * 1.1,
     ls = :dash,  color = fba_color,  lw = 5, label = "FBA")
 end
+
+function plot_marginal(metnet::MetNet, hrout::HRout, epout::EPout, fbaout::FBAout, 
+        ider::Union{AbstractString, Integer})
+    p = Plots.plot(title = "$(rxns(metnet, ider))", xlabel = "flx", ylabel = "pdf")
+    plot_marginal!(p, metnet, hrout, epout, fbaout, ider)
+    return p
+end
+
+plot_marginal(metnet::MetNet, hrout::HRout, epout::EPout, fbaout::FBAout, iders) = 
+    [plot_marginal(metnet, hrout, epout, fbaout, ider) for ider in iders]
+
+plot_marginal(metnet::MetNet, hrout::HRout, fbaout::FBAout, epout::EPout, iders) = 
+    [plot_marginal(metnet, hrout, epout, fbaout, ider) for ider in iders]
+
+plot_marginal(metnet::MetNet, fbaout::FBAout, epout::EPout, hrout::HRout, iders) = 
+    [plot_marginal(metnet, hrout, epout, fbaout, ider) for ider in iders]
+
+plot_marginal(metnet::MetNet, fbaout::FBAout, hrout::HRout, epout::EPout, iders) = 
+    [plot_marginal(metnet, hrout, epout, fbaout, ider) for ider in iders]
+
+plot_marginal(metnet::MetNet, epout::EPout, fbaout::FBAout, hrout::HRout, iders) = 
+    [plot_marginal(metnet, hrout, epout, fbaout, ider) for ider in iders]
+
+plot_marginal(metnet::MetNet, epout::EPout, hrout::HRout, fbaout::FBAout, iders) = 
+    [plot_marginal(metnet, hrout, epout, fbaout, ider) for ider in iders]
