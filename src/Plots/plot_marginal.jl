@@ -11,7 +11,7 @@ function plot_marginal!(p, metnet::MetNet, out::Union{FBAout, EPout}, ider; h = 
     ub_ = ub(metnet, ider)
 
     dist = marginal(metnet, out, ider)
-    if var(dist) < (ub_ - lb_)/100
+    if var(dist) < (ub_ - lb_)/50
         plot!(p, [lb_ - ub_/10, ub_ + ub_/10], [0.0, 0.0]; 
             label = "", color = color, kwargs...)
         plot!(p, [mean(dist), mean(dist)], [0.0, h]; 

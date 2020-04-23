@@ -19,7 +19,10 @@ va(hrout::HRout) = hrout.va
 hists(hrout::HRout) = hrout.hist
 hists(model::MetNet, hrout::HRout, ider) = 
     (ider = rxnindex(model, ider); hrout.hists[ider])
-hists(hrout::HRout, model::MetNet, ider) = hists(model, hrout, ider)
+
+hrsamples(hrout::HRout) = hrout.hrsamples
+hrsamples(model::MetNet, hrout::HRout, ider) = 
+    (ider = rxnindex(model, ider); hrout.hrsamples[:, ider])
 
 # Commons
 av(metnet::MetNet, out, ider) = av(out)[rxnindex(metnet, ider)]

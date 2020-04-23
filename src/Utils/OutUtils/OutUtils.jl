@@ -1,3 +1,6 @@
+include("base.jl")
 include("getters.jl")
 include("marginal.jl")
 include("pdf_maxval.jl")
+include("queries.jl")
+include("itrs.jl")

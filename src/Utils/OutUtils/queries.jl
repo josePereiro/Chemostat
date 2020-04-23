@@ -1,0 +1,1 @@
+has_samples(hrout::HRout) = !isempty(hrout.hrsamples)
