@@ -32,4 +32,5 @@ module Utils
     include("MetNetUtils/MetNetUtils.jl")
     include("OutUtils/OutUtils.jl")
     include("TestUtils/TetsUtils.jl")
+    include("ChstatBoundle/ChstatBoundle.jl")
 end
