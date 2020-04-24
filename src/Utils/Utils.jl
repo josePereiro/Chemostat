@@ -19,14 +19,14 @@
 """
 module Utils
     import MetabolicEP
-    import MetabolicEP: MetNet, preprocess, metabolicEP, EPout
+    import MetabolicEP: MetNet, preprocess, metabolicEP, EPout, AbstractEPMat
     import MetabolicEP.HitAndRun: hrsample
-    import SparseArrays: SparseMatrixCSC, spzeros
+    import SparseArrays: SparseMatrixCSC, spzeros, findnz, sparsevec, sparse
     import StatsBase: AbstractHistogram, Histogram, fit
     import Distributions: Normal, Truncated, mean, var, pdf
     import LinearAlgebra: normalize
     import Base: isequal, size, ==
-    
+    import JSON: json, parse
     
     include("General/General.jl")
     include("Types/Types.jl")
@@ -34,5 +34,5 @@ module Utils
     include("MetNetUtils/MetNetUtils.jl")
     include("OutUtils/OutUtils.jl")
     include("TestUtils/TetsUtils.jl")
-    include("ChstatBoundle/ChstatBoundle.jl")
+    include("BoundleUtils/BoundleUtils.jl")
 end
