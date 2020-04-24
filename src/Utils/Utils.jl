@@ -25,6 +25,8 @@ module Utils
     import StatsBase: AbstractHistogram, Histogram, fit
     import Distributions: Normal, Truncated, mean, var, pdf
     import LinearAlgebra: normalize
+    import Base: isequal, size, ==
+    
     
     include("General/General.jl")
     include("Types/Types.jl")
