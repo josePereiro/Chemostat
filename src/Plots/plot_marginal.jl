@@ -9,19 +9,23 @@ function plot_marginal!(p, metnet::MetNet, out::Union{FBAout, EPout}, ider; h = 
     lb_ = lb(metnet, ider)
     ub_ = ub(metnet, ider)
 
-    dist = marginal(metnet, out, ider)
+    av_ = av(metnet, out, ider);
+    μ_ = μ(metnet, out, ider);
+    σ_ = σ(metnet, out, ider);
+    sσ_ = sqrt(σ_)
+    tN = marginal(metnet, out, ider)
+    local_max_ = μ_ <= lb_ ? lb_ : μ_ >= ub_ ? ub_ : μ_ # local max
 
-    if sqrt(var(dist)) == 0.0
+    if sσ_ == 0.0 || !(-Inf < pdf(tN, local_max_) < Inf)
+        # print("zero std, type ($(typeof(out)))!!!")
         plot!(p, [lb_ - ub_/10, ub_ + ub_/10], [0.0, 0.0]; 
             label = "", color = color, kwargs...)
-        plot!(p, [mean(dist), mean(dist)], [0.0, h]; 
+        plot!(p, [av_, av_], [0.0, h]; 
             label = label, color = color, kwargs...)
     else
-        μ_ = μ(metnet, out, ider);
-        σ_ = σ(metnet, out, ider);
-        xs = normal_xs_for_plotting(μ_, σ_, lb_ - ub_/10, ub_ + ub_/10)
-        ys = [pdf(dist, x) for x in xs]
-        plot!(p, xs, ys; label = label, color = color, kwargs...)
+        # print("non zero std, type ($(typeof(out)))!!!")
+        Plots.plot!(p, x -> pdf(tN, x), lb_ - ub_/10, ub_ + ub_/10, lw = 10; 
+            label = label, color = color, kwargs...)
     end
 
 end
@@ -44,8 +48,10 @@ function plot_marginal!(p, metnet::MetNet,
         ider::Union{AbstractString, Integer})
 
     pdf_maxval_ = pdf_maxval(metnet, [hrout, epout], ider)
+    pdf_maxval_ = pdf_maxval_ != -1 ? pdf_maxval_ : 1
     plot_marginal!(p, metnet, hrout, ider; color = hr_color, label = "HR")
-    plot_marginal!(p, metnet, epout, ider; color = ep_color, lw = 10, label = "EP")
+    plot_marginal!(p, metnet, epout, ider; color = ep_color, 
+        h = pdf_maxval_ * 1.1, lw = 10, label = "EP")
     plot_marginal!(p, metnet, fbaout, ider; h = pdf_maxval_ * 1.1,
     ls = :dash,  color = fba_color,  lw = 5, label = "FBA")
 end
@@ -71,7 +77,9 @@ function plot_marginal!(p, metnet::MetNet,
     ider::Union{AbstractString, Integer})
 
     pdf_maxval_ = pdf_maxval(metnet, [epout], ider)
-    plot_marginal!(p, metnet, epout, ider; color = ep_color, lw = 10, label = "EP")
+    pdf_maxval_ = pdf_maxval_ != -1 ? pdf_maxval_ : 1
+    plot_marginal!(p, metnet, epout, ider; h = pdf_maxval_ * 1.1, 
+        color = ep_color, lw = 10, label = "EP")
     plot_marginal!(p, metnet, fbaout, ider; h = pdf_maxval_ * 1.1,
         ls = :dash,  color = fba_color,  lw = 5, label = "FBA")
 end
@@ -90,7 +98,10 @@ function plot_marginal!(p, metnet::MetNet,
         epout::EPout, hrout::HRout,
         ider::Union{AbstractString, Integer})
 
-    plot_marginal!(p, metnet, hrout, ider; color = hr_color, label = "HR")
+    pdf_maxval_ = pdf_maxval(metnet, [epout], ider)
+    pdf_maxval_ = pdf_maxval_ != -1 ? pdf_maxval_ : 1
+    plot_marginal!(p, metnet, hrout, ider; h = pdf_maxval_ * 1.1, 
+        color = hr_color, label = "HR")
     plot_marginal!(p, metnet, epout, ider; color = ep_color, lw = 10, label = "EP")
 end
 
