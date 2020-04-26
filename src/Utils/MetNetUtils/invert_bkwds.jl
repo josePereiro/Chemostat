@@ -1,4 +1,4 @@
-function invert_bkwds!(metnet)
+function invert_bkwds!(metnet::MetNet)
     revscount(metnet) > 0 && error("All reactions must be irreversibles!!!")
 
     for bkwd_rxn in bkwds(metnet)
@@ -12,4 +12,4 @@ function invert_bkwds!(metnet)
     
     return metnet
 end
-invert_bkwds(metnet) = invert_bkwds!(deepcopy(metnet))
+invert_bkwds(metnet::MetNet) = invert_bkwds!(deepcopy(metnet))

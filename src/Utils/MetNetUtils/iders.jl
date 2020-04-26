@@ -1,3 +1,5 @@
+const IDER_TYPE = Union{AbstractString, Integer}
+
 metindex(metnet::MetNet, ider::Int) = 
     0 < ider <= length(metnet.mets) ? ider : 
         error("Index ($ider) out of range, mets [1:$(length(metnet.mets))]")

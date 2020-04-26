@@ -1,3 +1,8 @@
+function get_data(boundle::ChstatBoundle, ξ::Real, β::Real)
+    k_tuple = (parse_ξ(boundle, ξ), parse_β(boundle, β))
+    return boundle.data[k_tuple]
+end
+
 function get_data(boundle::ChstatBoundle, ξ::Real, β::Real, key::AbstractString)
     k_tuple = (parse_ξ(boundle, ξ), parse_β(boundle, β))
     return boundle.data[k_tuple][key]
@@ -17,9 +22,9 @@ get_epmat(boundle::ChstatBoundle, ξ, β) = get_data(boundle, ξ, β, epmat_key)
 get_hrout(boundle::ChstatBoundle, ξ, β) = get_data(boundle, ξ, β, hrout_key)
 
 
-function get_data(boundle::ChstatBoundle, ξ::Real, β::Real)
-    k_tuple = (parse_ξ(boundle, ξ), parse_β(boundle, β))
-    return boundle.data[k_tuple]
+function get_data(boundle::ChstatBoundle, ξ::Real)
+    ξ = parse_ξ(boundle, ξ)
+    return boundle.data[ξ]
 end
 
 function get_data(boundle::ChstatBoundle, ξ::Real, key::AbstractString)
@@ -35,10 +40,5 @@ get_data(boundle::ChstatBoundle, ξ::Real, keys::Vector) =
 
 get_fbaout(boundle::ChstatBoundle, ξ) = get_data(boundle, ξ, fbaout_key)
 get_metnet(boundle::ChstatBoundle, ξ) = get_data(boundle, ξ, metnet_key)
-
-function get_data(boundle::ChstatBoundle, ξ::Real)
-    ξ = parse_ξ(boundle, ξ)
-    return boundle.data[ξ]
-end
 
 get_data(boundle::ChstatBoundle, key::AbstractString) = boundle.data[key]

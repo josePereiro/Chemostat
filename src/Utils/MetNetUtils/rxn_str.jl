@@ -1,4 +1,4 @@
-function reaction_str(metnet, ider::Union{AbstractString, Int})
+function rxn_str(metnet::MetNet, ider::IDER_TYPE)
     ridx = rxnindex(metnet, ider)
     arrow_str = isblock(metnet, ridx) ? " >< " : 
                 isbkwd(metnet, ridx) ? " <== " :
@@ -13,5 +13,5 @@ function reaction_str(metnet, ider::Union{AbstractString, Int})
         mets(metnet, prod))  for prod in prods], " + ")
     return react_str * arrow_str * prods_str
 end
-reaction_str(metnet, iders) = [reaction_str(metnet, ider) for ider in iders]
-reaction_str(metnet) = reaction_str(metnet, metnet.rxns)
+rxn_str(metnet::MetNet, iders::Vector) = [rxn_str(metnet, ider) for ider in iders]
+rxn_str(metnet::MetNet) = rxn_str(metnet, metnet.rxns)

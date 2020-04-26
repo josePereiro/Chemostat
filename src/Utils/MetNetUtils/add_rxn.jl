@@ -1,5 +1,5 @@
 #TODO fully implement this!!!
-function add_rxn(metnet, rxnid; kwargs...)
+function add_rxn(metnet::MetNet, rxnid::AbstractString; kwargs...)
     rxnid in metnet.rxns && error("rxn ($rxnid) already in the model!!!")
     kwargs = Dict(kwargs)
     

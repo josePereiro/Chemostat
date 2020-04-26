@@ -14,10 +14,13 @@ const cost_rxn_ub = 1.0
     the fluxes (rᵢ) so that Σ(rᵢ*costᵢ) = tot_cost, and tot_cost
     are usually bounded [0.0, 1.0]
 """
-function add_costs(metnet, cost_info; 
-        cost_met_id = cost_met_id, cost_met_name = cost_met_name, 
-        cost_rxn_id = cost_rxn_id, cost_rxn_name = cost_rxn_name,
-        cost_rxn_lb = cost_rxn_lb, cost_rxn_ub = cost_rxn_ub)
+function add_costs(metnet::MetNet, cost_info::Dict; 
+        cost_met_id::AbstractString = cost_met_id,
+        cost_met_name::AbstractString = cost_met_name, 
+        cost_rxn_id::AbstractString = cost_rxn_id, 
+        cost_rxn_name::AbstractString = cost_rxn_name,
+        cost_rxn_lb::Real = cost_rxn_lb, 
+        cost_rxn_ub::Real = cost_rxn_ub)
     
     # TODO check that internal reactions should be irreversibles
     
