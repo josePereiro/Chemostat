@@ -34,6 +34,7 @@ end
 
 
 function plot_marginal!(p, metnet::MetNet, out::HRout, ider; 
+    h = :ignore, 
     color = :black, label = rxns(metnet, ider), kwargs...)
 
     lb_ = lb(metnet, ider)
@@ -81,8 +82,8 @@ plot_marginal(metnet::MetNet,
 
 # 2 outs
 function plot_marginal!(p, metnet::MetNet, 
-    fbaout::EPout, epout::HRout,
-    ider::Union{AbstractString, Integer}; kwargs...)
+    fbaout::FBAout, epout::EPout,
+    ider::IDER_TYPE; kwargs...)
 
     pdf_maxval_ = pdf_maxval(metnet, [epout], ider)
     pdf_maxval_ = pdf_maxval_ != -1 ? pdf_maxval_ : 1
@@ -94,7 +95,7 @@ end
 
 function plot_marginal!(p, metnet::MetNet, 
     fbaout::FBAout, hrout::HRout,
-    ider::Union{AbstractString, Integer}; kwargs...)
+    ider::IDER_TYPE; kwargs...)
 
     pdf_maxval_ = pdf_maxval(metnet, [hrout], ider)
     plot_marginal!(p, metnet, hrout, ider; 
@@ -105,7 +106,7 @@ end
 
 function plot_marginal!(p, metnet::MetNet, 
         epout::EPout, hrout::HRout,
-        ider::Union{AbstractString, Integer}; kwargs...)
+        ider::IDER_TYPE; kwargs...)
 
     pdf_maxval_ = pdf_maxval(metnet, [epout], ider)
     pdf_maxval_ = pdf_maxval_ != -1 ? pdf_maxval_ : 1
@@ -116,7 +117,7 @@ function plot_marginal!(p, metnet::MetNet,
 end
 
 function plot_marginal(metnet::MetNet, out1, out2,
-        ider::Union{AbstractString, Integer};
+        ider::IDER_TYPE;
         title = rxns(metnet, ider), xlabel = "flx", ylabel = "pdf",
         kwargs...)
 
@@ -125,11 +126,11 @@ function plot_marginal(metnet::MetNet, out1, out2,
 end
 
 plot_marginal(metnet::MetNet, out1, out2,
-        iders; kwargs...) = [plot_marginal(metnet, out1, out2, ider; kwargs...) for ider in iders]
+        iders::Vector; kwargs...) = [plot_marginal(metnet, out1, out2, ider; kwargs...) for ider in iders]
 
 
-function plot_marginal!(p, ξ::Real, β::Real, boundle::ChstatBoundle, 
-    ider::Union{AbstractString, Integer}; kwargs...)
+function plot_marginal!(p, boundle::ChstatBoundle, ξ::Real, β::Real, 
+    ider::IDER_TYPE; kwargs...)
 
     outs = []
     try push!(outs, get_fbaout(boundle, ξ)) catch KeyError end
@@ -138,20 +139,22 @@ function plot_marginal!(p, ξ::Real, β::Real, boundle::ChstatBoundle,
     metnet = get_metnet(boundle, ξ)
     pdf_maxval_ = pdf_maxval(metnet, outs, ider)
     pdf_maxval_ = pdf_maxval_ != -1 ? pdf_maxval_ : 1
-    length(outs) == 1 && plot_marginal!(p, metnet, outs[1], ider; kwargs...)
-    length(outs) == 2 && plot_marginal!(p, metnet, outs[1], outs[2], ider; kwargs...)
-    length(outs) == 3 && plot_marginal!(p, metnet, outs[1], outs[2], outs[3], ider; kwargs...)
-
+    length(outs) == 1 && plot_marginal!(p, metnet, outs[1], ider; h = pdf_maxval_ * 1.1, kwargs...)
+    length(outs) == 2 && plot_marginal!(p, metnet, outs[1], outs[2], ider; h = pdf_maxval_ * 1.1, kwargs...)
+    length(outs) == 3 && plot_marginal!(p, metnet, outs[1], outs[2], outs[3], ider; h = pdf_maxval_ * 1.1, kwargs...)
+    return p
 end
 
-plot_marginal(ξ::Real, β::Real, boundle::ChstatBoundle, 
-    ider::Union{AbstractString, Integer}; kwargs...) = 
-        plot_marginal!(plot(), ξ, β, boundle, ider; kwargs...)
+plot_marginal(boundle::ChstatBoundle, ξ::Real, β::Real, 
+    ider::IDER_TYPE; 
+    title = rxns(get_metnet(boundle, ξ), ider),
+    kwargs...) = 
+        plot_marginal!(plot(), boundle, ξ, β, ider; title = title,  kwargs...)
 
-plot_marginal(ξ::Real, β::Real, boundle::ChstatBoundle, iders::Vector; kwargs...) = 
-    [plot_marginal(ξ, β, boundle, ider; kwargs...) for ider in iders]
+plot_marginal(boundle::ChstatBoundle, ξ::Real, β::Real, iders::Vector; kwargs...) = 
+    [plot_marginal(boundle, ξ, β, ider; kwargs...) for ider in iders]
 
-function plot_marginal_legend(ξ ,β; digits = 3, lw = 3, legend = :best, kwargs...)
+function plot_marginal_legend(ξ, β; digits = 3, lw = 3, legend = :best, kwargs...)
     ξ = round(ξ, digits = digits)
     β = round(β, digits = digits)
 

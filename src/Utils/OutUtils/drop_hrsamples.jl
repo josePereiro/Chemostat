@@ -1,0 +1,1 @@
+# drop_hrsamples!(hrout::HRout) = splice!(hrout.hrsamples, 1:length(hrout.hrsamples))

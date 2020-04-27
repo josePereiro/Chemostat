@@ -8,6 +8,7 @@ struct HRout{T<:AbstractFloat}
 end
 
 function HRout(hrsamples::AbstractArray, drop_samples = false)
+    isempty(hrsamples) && error("'hrsamples' is empty!!!")
     av = [mean(sample) for sample in eachcol(hrsamples)]
     va = [var(sample) for sample in eachcol(hrsamples)]
     hists = [fit(Histogram, sample, nbins = 100) for sample in eachcol(hrsamples)]

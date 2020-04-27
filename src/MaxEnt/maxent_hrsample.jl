@@ -32,7 +32,9 @@ function maxent_hrsamples_idxs(metnet::MetNet, hrout::HRout, biomider, β;
     
     W, N = size(hrout)
     biom_idx = rxnindex(metnet, biomider)
-    biom_ub = metnet.ub[biom_idx]
+    # The metnet must be preprocess (MetabolicEP.preprocess)
+    # to ensure this is a the valid maximum (the same of FBA)
+    biom_ub = metnet.ub[biom_idx] 
     biom_lb = metnet.lb[biom_idx]
     # TODO see TODO in the top
     # Only the biomass value is important
@@ -64,6 +66,6 @@ function maxent_hrsamples(metnet, hrout::HRout, biomider, β;
         error("HRout hrsamples is empty, samples was probably dropped!!!")
     end
     idxs = maxent_hrsamples_idxs(metnet, hrout, biomider, β; 
-    nsamples = nsamples, max_iters = max_iters, divs = divs)
+        nsamples = nsamples, max_iters = max_iters, divs = divs)
     return HRout(hrout.hrsamples[idxs,:], drop_samples)
 end
