@@ -15,7 +15,7 @@ function simple_toy_MetNet()
     lb =   [0.0   , 0.0   , 0.0   ,  0.0  , -100.0,   0.0,     0.5];
     ub =   [10.0 , 100.0 , 100.0 , 100.0 ,    0.0, 100.0,    100.0];
     rxnNames = ["Glucose transport", "Fermentation", "Respiration", 
-        "Lactate DH", "Biomass production rate", "atp demand"];
+        "Lactate DH", "Lactate transport", "Biomass production rate", "atp demand"];
     
     return MetNet(S, b, lb, ub, rxns, mets = mets, 
         metNames = metNames, rxnNames = rxnNames)
@@ -24,7 +24,7 @@ end
 function  toy_model(;resp_cost = -0.1, E_demand = 5.0)
     model = simple_toy_MetNet()
     lb!(model, "atpm", E_demand)
-    model = invert_bkwds(model);
+    # model = invert_bkwds(model);
     model = add_costs(model, Dict("resp" => resp_cost))
     return preprocess(model)
 end
