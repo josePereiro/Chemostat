@@ -1,8 +1,5 @@
 # From Cossios MaxEntChemostat2018
-function maxent_metabolicEP(model::MetNet, epout::EPout, epmat::AbstractEPMat, obj_ider, β0; verbose = true)
-    
-    # TODO see how to implement this with beta = Inf
-    epmat isa EPMatT0 && error("Not implemented for metabolicEP, beta = Inf")
+function maxent_metabolicEP(model::MetNet, epout::EPout, epmat::EPMat, obj_ider, β0; verbose = true)
     
     #= Anna's code scales fluxes to [-1,1], but it 
     doesn't rescale a,d back to the original range =#
@@ -16,24 +13,17 @@ function maxent_metabolicEP(model::MetNet, epout::EPout, epmat::AbstractEPMat, o
     contents of epmat =#
     v = epmat.v * maxflux
     Σ = epmat.invKKPD * maxflux^2
-    iΣ = epmat.KKPD / maxflux^2
     #= v, Σ are the mean vector and covariance matrix of Q,
     the full multivariate Gaussian (in Braunstein et al paper) =#
-
-    #= The mean and variance of the univariate marginals of Q(n)    
-    for each flux. Note that this does not include truncation.
-    These guys are re-scaled in Anna's code, so no need to do that
-    here again. =#
-    μ = epout.μ
-    ν = epout.σ
 
     # I dont want to introduce a new intermediate data type
     # I'll try to return a new EPout
     
-    # 
-    obj_ider = rxnindex(model, obj_ider)
+    obj_idx = rxnindex(model, obj_ider)
     α = spzeros(size(Σ, 1))
-    α[obj_ider] = β0
+    α[obj_idx] = β0
+
+    @show sum(abs.(Σ[:, obj_idx]))
 
     w = v + Σ * α
     Σnn = d .* diag(Σ) ./ (d .- diag(Σ)) # variances of the non-truncated marginals
