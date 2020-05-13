@@ -8,69 +8,65 @@ function maxent_metabolicEP(model::MetNet, epout::EPout,
 M = size(epmat.G, 1)
 N = length(epout.av)
 
-#scale factor
-maxflux = max(maximum(abs.(model.lb)), maximum(abs.(model.ub)))
+G = epmat.G
+Y = epmat.Y
+a = epout.sol.a
+b = epout.sol.b
 
 idxy = 1:M # dependent variables
 idxw = M+1:N # independent variables
-    
-# TODO pull request asking for updating Σy in epmat
-vw, vy, G, Y, lb, ub = epmat.vw, epmat.vy, epmat.G, epmat.Y, epmat.lb, epmat.ub
 
-# rescaling all back
-a = epout.sol.a .* maxflux
-b = epout.sol.b .* maxflux^2
-vw = vw .* maxflux
-vy = vy .* maxflux
-Y = Y .* maxflux
-lb = lb .* maxflux
-ub = ub .* maxflux
+ay, aw = view(a, idxy), view(a, idxw); # dep an ind prior mean (epfields)
+by, bw = view(b, idxy), view(b, idxw); # dep an ind prior variance (epfields)
 
-# covariance matrix
-Σw = inv(Diagonal(1.0 ./ b[idxw]) + G' * Diagonal( 1.0 ./ b[idxy]) * G);
-Σy = (G*Σw)*G'
+Σw = inv(Diagonal(1.0 ./ bw) + G' * Diagonal( 1.0 ./ by ) * G);
+Σy = G*Σw*G';
+vw = Σw * (aw ./ bw - G'*(ay ./ by));
+vy = -G*vw .+ Y;
 
-fullΣ = zeros(N,N)
-fullΣ[1:M, 1:M] .= Σy;
-fullΣ[M + 1:N,M + 1:N] .= Σw;
+model_obj_idx = rxnindex(model, obj_ider)
+epmat_obj_idx = findfirst(isequal(model_obj_idx), epmat.idx[M + 1:N])
 
-obj_idx = rxnindex(model, obj_ider) # index in original model
-epmat_obj_idx = findfirst(isequal(obj_idx), epmat.idx);
+isnothing(epmat_obj_idx) && error("obj_ider '$(obj_ider)' not found between independent fluxes. Try move it to the last index!!!")
 
-# epmat_obj_idx > M && error("obj_ider '$obj_ider' not included in the dependent variables. Move it to the first index of the model should fix it.")
-# @show epmat_obj_idx, model.rxns[obj_idx], sum(abs.(fullΣ[:, epmat_obj_idx]))
-
-βs_ = zeros(N);
+βs_ = zeros(N - M);
 βs_[epmat_obj_idx] = β
 
-w = [vy; vw] + fullΣ * βs_;
+ww = vw + Σw * βs_
+wy = -G*ww + Y;
 
-# From Annas code
-Σnn = []
-wn = []
-for i in 1:N # (ind (y))
-    Σ_, a_, b_, w_, lb_, ub_ = fullΣ[i,i], a[i], b[i], w[i], lb[i], ub[i]
-    # This is exactly what Annas code do for computing μ and σ at T0.
-    # the only difference is that I use 'w' instead of 'v'
+# μ and σ
+σy = []
+μy = []
+
+for i in 1:M # (dep (y))
+    Σ_, a_, b_, v_, lb_, ub_ = Σy[i,i], ay[i], by[i], wy[i], epmat.lb[i], epmat.ub[i]
     σ = clamp(inv(1.0/Σ_ - 1.0/b_), minvar, maxvar)
-    μ = Σ_ != b_ ? σ * (w_/Σ_ - a_/b_) : 0.5 * (ub_ + lb_)
-    push!(Σnn,  σ)
-    push!(wn,  μ)
+    μ = Σ_ != b_ ? σ * (v_/Σ_ - a_/b_) : 0.5 * (ub_ + lb_)
+    push!(σy,  σ)
+    push!(μy,  μ)
 end
 
-# From Cossios code
-# Σnn = b .* diag(fullΣ) ./ (b .- diag(fullΣ)) # variances of the non-truncated marginals
-# wn = (b .* w - diag(fullΣ) .* a) ./ (b .- diag(fullΣ)) # mean of the non-truncated marginals
-    
-tns = Truncated.(Normal.(wn, sqrt.(Σnn)), lb, ub)
+# μ and σ
+σw = []
+μw = []
+
+for i in 1:N - M # (ind (y))
+    Σ_, a_, b_, v_, lb_, ub_ = Σw[i,i], aw[i], bw[i], ww[i], epmat.lb[M + i], epmat.ub[M + i]
+    σ = clamp(inv(1.0/Σ_ - 1.0/b_), minvar, maxvar)
+    μ = Σ_ != b_ ? σ * (v_/Σ_ - a_/b_) : 0.5 * (ub_ + lb_)
+    push!(σw,  σ)
+    push!(μw,  μ)
+end
 
 # epmat.idx map to the original permutation
+maxflux = max(maximum(abs.(model.lb)), maximum(abs.(model.ub)))
+μ = [μy; μw][epmat.idx] * maxflux;
+σ = [σy; σw][epmat.idx] * maxflux^2;
+    
+tns = Truncated.(Normal.(μ, sqrt.(σ)), model.lb, model.ub)
 
-return typeof(epout)(wn[epmat.idx], 
-                    Σnn[epmat.idx], 
-                    mean.(tns)[epmat.idx], 
-                    var.(tns)[epmat.idx], 
-                    epout.sol, epout.status)
+return typeof(epout)(μ, σ, mean.(tns), var.(tns), epout.sol, epout.status)
 
 
 end

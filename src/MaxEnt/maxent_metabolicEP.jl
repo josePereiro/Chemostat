@@ -23,8 +23,6 @@ function maxent_metabolicEP(model::MetNet, epout::EPout, epmat::EPMat, obj_ider,
     α = spzeros(size(Σ, 1))
     α[obj_idx] = β0
 
-    @show sum(abs.(Σ[:, obj_idx]))
-
     w = v + Σ * α
     Σnn = d .* diag(Σ) ./ (d .- diag(Σ)) # variances of the non-truncated marginals
     wn = (d .* w - diag(Σ) .* a) ./ (d .- diag(Σ)) # mean of the non-truncated marginals
