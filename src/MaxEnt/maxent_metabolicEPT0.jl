@@ -25,15 +25,15 @@ vw = Σw * (aw ./ bw - G'*(ay ./ by));
 vy = -G*vw .+ Y;
 
 model_obj_idx = rxnindex(model, obj_ider)
-epmat_obj_idx = findfirst(isequal(model_obj_idx), epmat.idx[M + 1:N])
+epmat_obj_idx = findfirst(isequal(model_obj_idx), epmat.idx[1:M])
 
-isnothing(epmat_obj_idx) && error("obj_ider '$(obj_ider)' not found between independent fluxes. Try move it to the last index!!!")
+isnothing(epmat_obj_idx) && error("obj_ider '$(obj_ider)' not found between dependent fluxes. Try move it to the first index!!!")
 
-βs_ = zeros(N - M);
+βs_ = zeros(M);
 βs_[epmat_obj_idx] = β
 
-ww = vw + Σw * βs_
-wy = -G*ww + Y;
+wy = vy + Σy*βs_
+ww = pinv(-G)*(wy - Y)
 
 # μ and σ
 σy = []
