@@ -9,14 +9,14 @@ function add_data!(boundle::ChstatBoundle, ξ::Real, β::Real, key::AbstractStri
     !(β in boundle.βs) && push!(boundle.βs, β)
 end
 
-add_epout!(boundle::ChstatBoundle, ξ::Real, β::Real, epout::EPout) = 
-    add_data!(boundle, ξ, β, epout_key, epout)
+# add_epout!(boundle::ChstatBoundle, ξ::Real, β::Real, epout::EPout) = 
+#     add_data!(boundle, ξ, β, epout_key, epout)
 
-add_epmat!(boundle::ChstatBoundle, ξ::Real, β::Real, epmat::AbstractEPMat) = 
-    add_data!(boundle, ξ, β, epmat_key, epmat)
+# add_epmat!(boundle::ChstatBoundle, ξ::Real, β::Real, epmat::AbstractEPMat) = 
+#     add_data!(boundle, ξ, β, epmat_key, epmat)
 
-add_hrout!(boundle::ChstatBoundle, ξ::Real, β::Real, hrout::HRout) = 
-    add_data!(boundle, ξ, β, hrout_key, hrout)
+# add_hrout!(boundle::ChstatBoundle, ξ::Real, β::Real, hrout::HRout) = 
+#     add_data!(boundle, ξ, β, hrout_key, hrout)
  
 function add_data!(boundle::ChstatBoundle, ξ::Real, key::AbstractString, data)
     if !haskey(boundle.data, ξ)
@@ -27,11 +27,11 @@ function add_data!(boundle::ChstatBoundle, ξ::Real, key::AbstractString, data)
     !(ξ in boundle.ξs) && push!(boundle.ξs, ξ)
 end
 
-add_fbaout!(boundle::ChstatBoundle, ξ::Real, fbaout::FBAout) = 
-    add_data!(boundle, ξ, fbaout_key, fbaout)
+# add_fbaout!(boundle::ChstatBoundle, ξ::Real, fbaout::FBAout) = 
+#     add_data!(boundle, ξ, fbaout_key, fbaout)
 
-add_metnet!(boundle::ChstatBoundle, ξ::Real, metnet::MetNet) = 
-    add_data!(boundle, ξ, metnet_key, metnet)
+# add_metnet!(boundle::ChstatBoundle, ξ::Real, metnet::MetNet) = 
+#     add_data!(boundle, ξ, metnet_key, metnet)
 
 function add_data!(boundle::ChstatBoundle, key::AbstractString, data)
     if !haskey(boundle.data, key)

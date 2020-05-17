@@ -3,23 +3,19 @@ function get_data(boundle::ChstatBoundle, ξ::Real, β::Real)
     return boundle.data[k_tuple]
 end
 
-function get_data(boundle::ChstatBoundle, ξ::Real, β::Real, key::AbstractString)
-    k_tuple = (parse_ξ(boundle, ξ), parse_β(boundle, β))
-    return boundle.data[k_tuple][key]
+function get_data(boundle::ChstatBoundle, ξ::Real, β::Real, data_key::Symbol)
+    data = get_data(boundle, ξ, β)
+    return haskey(data, data_key) ? data[data_key] : error("key '$data_key' not present, currect keys in data dict $(collect(keys(data)))")
 end
 
-get_data(boundle::ChstatBoundle, ξs::Vector, β::Real, key::AbstractString) =
-    [get_data(boundle, ξ, β, key) for ξ in ξs]
+get_data(boundle::ChstatBoundle, ξs::Vector, β::Real, data_key::AbstractString) =
+    [get_data(boundle, ξ, β, data_key) for ξ in ξs]
 
-get_data(boundle::ChstatBoundle, ξ::Real, βs::Vector, key::AbstractString) =
-    [get_data(boundle, ξ, β, key) for β in βs]
+get_data(boundle::ChstatBoundle, ξ::Real, βs::Vector, data_key::Symbol) =
+    [get_data(boundle, ξ, β, data_key) for β in βs]
 
-get_data(boundle::ChstatBoundle, ξ::Real, β::Real, keys::Vector) =
-    [get_data(boundle, ξ, β, key) for key in keys]
-
-get_epout(boundle::ChstatBoundle, ξ, β) = get_data(boundle, ξ, β, epout_key)
-get_epmat(boundle::ChstatBoundle, ξ, β) = get_data(boundle, ξ, β, epmat_key)
-get_hrout(boundle::ChstatBoundle, ξ, β) = get_data(boundle, ξ, β, hrout_key)
+get_data(boundle::ChstatBoundle, ξ::Real, β::Real, date_keys::Vector) =
+    [get_data(boundle, ξ, β, date_key) for date_key in date_keys]
 
 
 function get_data(boundle::ChstatBoundle, ξ::Real)
@@ -27,18 +23,17 @@ function get_data(boundle::ChstatBoundle, ξ::Real)
     return boundle.data[ξ]
 end
 
-function get_data(boundle::ChstatBoundle, ξ::Real, key::AbstractString)
-    ξ = parse_ξ(boundle, ξ)
-    return boundle.data[ξ][key]
+function get_data(boundle::ChstatBoundle, ξ::Real, data_key::Symbol)
+    data = get_data(boundle, ξ)
+    return haskey(data, data_key) ? data[data_key] : error("key '$data_key' not present, currect keys in data dict $(collect(keys(data)))")
 end
 
-get_data(boundle::ChstatBoundle, ξs::Vector, key::AbstractString) = 
-    [get_data(boundle, ξ, key) for ξ in ξs]
+get_data(boundle::ChstatBoundle, ξs::Vector, data_key::Symbol) = 
+    [get_data(boundle, ξ, data_key) for ξ in ξs]
 
-get_data(boundle::ChstatBoundle, ξ::Real, keys::Vector) = 
-    [get_data(boundle, ξ, key) for key in keys]
+get_data(boundle::ChstatBoundle, ξ::Real, data_keys::Vector) = 
+    [get_data(boundle, ξ, data_key) for data_key in data_keys]
 
-get_fbaout(boundle::ChstatBoundle, ξ) = get_data(boundle, ξ, fbaout_key)
-get_metnet(boundle::ChstatBoundle, ξ) = get_data(boundle, ξ, metnet_key)
+get_data(boundle::ChstatBoundle, data_key::Symbol) = boundle.data[data_key]
 
-get_data(boundle::ChstatBoundle, key::AbstractString) = boundle.data[key]
+
