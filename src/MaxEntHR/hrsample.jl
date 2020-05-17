@@ -26,3 +26,6 @@ function hrsample(S, b, lb, ub; niter=10^6, nsamples = 10000)
     end
     h
 end
+
+hrsample(model::MetNet; niter=10^6, nsamples = 10000) = 
+    hrsample(model.S, model.b, model.lb, model.ub; niter=niter, nsamples = nsamples)

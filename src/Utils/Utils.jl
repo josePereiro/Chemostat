@@ -18,9 +18,7 @@
     Common utilities
 """
 module Utils
-    # import MetabolicEP
-    # import MetabolicEP: MetNet, preprocess, metabolicEP, EPout, AbstractEPMat
-    # import MetabolicEP.HitAndRun: hrsample
+    
     import MathProgBase.HighLevelInterface: linprog
     import Clp: ClpSolver
     import SparseArrays: SparseMatrixCSC, spzeros, findnz, sparsevec, sparse
@@ -37,4 +35,5 @@ module Utils
     include("OutUtils/OutUtils.jl")
     include("TestUtils/TetsUtils.jl")
     include("BoundleUtils/BoundleUtils.jl")
+    include("MaxEntEPUtils/MaxEntUtils.jl")
 end

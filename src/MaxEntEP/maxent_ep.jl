@@ -49,3 +49,7 @@ function maxent_ep(K::AbstractArray{T,2}, Y::Array{T,1}, lb::Array{T,1}, ub::Arr
         return  EPout(epfield.μ[idx],epfield.s[idx],epfield.av[idx],epfield.va[idx], epfield, returnstatus)
     end
 end
+
+function maxent_ep(metnet::MetNet; kwargs...)
+    return maxent_ep(metnet.S, metnet.b, metnet.lb, metnet.ub; kwargs...)
+end

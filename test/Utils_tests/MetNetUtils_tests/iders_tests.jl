@@ -1,5 +1,5 @@
 function test_iders()
-    model = Chemostat.Utils.simple_toy_MetNet()
+    model = deserialize(METNET_CACHE_FILE)
 
     too_big = 100
     negative = -100

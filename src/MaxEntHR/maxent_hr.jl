@@ -56,7 +56,7 @@ function maxent_hr_idxs(metnet::MetNet, hrout::HRout, biomider, β;
     return maxent_samples_idxs
 end
 
-function maxent_hr(metnet, hrout::HRout, biomider, β; 
+function maxent_hr(metnet::MetNet, hrout::HRout, biomider, β; 
         drop_samples = true, 
         nsamples = size(hrout, 1),
         max_iters = 100 * nsamples,

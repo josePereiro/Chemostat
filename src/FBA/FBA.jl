@@ -4,8 +4,7 @@ module FBA
 # Prossibly make pull request for MetabolicEP too
 import MathProgBase.HighLevelInterface: linprog
 import Clp: ClpSolver
-import ..Utils: rxnindex, FBAout
-import MetabolicEP: MetNet
+import ..Utils: rxnindex, FBAout, MetNet
 
 include("fba_.jl")
 

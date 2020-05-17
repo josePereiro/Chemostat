@@ -21,7 +21,7 @@ function test_add_rxn(model, mets_info_)
     end
 end
 function test_add_rxn()
-    model = Chemostat.Utils.simple_toy_MetNet()
+    model = deserialize(METNET_CACHE_FILE)
 
     mets_info_ = Dict()
     for met in Chemostat.Utils.mets(model)

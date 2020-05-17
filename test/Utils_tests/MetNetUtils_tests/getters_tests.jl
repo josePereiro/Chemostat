@@ -1,5 +1,5 @@
 function test_getters()
-    model = Chemostat.Utils.simple_toy_MetNet()
+    model = deserialize(METNET_CACHE_FILE)
     @test Chemostat.Utils.mets(model) == model.mets
     @test Chemostat.Utils.rxns(model) == model.rxns
 
