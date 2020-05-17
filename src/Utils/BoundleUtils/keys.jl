@@ -1,10 +1,6 @@
-epout_key = "epout"
-set_epout_key(k) = global epout_key = k
-epmat_key = "epmat"
-set_epmat_key(k) = global epmat_key = k
-fbaout_key = "fbaout"
-set_fbaout_key(k) = global fbaout_key = k
-hrout_key = "hrout"
-set_hrout_key(k) = global hrout_key = k
-metnet_key = "metnet"
-set_model_key(k) = global model_key = k
+# Some defaults keys
+const epout_data_key = :ep
+const epmat_data_key = :epmat
+const fbaout_data_key = :fba
+const hrout_data_key = :hr
+const metnet_data_key = :net

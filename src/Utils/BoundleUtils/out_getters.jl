@@ -1,60 +1,43 @@
 # Boundle
-av_ep(boundle::ChstatBoundle, ξ::Real, β::Real) = 
-    av(get_epout(boundle, ξ, β))
-av_ep(boundle::ChstatBoundle, ξ, β, ider) = 
-    av(get_metnet(boundle, ξ), get_epout(boundle, ξ, β), ider)
+av(boundle::ChstatBoundle, ξ::Real, β::Real, data_key::Symbol) = 
+    av(get_data(boundle, ξ, β, data_key))
 
-va_ep(boundle::ChstatBoundle, ξ::Real, β::Real) = 
-    va(get_epout(boundle, ξ, β))
-va_ep(boundle::ChstatBoundle, ξ, β, ider) = 
-    va(get_metnet(boundle, ξ), get_epout(boundle, ξ, β), ider)
+function av(boundle::ChstatBoundle, ξ, β, data_key::Symbol, ider,
+        metnet_data_key::Symbol = metnet_data_key)
 
-μ_ep(boundle::ChstatBoundle, ξ, β) = 
-    μ(get_epout(boundle, ξ, β))
-μ_ep(boundle::ChstatBoundle, ξ, β, ider) = 
-    μ(get_metnet(boundle, ξ), get_epout(boundle, ξ, β), ider)
+    metnet = get_data(boundle, ξ, metnet_data_key)
+    data = get_data(boundle, ξ, β, data_key)
+    return av(metnet, data, ider)
+end
 
-σ_ep(boundle::ChstatBoundle, ξ, β) = 
-    σ(get_epout(boundle, ξ, β))
-σ_ep(boundle::ChstatBoundle, ξ, β, ider) = 
-    σ(get_metnet(boundle, ξ), get_epout(boundle, ξ, β), ider)
+va(boundle::ChstatBoundle, ξ::Real, β::Real, data_key::Symbol) = 
+    va(get_data(boundle, ξ, β, data_key))
 
-va_hr(boundle::ChstatBoundle, ξ, β) = 
-    va(get_hrout(boundle, ξ, β))
-va_hr(boundle::ChstatBoundle, ξ, β, ider) = 
-    va(get_metnet(boundle, ξ), get_hrout(boundle, ξ, β), ider)
+function va(boundle::ChstatBoundle, ξ, β, data_key::Symbol, ider,
+        metnet_data_key::Symbol = metnet_data_key)
 
-av_hr(boundle::ChstatBoundle, ξ, β) = 
-    av(get_hrout(boundle, ξ, β))
-av_hr(boundle::ChstatBoundle, ξ, β, ider) = 
-    av(get_metnet(boundle, ξ), get_hrout(boundle, ξ, β), ider)
+    metnet = get_data(boundle, ξ, metnet_data_key)
+    data = get_data(boundle, ξ, β, data_key)
+    return va(metnet, data, ider)
+end
 
-μ_hr(boundle::ChstatBoundle, ξ, β) = 
-    μ(get_hrout(boundle, ξ, β))
-μ_hr(boundle::ChstatBoundle, ξ, β, ider) = 
-    μ(get_metnet(boundle, ξ), get_hrout(boundle, ξ, β), ider)
+μ(boundle::ChstatBoundle, ξ::Real, β::Real, data_key::Symbol) = 
+    μ(get_data(boundle, ξ, β, data_key))
 
-σ_hr(boundle::ChstatBoundle, ξ, β) = 
-    σ(get_hrout(boundle, ξ, β))
-σ_hr(boundle::ChstatBoundle, ξ, β, ider) = 
-    σ(get_metnet(boundle, ξ), get_hrout(boundle, ξ, β), ider)
+function μ(boundle::ChstatBoundle, ξ, β, data_key::Symbol, ider,
+        metnet_data_key::Symbol = metnet_data_key)
 
+    metnet = get_data(boundle, ξ, metnet_data_key)
+    data = get_data(boundle, ξ, β, data_key)
+    return μ(metnet, data, ider)
+end
+σ(boundle::ChstatBoundle, ξ::Real, β::Real, data_key::Symbol) = 
+σ(get_data(boundle, ξ, β, data_key))
 
-va_fba(boundle::ChstatBoundle, ξ) = va(get_fbaout(boundle, ξ))
-va_fba(boundle::ChstatBoundle, ξ, ider) = 
-    va(get_metnet(boundle, ξ), get_fbaout(boundle, ξ), ider)
+function σ(boundle::ChstatBoundle, ξ, β, data_key::Symbol, ider,
+        metnet_data_key::Symbol = metnet_data_key)
 
-av_fba(boundle::ChstatBoundle, ξ) = 
-    av(get_fbaout(boundle, ξ))
-av_fba(boundle::ChstatBoundle, ξ, ider) = 
-    av(get_metnet(boundle, ξ), get_fbaout(boundle, ξ), ider)
-
-μ_fba(boundle::ChstatBoundle, ξ) = 
-    μ(get_fbaout(boundle, ξ))
-μ_fba(boundle::ChstatBoundle, ξ, ider) = 
-    μ(get_metnet(boundle, ξ), get_fbaout(boundle, ξ), ider)
-
-σ_fba(boundle::ChstatBoundle, ξ) = 
-    σ(get_fbaout(boundle, ξ))
-σ_fba(boundle::ChstatBoundle, ξ, ider) = 
-    σ(get_metnet(boundle, ξ), get_fbaout(boundle, ξ), ider)
+    metnet = get_data(boundle, ξ, metnet_data_key)
+    data = get_data(boundle, ξ, β, data_key)
+    return σ(metnet, data, ider)
+end
