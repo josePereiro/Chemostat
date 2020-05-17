@@ -30,10 +30,9 @@ module Utils
     
     include("General/General.jl")
     include("Types/Types.jl")
-    # include("MetabolicEPUtils/MetabolicEPUtils.jl") # Deprecated
     include("MetNetUtils/MetNetUtils.jl")
     include("OutUtils/OutUtils.jl")
     include("TestUtils/TetsUtils.jl")
     include("BoundleUtils/BoundleUtils.jl")
-    include("MaxEntEPUtils/MaxEntUtils.jl")
+    
 end
