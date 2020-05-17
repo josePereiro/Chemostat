@@ -18,19 +18,21 @@
     Common utilities
 """
 module Utils
-    import MetabolicEP
-    import MetabolicEP: MetNet, preprocess, metabolicEP, EPout, AbstractEPMat
-    import MetabolicEP.HitAndRun: hrsample
+    # import MetabolicEP
+    # import MetabolicEP: MetNet, preprocess, metabolicEP, EPout, AbstractEPMat
+    # import MetabolicEP.HitAndRun: hrsample
+    import MathProgBase.HighLevelInterface: linprog
+    import Clp: ClpSolver
     import SparseArrays: SparseMatrixCSC, spzeros, findnz, sparsevec, sparse
     import StatsBase: AbstractHistogram, Histogram, fit
     import Distributions: Normal, Truncated, mean, var, pdf
-    import LinearAlgebra: normalize
+    import LinearAlgebra: normalize, qr, diag
     import Base: isequal, size, ==
     import JSON: json, parse
     
     include("General/General.jl")
     include("Types/Types.jl")
-    include("MetabolicEPUtils/MetabolicEPUtils.jl")
+    # include("MetabolicEPUtils/MetabolicEPUtils.jl") # Deprecated
     include("MetNetUtils/MetNetUtils.jl")
     include("OutUtils/OutUtils.jl")
     include("TestUtils/TetsUtils.jl")
