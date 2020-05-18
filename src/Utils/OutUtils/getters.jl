@@ -24,39 +24,20 @@ hrsamples(hrout::HRout) = hrout.hrsamples
 hrsamples(model::MetNet, hrout::HRout, ider::IDER_TYPE) = 
     (ider = rxnindex(model, ider); hrout.hrsamples[:, ider])
 
-# Commons
-av(metnet::MetNet, out, ider::IDER_TYPE) = 
-    av(out)[rxnindex(metnet, ider)]
-av(metnet::MetNet, out, iders::Vector) = 
-    [av(metnet, out, ider) for ider in iders]
-av(metnet::MetNet, outs::Vector, ider::IDER_TYPE) =
-    [av(metnet, out, ider) for out in outs]
-av(metnets::Vector, outs::Vector, ider::IDER_TYPE) = 
-    [av(metnet, out, ider) for (metnet, out) in zip(metnets, outs)]
+# Commons getter interface
+for fun in [av, va, μ, σ]
+    fun_name = string(nameof(fun))
 
-va(metnet::MetNet, out, ider::IDER_TYPE) = 
-    va(out)[rxnindex(metnet, ider)]
-va(metnet::MetNet, out, iders::Vector) = 
-    [va(metnet, out, ider) for ider in iders]
-va(metnet::MetNet, outs::Vector, ider::IDER_TYPE) = 
-    [va(metnet, out, ider) for out in outs]
-va(metnets::Vector, outs::Vector, ider::IDER_TYPE) = 
-    [va(metnet, out, ider) for (metnet, out) in zip(metnets, outs)]
-
-μ(metnet::MetNet, out, ider::IDER_TYPE) = 
-    μ(out)[rxnindex(metnet, ider)]
-μ(metnet::MetNet, out, iders::Vector) = 
-    [μ(metnet, out, ider) for ider in iders]
-μ(metnet::MetNet, outs::Vector, ider::IDER_TYPE) = 
-    [μ(metnet, out, ider) for out in outs]
-μ(metnets::Vector, outs::Vector, ider::IDER_TYPE) = 
-    [μ(metnet, out, ider) for (metnet, out) in zip(metnets, outs)]
-
-σ(metnet::MetNet, out, ider::IDER_TYPE) = σ(out)[rxnindex(metnet, ider)]
-σ(metnet::MetNet, out, iders::Vector) = 
-    [σ(metnet, out, ider) for ider in iders]
-σ(metnet::MetNet, outs::Vector, ider::IDER_TYPE) = 
-    [σ(metnet, out, ider) for out in outs]
-σ(metnets::Vector, outs::Vector, ider::IDER_TYPE) = 
-    [σ(metnet, out, ider) for (metnet, out) in zip(metnets, outs)]
-
+    eval(Meta.parse(
+        """$(fun_name)(metnet::MetNet, out, ider::IDER_TYPE) = 
+                $(fun_name)(out)[rxnindex(metnet, ider)]"""))
+    eval(Meta.parse(
+        """$(fun_name)(metnet::MetNet, out, iders::Vector) = 
+                [$(fun_name)(metnet, out, ider) for ider in iders]"""))
+    eval(Meta.parse(
+        """$(fun_name)(metnet::MetNet, outs::Vector, ider::IDER_TYPE) =
+                [$(fun_name)(metnet, out, ider) for out in outs]"""))
+    eval(Meta.parse(
+        """$(fun_name)(metnets::Vector, outs::Vector, ider::IDER_TYPE) = 
+                [$(fun_name)(metnet, out, ider) for (metnet, out) in zip(metnets, outs)]"""))
+end
