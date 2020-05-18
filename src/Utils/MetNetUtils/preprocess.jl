@@ -25,8 +25,9 @@ function preprocess(S,b,lb,ub,rxns; verbose = false)
 end
 
 
-function preprocess(metnet::MetNet)
-    S_, b_, lb_, ub_, rxns_ = preprocess(metnet.S, metnet.b, metnet.lb, metnet.ub, metnet.rxns);
+function preprocess(metnet::MetNet; verbose = false)
+    S_, b_, lb_, ub_, rxns_ = preprocess(metnet.S, metnet.b, metnet.lb, 
+        metnet.ub, metnet.rxns; verbose = verbose);
     M_, N_ = size(S_)
     return MetNet(N_, M_, S_, metnet.b, metnet.c, lb_, ub_, 
                     metnet.genes, metnet.rxnGeneMat, metnet.grRules, metnet.mets, rxns_, 

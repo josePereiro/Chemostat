@@ -1,4 +1,4 @@
-struct HRout{T<:AbstractFloat}
+struct HRout{T<:Real} <: AbstractOut
     av::Vector{T} # mean of the samples
     va::Vector{T} # variance of the samples
     hists::Vector{<:AbstractHistogram} # an histogram representation of the samples
