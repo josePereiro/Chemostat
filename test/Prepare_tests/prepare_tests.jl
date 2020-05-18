@@ -98,7 +98,7 @@ function create_boundle_cache()
 
         for (βi, β) in enumerate(βs)
 
-            print("ξ: [$(ξi)/ $(length(ξs))] β: [$(βi)/ $(length(βs))] \r");flush(stdout)
+            print("xi: [$(ξi)/ $(length(ξs))] beta: [$(βi)/ $(length(βs))] \r");flush(stdout)
                 
             βv[obj_idx] = β
             epout = Chemostat.MaxEntEP.maxent_ep(model; α = 1e11, βv = βv, verbose = verbose_)

@@ -41,20 +41,20 @@ function MetNet(mat_model::Dict, T = Float64)
 
     S = Matrix(mat_model["S"])
     M, N = size(S)
-    b = reshape(mat_model["b"], :, 1)
-    c = haskey(mat_model, "c") ? reshape(mat_model["c"], :, 1) : [0.0]
-    lb = reshape(mat_model["lb"], :, 1)
-    ub = reshape(mat_model["ub"], :, 1)
-    genes = haskey(mat_model, "genes") ? String.(reshape(mat_model["genes"], :, 1)) : [""]
+    b = vec(mat_model["b"])
+    c = haskey(mat_model, "c") ? vec(mat_model["c"]) : [0.0]
+    lb = vec(mat_model["lb"])
+    ub = vec(mat_model["ub"])
+    genes = haskey(mat_model, "genes") ? vec(mat_model["genes"]) : [""]
     rxnGeneMat = haskey(mat_model, "rxnGeneMat") ? Matrix(mat_model["rxnGeneMat"]) : []
-    grRules = haskey(mat_model, "grRules") ? String.(reshape(mat_model["grRules"], :, 1)) : [""]
-    mets = haskey(mat_model, "mets") ? String.(reshape(mat_model["mets"], :, 1)) : ["M$i" for i in 1:M]
-    rxns = haskey(mat_model, "rxns") ? String.(reshape(mat_model["rxns"], :, 1)) : ["r$i" for i in 1:N]
-    metNames = haskey(mat_model, "metNames") ? String.(reshape(mat_model["metNames"], :, 1)) : [""]
-    metFormulas = haskey(mat_model, "metFormulas") ? String.(reshape(mat_model["metFormulas"], :, 1)) : [""]
-    rxnNames = haskey(mat_model, "rxnNames") ? String.(reshape(mat_model["rxnNames"], :, 1)) : [""]
-    rev = haskey(mat_model, "rev") ? Bool.(reshape(mat_model["rev"], :, 1)) : (lb .< 0.0) .& (ub .> 0.0)
-    subSystems = haskey(mat_model, "subSystems") ? String.(reshape(mat_model["subSystems"], :, 1)) : [""]
+    grRules = haskey(mat_model, "grRules") ? vec(mat_model["grRules"]) : [""]
+    mets = haskey(mat_model, "mets") ? vec(mat_model["mets"]) : ["M$i" for i in 1:M]
+    rxns = haskey(mat_model, "rxns") ? vec(mat_model["rxns"]) : ["r$i" for i in 1:N]
+    metNames = haskey(mat_model, "metNames") ? vec(mat_model["metNames"]) : [""]
+    metFormulas = haskey(mat_model, "metFormulas") ? vec(mat_model["metFormulas"]) : [""]
+    rxnNames = haskey(mat_model, "rxnNames") ? vec(mat_model["rxnNames"]) : [""]
+    rev = haskey(mat_model, "rev") ? vec(mat_model["rev"]) : []
+    subSystems = haskey(mat_model, "subSystems") ? vec(mat_model["subSystems"]) : [""]
     
     return MetNet{T}(N, M, S, b, c, lb, ub, genes, 
         rxnGeneMat, grRules, mets, rxns, metNames, metFormulas, rxnNames, rev, subSystems)
