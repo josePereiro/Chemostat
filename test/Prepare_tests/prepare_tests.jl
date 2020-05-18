@@ -59,3 +59,59 @@ function create_fbaout_cache()
     @test true
 end
 create_fbaout_cache()
+
+#Boundle
+const BOUNDLE_CACHE_FILE = joinpath(TEST_CACHE_DIR, "chstat_boundle.jls")
+function create_boundle_cache()
+    # This is a whole workflow
+
+    βs = [0.0; Chemostat.Utils.logspace(-2,5, 10)];
+    ξs = Chemostat.Utils.logspace(-1,1, 10);
+
+    # this only works for the toymodel
+    intake_info = Dict(
+        # Open intakes
+        "gt" => Dict("ub" => 100.0, "c" => 10.0),
+    );
+    obj_ider = "biom"; 
+
+    boundle = Chemostat.Utils.ChstatBoundle();
+
+    verbose_ = false
+    for (ξi, ξ) in enumerate(ξs)
+        
+        # Model
+        model = deserialize(METNET_CACHE_FILE)
+        Chemostat.SteadyState.apply_bound!(model, ξ, intake_info)
+        model = Chemostat.Utils.preprocess(model, verbose = verbose_)
+        
+        # FBA
+        fbaout = Chemostat.FBA.fba(model, obj_ider)
+        
+        # Add to boundle
+        Chemostat.Utils.add_data!(boundle, ξ, :net, model)
+        Chemostat.Utils.add_data!(boundle, ξ, :fba, fbaout)
+        
+        # MaxEnt-EP
+        βv = zeros(size(model, 2))
+        obj_idx = Chemostat.Utils.rxnindex(model, obj_ider)
+
+        for (βi, β) in enumerate(βs)
+
+            print("ξ: [$(ξi)/ $(length(ξs))] β: [$(βi)/ $(length(βs))] \r");flush(stdout)
+                
+            βv[obj_idx] = β
+            epout = Chemostat.MaxEntEP.maxent_ep(model; α = 1e11, βv = βv, verbose = verbose_)
+            Chemostat.Utils.add_data!(boundle, ξ, β, :ep, epout)
+            @test true
+        end
+    end
+    println("Done                              ");
+
+    serialize(BOUNDLE_CACHE_FILE, boundle)
+    flush(stdout)
+    println("created $BOUNDLE_CACHE_FILE")
+    @test true
+
+end
+create_boundle_cache()
