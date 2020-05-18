@@ -85,7 +85,7 @@ for fun in [av, va, μ, σ]
     # indexing using ξ(s), β(s), data_key, ider(s)
     fun_str = 
         """
-        fu$(fun_name)n(boundle::ChstatBoundle, 
+        $(fun_name)(boundle::ChstatBoundle, 
                 ξ, β, data_key::Symbol, 
                 ider, metnet_data_key::Symbol = metnet_data_key) = 
             _apply_out_getter($(fun_name), boundle, ξ, β, data_key, ider, metnet_data_key)
