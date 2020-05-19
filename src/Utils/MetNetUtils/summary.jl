@@ -16,39 +16,63 @@ function summary(metnet::MetNet)
 end
 
 function summary_rxn_bounds(metnet::MetNet)
-    length(metnet.lb) != metnet.N && (printstyled(
-        "lb ($(length(metnet.lb))) != N ($(metnet.N)), dimention missmatch", 
-        "\n", color = error_color); return)
+    PRINT_MAX = 50 # TODO make this global?
+    M, N = size(metnet)
 
-    length(metnet.ub) != metnet.N && (printstyled(
-        "ub ($(length(metnet.ub))) != N ($(metnet.N)), dimention missmatch", 
-        "\n", color = error_color); return)
+    all(iszero(metnet.lb)) && all(iszero(metnet.ub)) && 
+        (printstyled("lb and ub boths has only zero elements", "\n", color = error_color); return)
+    
+    # single checks
+    for (id, val) in zip(["lb", "ub"], [metnet.lb, metnet.ub])
+    
+        length(val) != N && (printstyled(
+            "$id ($(length(val))) != N ($N), dimention missmatch", 
+            "\n", color = error_color); return)
 
-    all(iszero(metnet.lb)) && printstyled("all lb are zero", "\n", color = info_color)
-    all(iszero(metnet.ub)) && printstyled("all ub are zero", "\n", color = error_color)
-    flush(stdout);
-    all(iszero(metnet.lb)) && all(iszero(metnet.ub)) && return
-    printstyled("lb unique elments: ", sort!(unique(metnet.lb)), "\n",color = info_color)
-    printstyled("ub unique elments: ", sort!(unique(metnet.ub)), "\n", color = info_color)
+        # length(metnet.ub) != N && (printstyled(
+        #     "ub ($(length(metnet.ub))) != N ($N), dimention missmatch", 
+        #     "\n", color = error_color); return)
 
+        all(iszero(val)) && printstyled("all $id are zero", "\n", color = info_color)
+        # all(iszero(metnet.ub)) && printstyled("all ub are zero", "\n", color = error_color)
+    
+        unique_ = sort!(unique(val))
+        length(unique_) < PRINT_MAX ?
+            printstyled("   $id $(length(unique_)) unique elment(s): ", unique_, "\n", color = info_color) :
+            printstyled("   $id $(length(unique_)) unique elment(s): min: ", 
+                first(unique_), " max: ", last(unique_), "\n", color = info_color)
+
+    end
+
+    # Counple checks
+    line_count = 0
     for (i, rxn) in enumerate(metnet.rxns)
         lb = metnet.lb[i]
         ub = metnet.ub[i]
-        lb > ub && printstyled("rxn($i): ($rxn), lb ($lb) > ub ($ub)", 
-            "\n", color = error_color)
-        lb > 0.0 && printstyled("rxn($i): ($rxn), lb ($lb) > 0.0", 
-            "\n", color = warn_color);  
-        lb == ub && printstyled("rxn($i): ($rxn), lb ($lb) == ub ($ub)", 
-            "\n", color = info_color); 
-        (isrev(metnet, i) ⊻ metnet.rev[i]) && printstyled("rxn($i): ($rxn), rev and bounds missmatch", 
-            "\n", color = error_color)
+        lb > ub && (printstyled("rxn($i): ($rxn), lb ($lb) > ub ($ub)", 
+            "\n", color = error_color); line_count += 1)
+        lb > 0.0 && (printstyled("rxn($i): ($rxn), lb ($lb) > 0.0", 
+            "\n", color = warn_color); line_count += 1)
+        ub < 0.0 && (printstyled("rxn($i): ($rxn), ub ($ub) < 0.0", 
+            "\n", color = warn_color);  line_count += 1)
+        lb == ub && (printstyled("rxn($i): ($rxn), lb ($lb) == ub ($ub)", 
+            "\n", color = info_color); line_count += 1)
+        (isrev(metnet, i) ⊻ metnet.rev[i]) && 
+                (printstyled("rxn($i): ($rxn), rev and bounds missmatch", "\n", 
+                        color = error_color); line_count += 1)
+
+        if line_count > PRINT_MAX
+            printstyled("PRINT_MAX $PRINT_MAX reached!!! ... ", "\n", color = warn_color)
+            break;
+        end
         flush(stdout)
     end
 
+
     revscount(metnet) > 0 && printstyled("revscount: $(revscount(metnet))", "\n", color = error_color)
     fwdscount(metnet) > 0 && printstyled("fwds: $(fwdscount(metnet))", "\n", color = info_color)
-    bkwdscount(metnet) > 0 && printstyled("bkwds: $(bkwdscount(metnet))", "\n", color = error_color)
-    blockscount(metnet) > 0 && printstyled("blocks: $(blockscount(metnet))", "\n", color = error_color)
+    bkwdscount(metnet) > 0 && printstyled("bkwds: $(bkwdscount(metnet))", "\n", color = warn_color)
+    blockscount(metnet) > 0 && printstyled("blocks: $(blockscount(metnet))", "\n", color = warn_color)
     fixxedscount(metnet) > 0 && printstyled("fixxed: $(fixxedscount(metnet))", "\n", color = info_color)
 
     return nothing
