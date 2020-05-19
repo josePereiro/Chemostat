@@ -6,8 +6,6 @@
     the rest are untouched, so they may be contain dummy values sometimes!!!
 =#
 struct MetNet{T<:Real}
-    N::Integer # number of fluxes
-    M::Integer # number of metabolites
     S::AbstractMatrix{T} # Stoichiometric matrix M x N sparse (*)
     b::AbstractVector{T} # right hand side of equation  S ν = b (*)
     c::AbstractVector{Float64} # reaction index of biomass 

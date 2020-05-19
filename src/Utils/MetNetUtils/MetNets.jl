@@ -8,7 +8,7 @@ fake_rxnNames(N) = ["RXN $i" for i in 1:N]
 
 # Minimum Constructor
 function MetNet(S, b, lb, ub, 
-    xns = fake_rxnsid(size(S,2)), 
+    rxns = fake_rxnsid(size(S,2)), 
     mets = fake_metsid(size(S,1));
     T = Float64,  
     metNames =  fake_metNames(size(S,1)), 
@@ -17,8 +17,6 @@ function MetNet(S, b, lb, ub,
     
     M,N = size(S);
     return MetNet{T}(
-        N, # number of fluxes
-        M, # number of metabolites
         S, # Stoichiometric matrix M x N sparse
         b, # right hand side of equation  S ν = b 
         zeros(Float64,N), # reaction index of biomass
@@ -38,9 +36,9 @@ end
 
 # For COBRA .mat compatible files
 function MetNet(mat_model::Dict, T = Float64) 
+    mat_model = deepcopy(mat_model)
 
     S = Matrix(mat_model["S"])
-    M, N = size(S)
     b = vec(mat_model["b"])
     c = haskey(mat_model, "c") ? vec(mat_model["c"]) : [0.0]
     lb = vec(mat_model["lb"])
@@ -56,6 +54,6 @@ function MetNet(mat_model::Dict, T = Float64)
     rev = haskey(mat_model, "rev") ? vec(mat_model["rev"]) : []
     subSystems = haskey(mat_model, "subSystems") ? vec(mat_model["subSystems"]) : [""]
     
-    return MetNet{T}(N, M, S, b, c, lb, ub, genes, 
+    return MetNet{T}(S, b, c, lb, ub, genes, 
         rxnGeneMat, grRules, mets, rxns, metNames, metFormulas, rxnNames, rev, subSystems)
 end

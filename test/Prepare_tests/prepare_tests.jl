@@ -1,11 +1,13 @@
-# const test_cache_dir = "../test_cache"
 
 const TEST_ROOT_DIR = dirname(@__DIR__)
 const TEST_CACHE_DIR = joinpath(TEST_ROOT_DIR, "cache")
+rm(TEST_CACHE_DIR, force = true, recursive = true)
+@test !isdir(TEST_CACHE_DIR)
 
 # cache
 if !isdir(TEST_CACHE_DIR)
     mkpath(TEST_CACHE_DIR)
+    @test isdir(TEST_CACHE_DIR)
     flush(stdout)
     println("created $TEST_CACHE_DIR")
 end

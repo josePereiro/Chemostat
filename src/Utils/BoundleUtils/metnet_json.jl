@@ -41,7 +41,7 @@ function metnet_from_json(json_str)
     rev = (lb .< 0.0) .& (lb .> 0.0)
     subSystems = data_dict["subSystems"]
     
-    return MetNet(N,M,S,b,c,lb,ub,genes,
+    return MetNet(S,b,c,lb,ub,genes,
         rxnGeneMat,grRules,mets,rxns,metNames,
         metFormulas,rxnNames,rev,subSystems)
 end

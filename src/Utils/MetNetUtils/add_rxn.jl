@@ -37,7 +37,7 @@ function add_rxn(metnet::MetNet, rxnid::AbstractString; kwargs...)
     push!(subSystems_, get(kwargs, :subSystem, subSystems_default))
     push!(rev_, get(kwargs, :rev, (lb_[end] < 0.0) && (ub_[end] > 0.0)))
     
-    return MetNet(N_,M_,S_,b_, c_, lb_, ub_, 
+    return MetNet(S_,b_, c_, lb_, ub_, 
         genes_, rxnGeneMat_, grRules_, mets_, rxns_, 
         metNames_, metFormulas_, rxnNames_, rev_, subSystems_)
     

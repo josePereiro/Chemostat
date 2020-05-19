@@ -17,7 +17,7 @@ function simple_toy_MetNet()
     rxnNames = ["Glucose transport", "Fermentation", "Respiration", 
         "Lactate DH", "Lactate transport", "Biomass production rate", "atp demand"];
     
-    return MetNet(S, b, lb, ub, rxns, mets = mets, 
+    return MetNet(S, b, lb, ub, rxns, mets, 
         metNames = metNames, rxnNames = rxnNames)
 end
 

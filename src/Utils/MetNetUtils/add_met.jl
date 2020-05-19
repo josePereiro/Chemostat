@@ -44,7 +44,7 @@ function add_met(metnet::MetNet, metid::AbstractString; kwargs...)
     push!(b_, get(kwargs, :b, b_default))
 
     
-    return MetNet(N_,M_,S_,b_, c_, lb_, ub_, 
+    return MetNet(S_,b_, c_, lb_, ub_, 
         genes_, rxnGeneMat_, grRules_, mets_, rxns_, 
         metNames_, metFormulas_, rxnNames_, rev_, subSystems_)
 end
