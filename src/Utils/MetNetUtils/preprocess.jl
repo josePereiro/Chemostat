@@ -35,10 +35,6 @@ function preprocess(metnet::MetNet; verbose = false, return_blocked = false,)
     S_, b_, lb_, ub_, rxns_, idxb_ = preprocess(metnet.S, metnet.b, metnet.lb, 
         metnet.ub, metnet.rxns; verbose = verbose);
     
-    # TODO use the (metnet; kwargs...) constructor
-    metnet = MetNet(S_, metnet.b, metnet.c, lb_, ub_, 
-                    metnet.genes, metnet.rxnGeneMat, metnet.grRules, metnet.mets, rxns_, 
-                    metnet.metNames, metnet.metFormulas, metnet.rxnNames, 
-                    ((lb_ .< 0.0) .& (ub_ .> 0.0)), metnet.subSystems)
+    metnet = MetNet(metnet, S = S_, b = b_, lb = lb_, ub = ub_, rxns = rxns_)
     return return_blocked ? (metnet, idxb_) : metnet
 end

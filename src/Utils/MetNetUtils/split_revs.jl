@@ -5,24 +5,19 @@ using SparseArrays
 """
     Returns a new MetNet with no reversible reactions.
 """
-function split_revs(metnet::MetNet)
-    M,N = metnet.M, metnet.N
+function split_revs(metnet::MetNet) # TODO Add tests
+    M, N = metnet.M, metnet.N
     revs = [isrev(metnet, i) for i in 1:N]
     
     M_, N_ = M, N + count(revs)
     S_ = spzeros(M_, N_)
     S_[1:M,1:N] .= metnet.S
-    b_ = copy(metnet.b)
     c_ = copy(metnet.c)
     lb_ = copy(metnet.lb)
     ub_ = copy(metnet.ub)
     genes_ = copy(metnet.genes)
-    rxnGeneMat_ = copy(metnet.rxnGeneMat)
     grRules_ = copy(metnet.grRules)
-    mets_ = copy(metnet.mets)
     rxns_ = copy(metnet.rxns)
-    metNames_ = copy(metnet.metNames)
-    metFormulas_ = copy(metnet.metFormulas)
     rxnNames_ = copy(metnet.rxnNames)
     rev_ = falses(N_)
     subSystems_ = copy(metnet.subSystems)
@@ -35,27 +30,27 @@ function split_revs(metnet::MetNet)
         orig_rxn = metnet.rxns[fwd_idx]
         orig_lb = metnet.lb[fwd_idx]
         
-        # foward reaction
+        # transform to foward reaction
         rxns_[fwd_idx] = "$(orig_rxn)$(fwd_prefix)"
         lb_[fwd_idx] = 0.0
         
-        # backward reaction
+        # add backward reaction
         S_[:,bkwd_idx] .= -S_[:,fwd_idx]
         push!(rxns_, "$(orig_rxn)$(bkwd_prefix)")
         push!(rxnNames_, rxnNames_[fwd_idx])
-        # TODO handle correctly all non FBA, EP esential fields
-        # push!(grRules_, grRules_[fwd_idx])
-        # push!(subSystems_, subSystems_[fwd_idx])
         push!(lb_, 0.0)
         push!(ub_, -orig_lb)
-        push!(c_, 0.0) # The objective, if splitted, will be the fwd reaction
-        
-        
+
+        checkbounds(Bool, c_, bkwd_idx - 1) && push!(c_, 0.0) # The objective, if splitted, will be the fwd reaction,
+        checkbounds(Bool, grRules_, bkwd_idx - 1) && push!(grRules_, grRules_[fwd_idx])
+        checkbounds(Bool, subSystems_, bkwd_idx - 1) && push!(subSystems_, subSystems_[fwd_idx])
+        checkbounds(Bool, genes_, bkwd_idx - 1) && push!(genes_, genes_[fwd_idx])
+
     end
 
     N_ != N && (@warn("Only use this method after MetabolicEP.preprocess!!!"); flush(stdout))
     
-    return MetNet(S_,b_, c_, lb_, ub_, 
-        genes_, rxnGeneMat_, grRules_, mets_, rxns_, 
-        metNames_, metFormulas_, rxnNames_, rev_, subSystems_)
+    return MetNet(S = S_,c = c_,lb = lb_, ub = ub_, 
+        genes = genes_, grRules = grRules_, rxns = rxns_, 
+        rxnNames =  rxnNames_, rev = rev_, subSystems = subSystems_)
 end
