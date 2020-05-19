@@ -57,3 +57,26 @@ function MetNet(mat_model::Dict, T = Float64)
     return MetNet{T}(S, b, c, lb, ub, genes, 
         rxnGeneMat, grRules, mets, rxns, metNames, metFormulas, rxnNames, rev, subSystems)
 end
+
+"""
+    Create a new MetNet from a template but overwriting the fields
+    passed as kwargs
+"""
+function MetNet(metnet::MetNet; kwargs...)
+    kwargs = Dict(kwargs)
+    
+    metnet_dict = Dict()
+    for field in fieldnames(typeof(metnet))
+        metnet_dict[string(field)] = getfield(metnet, field)
+    end
+    
+    for (k, v) in metnet_dict
+        sk = Symbol(k)
+        if haskey(kwargs, sk)
+            metnet_dict[k] = kwargs[sk]
+        end
+    end
+    # TODO include a T_default ?
+    T = get(kwargs, :T, Float64)
+    return MetNet(metnet_dict, T)
+end
