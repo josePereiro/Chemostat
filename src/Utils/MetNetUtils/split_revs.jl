@@ -23,6 +23,8 @@ function split_revs(metnet::MetNet) # TODO Add tests
     subSystems_ = copy(metnet.subSystems)
     
     # I only need to update the rev reactions
+    _check_and_push!(v::AbstractVector, idx, val) = checkbounds(Bool, v, idx) && push!(v, val)
+
     for (i, fwd_idx) in enumerate(findall(revs))
         bkwd_idx = N + i
         
@@ -40,11 +42,11 @@ function split_revs(metnet::MetNet) # TODO Add tests
         push!(rxnNames_, rxnNames_[fwd_idx])
         push!(lb_, 0.0)
         push!(ub_, -orig_lb)
-
-        checkbounds(Bool, c_, bkwd_idx - 1) && push!(c_, 0.0) # The objective, if splitted, will be the fwd reaction,
-        checkbounds(Bool, grRules_, bkwd_idx - 1) && push!(grRules_, grRules_[fwd_idx])
-        checkbounds(Bool, subSystems_, bkwd_idx - 1) && push!(subSystems_, subSystems_[fwd_idx])
-        checkbounds(Bool, genes_, bkwd_idx - 1) && push!(genes_, genes_[fwd_idx])
+        
+        _check_and_push!(c_, bkwd_idx - 1, 0.0) # The objective, if splitted, will be the fwd reaction,
+        _check_and_push!(grRules_, bkwd_idx - 1, grRules_[fwd_idx])
+        _check_and_push!(subSystems_, bkwd_idx - 1, subSystems_[fwd_idx])
+        _check_and_push!(genes_, bkwd_idx - 1, genes_[fwd_idx])
 
     end
 
