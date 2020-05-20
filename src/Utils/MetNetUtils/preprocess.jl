@@ -8,9 +8,11 @@ function preprocess(S,b,lb,ub,rxns; verbose = false, eps = 0.0)
         ei[i] = -1.0
         verbose && (print("processing [$i / $n]        \r"); flush(stdout))
         sol = linprog(ei, S, b, b, lb, ub, ClpSolver())
+        isempty(sol.sol) && error("FVA fails to find a solution maximixing rxn $(rxns[i])")
         ub[i] = min(ub[i], sol.sol[i])
         ei[i] = +1.0
         sol = linprog(ei, S, b, b, lb, ub, ClpSolver())
+        isempty(sol.sol) && error("FVA fails to find a solution minimaxing rxn $(rxns[i])")
         lb[i] = max(lb[i], sol.sol[i])
         ei[i] = 0.0
 
@@ -31,10 +33,10 @@ function preprocess(S,b,lb,ub,rxns; verbose = false, eps = 0.0)
 end
 
 
-function preprocess(metnet::MetNet; verbose = false, return_blocked = false,)
+function preprocess(metnet::MetNet; verbose = false, eps = 0.0, return_blocked = false,)
     S_, b_, lb_, ub_, rxns_, idxb_ = preprocess(metnet.S, metnet.b, metnet.lb, 
-        metnet.ub, metnet.rxns; verbose = verbose);
+        metnet.ub, metnet.rxns; verbose = verbose, eps = eps);
     
-    metnet = MetNet(metnet, S = S_, b = b_, lb = lb_, ub = ub_, rxns = rxns_)
+    metnet = MetNet(metnet; S = S_, b = b_, lb = lb_, ub = ub_, rxns = rxns_)
     return return_blocked ? (metnet, idxb_) : metnet
 end

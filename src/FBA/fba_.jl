@@ -9,6 +9,7 @@ function fba(S, b, lb, ub, obj_idx::Integer; sense = -1.0)
         lb, # column lb
         ub, # column ub
         ClpSolver());
+    isempty(sol.sol) && error("FBA failed, empty solution returned!!!")
     return FBAout(sol.sol, sol.sol[obj_idx], obj_idx, sol)
 end
 

@@ -2,7 +2,7 @@
 """
     Example of 'exchanges_info' = Dict("gt" => Dict("ub" => 100.0, "c" => 10.0))
 """
-function apply_bound!(metnet::MetNet, ξ, exchanges_info::Dict{String,Dict{String,Float64}})
+function apply_bound!(metnet::MetNet, ξ, exchanges_info::Dict)
     ξ < 0 && error("ξ must be positive")
     
     for (exch, exch_info) in exchanges_info
@@ -22,5 +22,6 @@ function apply_bound!(metnet::MetNet, ξ, exchanges_info::Dict{String,Dict{Strin
             error("neither 'lb' or 'ub' defined for exchange '$(rxns(metnet, exch))'")
         end
     end
+    update_rev!(metnet)
     return metnet
 end

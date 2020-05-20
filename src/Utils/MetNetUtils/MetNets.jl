@@ -6,14 +6,15 @@ fake_metFormulas(M) = ["X" for i in 1:M]
 fake_rxnsid(N) = ["r$i" for i in 1:N]
 fake_rxnNames(N) = ["RXN $i" for i in 1:N]
 
-# Minimum Constructor
-function MetNet(S, b, lb, ub, 
-    rxns = fake_rxnsid(size(S,2)), 
-    mets = fake_metsid(size(S,1));
-    T = Float64,  
-    metNames =  fake_metNames(size(S,1)), 
-    metFormulas = fake_metFormulas(size(S,1)), 
-    rxnNames = fake_rxnNames(size(S,2)))
+# Minimum simple Constructor
+function MetNet(S::AbstractMatrix, b::AbstractVector, 
+                lb::AbstractVector, ub::AbstractVector, 
+                rxns::AbstractVector = fake_rxnsid(size(S,2)), 
+                mets::AbstractVector = fake_metsid(size(S,1));
+                T = Float64,  
+                metNames =  fake_metNames(size(S,1)), 
+                metFormulas = fake_metFormulas(size(S,1)), 
+                rxnNames = fake_rxnNames(size(S,2)))
     
     M,N = size(S);
     return MetNet{T}(
@@ -39,20 +40,20 @@ function MetNet(mat_model::Dict, T = Float64)
     mat_model = deepcopy(mat_model)
 
     S = Matrix(mat_model["S"])
-    b = vec(mat_model["b"])
-    c = haskey(mat_model, "c") ? vec(mat_model["c"]) : [0.0]
-    lb = vec(mat_model["lb"])
-    ub = vec(mat_model["ub"])
-    genes = haskey(mat_model, "genes") ? vec(mat_model["genes"]) : [""]
-    rxnGeneMat = haskey(mat_model, "rxnGeneMat") ? Matrix(mat_model["rxnGeneMat"]) : []
-    grRules = haskey(mat_model, "grRules") ? vec(mat_model["grRules"]) : [""]
-    mets = haskey(mat_model, "mets") ? vec(mat_model["mets"]) : ["M$i" for i in 1:M]
-    rxns = haskey(mat_model, "rxns") ? vec(mat_model["rxns"]) : ["r$i" for i in 1:N]
-    metNames = haskey(mat_model, "metNames") ? vec(mat_model["metNames"]) : [""]
-    metFormulas = haskey(mat_model, "metFormulas") ? vec(mat_model["metFormulas"]) : [""]
-    rxnNames = haskey(mat_model, "rxnNames") ? vec(mat_model["rxnNames"]) : [""]
-    rev = haskey(mat_model, "rev") ? vec(mat_model["rev"]) : []
-    subSystems = haskey(mat_model, "subSystems") ? vec(mat_model["subSystems"]) : [""]
+    b = collect(vec(mat_model["b"]))
+    c = collect(haskey(mat_model, "c") ? vec(mat_model["c"]) : [0.0])
+    lb = collect(vec(mat_model["lb"]))
+    ub = collect(vec(mat_model["ub"]))
+    genes = collect(haskey(mat_model, "genes") ? vec(mat_model["genes"]) : [""])
+    rxnGeneMat = collect(haskey(mat_model, "rxnGeneMat") ? Matrix(mat_model["rxnGeneMat"]) : [])
+    grRules = collect(haskey(mat_model, "grRules") ? vec(mat_model["grRules"]) : [""])
+    mets = collect(haskey(mat_model, "mets") ? vec(mat_model["mets"]) : fake_metsid(size(S, 1)))
+    rxns = collect(haskey(mat_model, "rxns") ? vec(mat_model["rxns"]) : fake_rxnsid(size(S, 2)))
+    metNames = collect(haskey(mat_model, "metNames") ? vec(mat_model["metNames"]) : [""])
+    metFormulas = collect(haskey(mat_model, "metFormulas") ? vec(mat_model["metFormulas"]) : [""])
+    rxnNames = collect(haskey(mat_model, "rxnNames") ? vec(mat_model["rxnNames"]) : [""])
+    rev = collect(haskey(mat_model, "rev") ? vec(mat_model["rev"]) : [])
+    subSystems = collect(haskey(mat_model, "subSystems") ? vec(mat_model["subSystems"]) : [""])
     
     return MetNet{T}(S, b, c, lb, ub, genes, 
         rxnGeneMat, grRules, mets, rxns, metNames, metFormulas, rxnNames, rev, subSystems)
@@ -60,7 +61,7 @@ end
 
 """
     Create a new MetNet from a template but overwriting the fields
-    passed as kwargs
+    of the template with the passed as kwargs
 """
 function MetNet(metnet::MetNet; kwargs...)
     kwargs = Dict(kwargs)
