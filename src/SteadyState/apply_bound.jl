@@ -22,6 +22,5 @@ function apply_bound!(metnet::MetNet, ξ, exchanges_info::Dict)
             error("neither 'lb' or 'ub' defined for exchange '$(rxns(metnet, exch))'")
         end
     end
-    update_rev!(metnet)
     return metnet
 end

@@ -57,9 +57,10 @@ function summary_rxn_bounds(metnet::MetNet)
             "\n", color = warn_color);  line_count += 1)
         lb == ub && (printstyled("rxn($i): ($rxn), lb ($lb) == ub ($ub)", 
             "\n", color = info_color); line_count += 1)
-        (isrev(metnet, i) ⊻ metnet.rev[i]) && 
-                (printstyled("rxn($i): ($rxn), rev and bounds missmatch", "\n", 
-                        color = error_color); line_count += 1)
+        # TODO implement correctly the rev array
+        # (isrev(metnet, i) ⊻ metnet.rev[i]) && 
+        #         (printstyled("rxn($i): ($rxn), rev and bounds missmatch", "\n", 
+        #                 color = error_color); line_count += 1)
 
         if line_count > PRINT_MAX
             printstyled("PRINT_MAX $PRINT_MAX reached!!! ... ", "\n", color = warn_color)
