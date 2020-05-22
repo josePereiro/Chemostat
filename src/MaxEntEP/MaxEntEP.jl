@@ -13,15 +13,18 @@ module MaxEntEP
 
 import SparseArrays: SparseMatrixCSC
 import ExtractMacro: @extract
-import LinearAlgebra: rmul!, inv!, Hermitian, cholesky!, Diagonal, mul!
+import LinearAlgebra: diag, rmul!, inv!, Hermitian, cholesky!, Diagonal, mul!
 import Printf: @printf
 import SpecialFunctions: erf
+import Distributions: Truncated, Normal, mean, var
+
 import ..Utils: AbstractEPMat, EPAlg, EPFields, EPMat, EPMatT0, EPout, MetNet
 
 include("compute_mom5d.jl")
 include("epconverge.jl")
 include("eponesweep.jl")
 include("eponesweepT0.jl")
+include("fast_maxent_ep.jl")
 include("matchmom.jl")
 include("maxent_ep.jl")
 include("newav.jl")
@@ -30,6 +33,6 @@ include("prepare_beta_v.jl")
 include("prepareinput.jl")
 include("scaleepfield.jl")
 include("utils.jl")
-
+# include("Q_sigma.jl")
 
 end
