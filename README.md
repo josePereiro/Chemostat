@@ -1,6 +1,6 @@
 # Chemostat
 
-[![Build Status](https://travis-ci.com/josePereiro/Chemostat.jl.svg?branch=master)](https://travis-ci.com/josePereiro/Chemostat.jl)
+[![Build Status](https://travis-ci.com/josePereiro/Chemostat.svg?branch=develop)](https://travis-ci.com/josePereiro/Chemostat)
 [![Codecov](https://codecov.io/gh/josePereiro/Chemostat.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/josePereiro/Chemostat.jl)
 
 ## Citing
