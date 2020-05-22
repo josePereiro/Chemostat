@@ -1,7 +1,12 @@
 language: julia
+os:
+  - linux
+  - osx
+
 julia:
+  - 1.1
   - nightly
-  - 1.X
+  
 
 # codecov: true
 # coveralls: true
