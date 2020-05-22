@@ -8,7 +8,7 @@ function get_data(boundle::ChstatBoundle, ξ::Real, β::Real, data_key::Symbol)
     return haskey(data, data_key) ? data[data_key] : error("key '$data_key' not present, currect keys in data dict $(collect(keys(data)))")
 end
 
-get_data(boundle::ChstatBoundle, ξs::Vector, β::Real, data_key::AbstractString) =
+get_data(boundle::ChstatBoundle, ξs::Vector, β::Real, data_key::Symbol) =
     [get_data(boundle, ξ, β, data_key) for ξ in ξs]
 
 get_data(boundle::ChstatBoundle, ξ::Real, βs::Vector, data_key::Symbol) =

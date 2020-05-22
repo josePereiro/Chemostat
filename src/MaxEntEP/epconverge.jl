@@ -15,7 +15,9 @@ function epconverge!(epfield::EPFields, epmat::M, epalg::EPAlg, eponesweep!::T) 
         # eponesweep! will be eponesweepT0! or eponesweep depending on beta
         (errav, errvar, errμ, errs) = eponesweep!(epfield, epalg, epmat)
         if (verbose)
-            @printf(stderr, "it = %d ɛav = %.2e ɛvar = %.2e ɛμ = %.2e ɛs = %.2e                 \r", iter, errav, errvar, errμ, errs)
+            @printf(stderr, 
+                "it = %d ɛav = %.2e ɛvar = %.2e ɛμ = %.2e ɛs = %.2e                                   \r", 
+                iter, errav, errvar, errμ, errs)
             flush(stderr)
         end
 
