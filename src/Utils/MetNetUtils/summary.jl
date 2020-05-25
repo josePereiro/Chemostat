@@ -78,3 +78,10 @@ function summary_rxn_bounds(metnet::MetNet)
 
     return nothing
 end
+
+function rxn_summary(metnet, ider)
+    idx = rxnindex(metnet, ider)
+    println(idx,": ", metnet.rxns[idx], " (", metnet.rxnNames[idx], ")")
+    println("lb: ", metnet.lb[idx], ", ub: ", metnet.ub[idx])
+    println(rxn_str(metnet, idx))
+end
