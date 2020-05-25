@@ -1,16 +1,17 @@
-function balance_str(model::MetNet, out, ider::IDER_TYPE; digits = 50)
+function balance_str(model::MetNet, out::AbstractOut, ider::IDER_TYPE; digits = 50)
     meti = metindex(model, ider)
-    rxns = met_rxns(model, ider)
+    rxns = model.rxns[met_rxns(model, ider)] |> sort
     b_str = []
     b = 0.0
     for rxn in rxns
-        s = model.S[meti, rxn]
-        f = av(model, out, rxn)
+        s = round(S(model, meti, rxn), digits = digits)
+        f = round(av(model, out, rxn), digits = digits)
+        sf = round(s*f, digits = digits)
         b += s*f
-        push!(b_str, "$(model.rxns[rxn])($s*$(round(f, digits = digits)) = $(round(s*f, digits = digits)))")
+        push!(b_str, "($s*$f=$sf)$(rxn)")
     end
-    return "$(model.mets[meti]): " * join(b_str, " + ") * " == " * 
-                "$(round(model.b[meti], digits = digits))" * " [$(round(b, digits = digits))]"
+    return "$(model.mets[meti]): " * join(b_str, " + ") * " [tot: $(round(b, digits = digits))]" * " == " * 
+                "$(round(model.b[meti], digits = digits))"
 end
-balance_str(model, out, iders::Vector; digits = 50) = 
+balance_str(model, out::AbstractOut, iders::Vector; digits = 50) = 
     [balance_str(model, out, ider; digits = digits) for ider in iders]
