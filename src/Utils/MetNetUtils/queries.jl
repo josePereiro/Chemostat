@@ -29,3 +29,11 @@ fixxeds(metnet::MetNet) = findall((metnet.lb .== metnet.ub .!= 0.0))
 fixxedscount(metnet::MetNet) = length(fixxeds(metnet))
 
 allfwd(metnet::MetNet) = fwdscount(metnet) == rxnscount(metnet)
+
+function is_exchange(metnet::MetNet, ider::IDER_TYPE)
+    reacts = rxn_reacts(metnet, ider)
+    prods = rxn_prods(metnet, ider)
+    return xor(isempty(reacts), isempty(prods))
+end
+exchanges(metnet::MetNet) = findall(x -> is_exchange(metnet, x), metnet.rxns)
+exchangescount(metnet::MetNet) = length(exchanges(metnet))
