@@ -1,3 +1,6 @@
+_epout_β0_cache_ = Dict()
+_clear__epout_β0_cache_() = global _epout_β0_cache_ = Dict()
+
 """
     Make MaxEnt-EP but applaying MaxEnt starting from a EP solution at beta zero.
     It is important to pass a epout solution computed with beta zero.
@@ -17,19 +20,30 @@ function fast_maxent_ep(model::MetNet, epout_β0::EPout, α::Real,  βv::Vector)
 
     #= v, Σ are the mean vector and covariance matrix of Q,
     the full multivariate Gaussian (in Braunstein et al paper) =#
-    S = model.S
-    b = model.b
-    D = Diagonal(1.0 ./ d)
-    invΣ = Matrix(α*S'*S + D)
-    Σ = inv(invΣ)
-    v = Σ*(α*S'*b + D*a)
+    if haskey(_epout_β0_cache_, epout_β0)
+        Σ = _epout_β0_cache_[epout_β0]["Σ"]
+        v = _epout_β0_cache_[epout_β0]["v"]
+    else
+        S = model.S
+        b = model.b
+        D = Diagonal(1.0 ./ d)
+        invΣ = Matrix(α*S'*S + D)
+        Σ = inv(invΣ)
+        v = Σ*(α*S'*b + D*a)
+
+        _clear__epout_β0_cache_()
+        _epout_β0_cache_[epout_β0] = Dict()
+        _epout_β0_cache_[epout_β0]["Σ"] = Σ
+        _epout_β0_cache_[epout_β0]["v"] = v
+    end
 
     #= From Cossios papar (see README) =#
     w = v + Σ * βv
-    # wn = (d .* w - diag(Σ) .* a) ./ (d .- diag(Σ)) # mean of the non-truncated marginals
-    # Σnn = d .* diag(Σ) ./ (d .- diag(Σ)) # variances of the non-truncated marginals
+    wn = (d .* w - diag(Σ) .* a) ./ (d .- diag(Σ)) # mean of the non-truncated marginals
+    Σnn = d .* diag(Σ) ./ (d .- diag(Σ)) # variances of the non-truncated marginals
 
+    # Fix case of blocked reactoins
     tns = Truncated.(Normal.(wn, sqrt.(Σnn)), model.lb, model.ub)
 
-    return EPout(wn, Σnn, mean.(tns), var.(tns), nothing, epout_β0.status)
+    return EPout(wn, Σnn, mean.(tns), var.(tns), epout_β0.sol, epout_β0.status)
 end
