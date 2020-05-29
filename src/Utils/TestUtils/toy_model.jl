@@ -26,5 +26,5 @@ function  toy_model(;resp_cost = -0.1, E_demand = 5.0)
     lb!(model, "atpm", E_demand)
     # model = invert_bkwds(model);
     model = add_costs(model, Dict("resp" => resp_cost))
-    return preprocess(model)
+    return fva_preprocess(model)
 end

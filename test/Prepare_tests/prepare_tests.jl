@@ -85,7 +85,7 @@ function create_boundle_cache()
         # Model
         model = deserialize(METNET_CACHE_FILE)
         Chemostat.SteadyState.apply_bound!(model, ξ, intake_info)
-        model = Chemostat.Utils.preprocess(model, verbose = verbose_)
+        model = Chemostat.Utils.fva_preprocess(model, verbose = verbose_)
         
         # FBA
         fbaout = Chemostat.FBA.fba(model, obj_ider)
