@@ -27,6 +27,7 @@ module Utils
     import LinearAlgebra: normalize, qr, diag
     import Base: isequal, size, ==
     import JSON: json, parse
+    import MAT: matread
     
     include("General/General.jl")
     include("Types/Types.jl")
