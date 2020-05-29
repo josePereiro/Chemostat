@@ -52,7 +52,7 @@ function plot_marginal!(p, metnet::MetNet, outs::Vector, ider::IDER_TYPE; kwargs
     return p
 end
 
-# 
+# Boundle
 function plot_marginal!(p, boundle::ChstatBoundle, 
         ξ::Real, β::Real, data_keys::Vector,
         ider::IDER_TYPE, metnet_data_key::Symbol = metnet_data_key; 
