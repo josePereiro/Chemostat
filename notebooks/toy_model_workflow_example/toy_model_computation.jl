@@ -15,6 +15,25 @@
 #     name: julia-1.1
 # ---
 
+# +
+using Distributed
+using Serialization
+
+NO_CORES = length(Sys.cpu_info())
+length(workers()) < NO_CORES && addprocs(NO_CORES)
+
+@everywhere begin
+    using ParallelDataTransfer
+    using Chemostat
+    Ch = Chemostat
+    using Distributed
+end
+# -
+
+# ---
+# ## EP, FBA, HR
+# ---
+
 @everywhere begin
     obj_ider = "biom";
     α = 1e9
@@ -27,10 +46,6 @@
     βs = [β0; Ch.Utils.logspace(-1,3, 20)] # This is the working interval of HR
     βs_str = round.(βs, digits = 2);
 end
-
-# ---
-# ## EP, FBA, HR
-# ---
 
 # ### Initializing everywhere
 
