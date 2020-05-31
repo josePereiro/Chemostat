@@ -34,6 +34,8 @@ end
 # ## EP, FBA, HR
 # ---
 
+# ### Initializing everywhere
+
 @everywhere begin
     obj_ider = "biom";
     α = 1e9
@@ -46,8 +48,6 @@ end
     βs = [β0; Ch.Utils.logspace(-1,3, 20)] # This is the working interval of HR
     βs_str = round.(βs, digits = 2);
 end
-
-# ### Initializing everywhere
 
 println("α: ", α)
 println("βs: ", βs_str)

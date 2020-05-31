@@ -7,7 +7,7 @@ struct HRout{T<:Real} <: AbstractOut
     hrsamples::AbstractArray # HR Samples (nsamples x fluxes)
 end
 
-function HRout(model::MetNet, hrsamples::AbstractArray, drop_samples = false; 
+function HRout(model::MetNet, hrsamples::AbstractArray; drop_samples = false, 
     step_factor = 0.01)
     isempty(hrsamples) && error("'hrsamples' is empty!!!")
     av = [mean(sample) for sample in eachcol(hrsamples)]
@@ -27,3 +27,7 @@ function HRout(model::MetNet, hrsamples::AbstractArray, drop_samples = false;
     hrsamples = drop_samples ? [] : hrsamples
     return HRout(av, va, hists, N, W, hrsamples)
 end
+
+HRout(hrout::HRout; drop_samples = false) = HRout(copy(hrout.av), copy(hrout.va), 
+                deepcopy(hrout.hists), hrout.N, hrout.W, 
+                drop_samples ? [] : copy(hrout.hrsamples))
