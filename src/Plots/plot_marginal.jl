@@ -5,6 +5,7 @@ const hr_color = :black
 # Single out
 function plot_marginal!(p, metnet::MetNet, out::Union{FBAout, EPout}, ider; 
         h = 1, 
+        lw = 5,
         color = out isa FBAout ? fba_color : ep_color,
         label = rxns(metnet, ider), kwargs...)
         
@@ -17,29 +18,30 @@ function plot_marginal!(p, metnet::MetNet, out::Union{FBAout, EPout}, ider;
     sσ_ = sqrt(σ_)
     tN = marginal(metnet, out, ider)
     local_max_ = μ_ <= lb_ ? lb_ : μ_ >= ub_ ? ub_ : μ_ # local max
-
+    margin_ = abs(ub_ - lb_) * 0.1
     if sσ_ == 0.0 || !(-Inf < pdf(tN, local_max_) < Inf)
-        plot!(p, [lb_ - ub_/10, ub_ + ub_/10], [0.0, 0.0]; 
-            label = "", color = color, lw = 5, kwargs...)
+        plot!(p, [lb_ - margin_, ub_ + margin_], [0.0, 0.0]; 
+            label = "", color = color, lw = lw, kwargs...)
         plot!(p, [av_, av_], [0.0, h]; 
-            label = label, color = color, lw = 5, kwargs...)
+            label = label, color = color, lw = lw, kwargs...)
     else
-        Plots.plot!(p, x -> pdf(tN, x), lb_ - ub_/10, ub_ + ub_/10; lw = 5, 
-            label = label, color = color, kwargs...)
+        Plots.plot!(p, x -> pdf(tN, x), lb_ - margin_, ub_ + margin_; 
+            lw = 3, label = label, color = color, kwargs...)
     end
 
 end
 
 
 function plot_marginal!(p, metnet::MetNet, out::HRout, ider; 
-        h = :ignore, color = hr_color, 
+        h = :ignored, color = hr_color, 
         label = rxns(metnet, ider), kwargs...)
 
     lb_ = lb(metnet, ider)
     ub_ = ub(metnet, ider)
-
+    margin_ = abs(ub_ - lb_) * 0.1
     hist = hists(metnet, out, ider)
     plot!(p, normalize(hist, mode = :pdf); 
+        xaxis = [lb_ - margin_, ub_ + margin_],
         label = label, color = color, kwargs...)
 end
 
@@ -58,18 +60,8 @@ function plot_marginal!(p, boundle::ChstatBoundle,
         ider::IDER_TYPE, metnet_data_key::Symbol = metnet_data_key; 
         kwargs...)
 
-    outs = []
     metnet = get_data(boundle, ξ, metnet_data_key)
-    for key in data_keys
-        if haskey(boundle, ξ, key)
-            data = get_data(boundle, ξ, key)
-            data isa AbstractOut && push!(outs, data)
-        end
-        if haskey(boundle, ξ, β, key)
-            data = get_data(boundle, ξ, β, key)
-            data isa AbstractOut && push!(outs, data)
-        end
-    end
+    outs = collect_data(d -> d isa AbstractOut, boundle, ξ, β, data_keys)
     plot_marginal!(p, metnet, outs, ider; kwargs...)
     return p
 end
