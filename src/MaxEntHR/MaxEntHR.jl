@@ -8,13 +8,10 @@ https://doi.org/10.1371/journal.pcbi.1006823.
 
 module MaxEntHR
 
-import LinearAlgebra: nullspace, norm
-import Clp: ClpSolver
-import MathProgBase.HighLevelInterface: linprog
-import ..Utils: rxnindex, HRout, eachsample, has_samples, IDER_TYPE, MetNet
+import LinearAlgebra: norm
+import ..Utils: rxnindex, HRAlg, HRout, eachsample, has_samples, IDER_TYPE, MetNet
 
 include("hrsample.jl")
 include("maxent_hr.jl")
-include("warmup.jl")
 
 end #end module HitAndRun

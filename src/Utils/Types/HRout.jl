@@ -7,11 +7,22 @@ struct HRout{T<:Real} <: AbstractOut
     hrsamples::AbstractArray # HR Samples (nsamples x fluxes)
 end
 
-function HRout(hrsamples::AbstractArray, drop_samples = false)
+function HRout(model::MetNet, hrsamples::AbstractArray, drop_samples = false; 
+    step_factor = 0.01)
     isempty(hrsamples) && error("'hrsamples' is empty!!!")
     av = [mean(sample) for sample in eachcol(hrsamples)]
     va = [var(sample) for sample in eachcol(hrsamples)]
-    hists = [fit(Histogram, sample, nbins = 100) for sample in eachcol(hrsamples)]
+    hists = Histogram[]
+    for (i, sample) in hrsamples |> eachcol |> enumerate
+        step = (maximum(sample) - minimum(sample)) * step_factor
+        if step != 0.0
+            bins = model.lb[i]:step:model.ub[i]
+            hist = fit(Histogram, sample, bins)
+        else
+            hist = fit(Histogram, sample)
+        end
+        push!(hists, hist)
+    end
     W, N = size(hrsamples)
     hrsamples = drop_samples ? [] : hrsamples
     return HRout(av, va, hists, N, W, hrsamples)
