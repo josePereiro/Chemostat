@@ -60,13 +60,14 @@ end
 function maxent_hr(metnet::MetNet, hrout_β0::HRout, obj_ider::IDER_TYPE, β; 
         drop_samples = true, 
         nsamples = size(hrout_β0, 1),
-        maxiter = 100 * nsamples
+        maxiter = 100 * nsamples,
+        verbose = true
     )
     if isempty(hrout_β0.hrsamples)
         error("HRout hrsamples is empty, samples was probably dropped!!!")
     end
     idxs = maxent_hr_idxs(metnet, hrout_β0, obj_ider, β; 
-        nsamples = nsamples, maxiter = maxiter)
+        nsamples = nsamples, maxiter = maxiter, verbose = verbose)
     return HRout(metnet, view(hrout_β0.hrsamples, idxs,:), drop_samples = drop_samples)
 end
 
