@@ -43,9 +43,9 @@ end
 
     ξs = Ch.Utils.logspace(-1,1,20);
     ξs_str = round.(ξs, digits = 2);
-
-    β0 = 0.0;
-    βs = [β0; Ch.Utils.logspace(-1,3, 20)] # This is the working interval of HR
+    
+    β0 = 0.0 # It is important to include beta = 0
+    βs = [β0; Ch.Utils.logspace(-1, 3.8, 20)]
     βs_str = round.(βs, digits = 2);
 end
 
@@ -70,18 +70,28 @@ println("ξs: ", ξs_str)
     # fba
     fbaout = Ch.FBA.fba(model, obj_ider)
     
+    # hr seed
+    hrout_β0 = nothing
+    
     # storing
     data[(ξ, :net)] = model
-    data[(ξ, :fba)] = fbaout   
+    data[(ξ, :fba)] = fbaout
 
     βv = zeros(size(model, 2))
     seed_epout = nothing
-    for (βi, β) in enumerate(βs)
+    for (βi, β) in enumerate(sort(βs))
         
-        # hrout
-        hrout = Ch.MaxEntHR.maxent_hr(model, obj_ider, 
-            β * 10.0^(-sqrt(ℯ)); # I have no idea why these work! TODO find it!
-            nsamples = 10_000)
+        if β == β0 # hrout seed
+            hrout_β0 = Ch.MaxEntHR.maxent_hr(model, nsamples = 10_000_000, 
+                                    drop_samples = false, verbose = false);
+            hrout = Ch.Utils.HRout(hrout_β0, drop_samples = true) # a copy without samples
+        else        
+            isnothing(hrout_β0) && (error("The minimum β must be cero!!!"); return)
+            hrout = Ch.MaxEntHR.maxent_hr(model, hrout_β0, obj_ider, 
+                β * 10.0^(-sqrt(ℯ)); # I have no idea why these work! TODO find it!
+                nsamples = 10_000, maxiter = 1e16, 
+                verbose = false)
+        end
 
         # epout
         βv[obj_idx] = β
@@ -116,19 +126,13 @@ end
 # this can take a while!!!
 boundle = Ch.Utils.ChstatBoundle()
 
-ξs_ = copy(ξs)
-while !isempty(ξs_)
-    @sync for w in workers()
-        @async begin
-            if !isempty(ξs_)
-                ξ = pop!(ξs_)
-                data = fetch(@spawnat w process_xi(ξ))
-                boundle_data!(boundle, ξ, βs, data)
-                flush(stdout)
-            end
-        end
+@sync for ξ in ξs
+    @async begin
+        data = fetch(@spawn process_xi(ξ))
+        boundle_data!(boundle, ξ, βs, data)
+        flush(stdout)
     end
-end # ξ loop
+end
 
 println("Done!!!", " "^100);
 # -
@@ -137,3 +141,5 @@ println("Done!!!", " "^100);
 cache_file = "toy_model_cache.jls"
 serialize(cache_file, boundle)
 println(relpath(cache_file), " created!!!")
+
+

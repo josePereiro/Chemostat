@@ -26,7 +26,7 @@ Ch = Chemostat;
 # ### Loading cache
 # This notebook use the cached data from [toy_model_computation.ipynb](./toy_model_computation.ipynb)
 
-cache_file = "../../dev/toy_model_cache.jls"#"toy_model_cache.jls"
+cache_file = "toy_model_cache.jls"#"toy_model_cache.jls"
 boundle = deserialize(cache_file)
 sort!(boundle.ξs)
 sort!(boundle.βs)
@@ -49,7 +49,7 @@ println(cache_file, " loaded!!!")
 metnet = Ch.Utils.get_data(boundle, ξ, :net)
 fbaout = Ch.Utils.get_data(boundle, ξ, :fba)
 ps = []
-βs_ = boundle.βs[2:end] # Select βs to plot
+βs_ = boundle.βs[5:end] # Select βs to plot
 βs_ = [βs_; reverse(βs_)]
 iders_ = metnet.rxns
 
@@ -85,7 +85,7 @@ end every 1
 
 # saving gif
 gif_file = "toy_model__all_marginals__varying_beta.gif"
-# cp("tmp.gif", gif_file, force = true)
+cp("tmp.gif", gif_file, force = true)
 gif
 
 # +
@@ -142,7 +142,7 @@ end every 1
 
 # saving gif
 gif_file = "toy_model__all_marginals__varying_xi.gif"
-# cp("tmp.gif", gif_file, force = true)
+cp("tmp.gif", gif_file, force = true)
 gif
 
 # +
@@ -169,16 +169,19 @@ Plots.plot!(p, ξs_, minimum.(flxs_), lw = 3, label = "", color = :white)
 Plots.plot!(p, ξs_, minimum.(flxs_), ls = :dash, lw = 3, label = "min abs flx", color = :red)
 
 # gif (making a zoom)
-yulims_ = Ch.Utils.logspace(-1,1.2, 100) |> reverse
+yulims_ = Ch.Utils.logspace(-1,1, 100) |> reverse
 yulims_ = [fill(maximum(yulims_), 25); yulims_]
 yulims_ = [reverse(yulims_); yulims_]
+yllim_ = -0.01
 gif = Plots.@gif for i in eachindex(yulims_)
-    Plots.plot!(p, yaxis = [-0.01, yulims_[i]])
+    iter_ = yllim_:((yulims_[i] - yllim_)/8):yulims_[i]
+    Plots.plot!(p, yaxis = [yllim_, yulims_[i]], yticks = (iter_, 
+            string.(round.(collect(iter_), digits = 2))))
 end every 1
 
 # saving gif
 gif_file = "toy_model__stoi_err_vs_xi.gif"
-# cp("tmp.gif", gif_file, force = true)
+cp("tmp.gif", gif_file, force = true)
 gif
 # +
 # Plot stoi err asfunctio of xi
@@ -210,13 +213,16 @@ Plots.plot!(p, βs_, minimum.(flxs_), ls = :dash, lw = 3, label = "min abs flx",
 yulims_ = Ch.Utils.logspace(-0.5,0.9, 100) |> reverse
 yulims_ = [fill(maximum(yulims_), 25); yulims_]
 yulims_ = [reverse(yulims_); yulims_]
+yllim_ = -0.01
 gif = Plots.@gif for i in eachindex(yulims_)
-    Plots.plot!(p, yaxis = [-0.01, yulims_[i]])
+    iter_ = yllim_:((yulims_[i] - yllim_)/8):yulims_[i]
+    Plots.plot!(p, yaxis = [yllim_, yulims_[i]], yticks = (iter_, 
+            string.(round.(collect(iter_), digits = 2))))
 end every 1
 
 # saving gif
 gif_file = "toy_model__stoi_err_vs_beta.gif"
-# cp("tmp.gif", gif_file, force = true)
+cp("tmp.gif", gif_file, force = true)
 gif
 # -
 
