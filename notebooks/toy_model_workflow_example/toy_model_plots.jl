@@ -19,7 +19,7 @@ using StatsBase
 using Serialization
 using Plots
 
-# run add "https://github.com/josePereiro/Ch" in the julia Pkg REPL for installing the package
+# run add "https://github.com/josePereiro/Chemostat" in the julia Pkg REPL for installing the package
 import Chemostat
 Ch = Chemostat;
 
