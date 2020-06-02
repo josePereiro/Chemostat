@@ -1,15 +1,7 @@
-function invert_bkwds!(metnet::MetNet)
-    revscount(metnet) > 0 && error("All reactions must be irreversibles!!!")
-
+function invert_bkwds!(metnet::MetNet; rename = true)
     for bkwd_rxn in bkwds(metnet)
-        metnet.S[:,bkwd_rxn] .*= -1
-        lb_ = abs(metnet.ub[bkwd_rxn])
-        ub_ = abs(metnet.lb[bkwd_rxn])
-        metnet.ub[bkwd_rxn] = ub_
-        metnet.lb[bkwd_rxn] = lb_
-        metnet.rxns[bkwd_rxn] *= bkwd_prefix
+        invert_rxn!(metnet, bkwd_rxn, rename = rename)
     end
-    
     return metnet
 end
 invert_bkwds(metnet::MetNet) = invert_bkwds!(deepcopy(metnet))
