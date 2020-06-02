@@ -1,12 +1,14 @@
 # Code derived from metabolicEP (https://github.com/anna-pa-m/Metabolic-EP)
-function fva_preprocess(S,b,lb,ub,rxns; verbose = false, eps = 0.0)
+function fva_preprocess(S,b,lb,ub,rxns; 
+        verbose = false, eps = 0.0, upfrec = 10)
     b,lb, ub = copy(b), copy(lb), copy(ub)
     n = length(lb)
     ei = zeros(n)
     blocked = falses(n)
+    upfrec = floor(Int, n/upfrec)
     for i=1:n
         ei[i] = -1.0
-        verbose && (print("processing [$i / $n]        \r"); flush(stdout))
+        verbose && i % upfrec == 0 && (print("fva_processing [$i / $n]        \r"); flush(stdout))
         sol = linprog(ei, S, b, b, lb, ub, ClpSolver())
         isempty(sol.sol) && error("FVA fails to find a solution maximixing rxn $(rxns[i])")
         ub[i] = min(ub[i], sol.sol[i])
@@ -22,7 +24,7 @@ function fva_preprocess(S,b,lb,ub,rxns; verbose = false, eps = 0.0)
             lb[i] -= eps
         end
     end
-    verbose && (println("done!!!                                           "); flush(stdout))
+    verbose && (println("fva_processing done!!!                                           "); flush(stdout))
     idxb = findall(blocked)
 
     verbose && println("$(sum(blocked)) blocked fluxes")
