@@ -2,7 +2,7 @@
 
 function eponesweep!(X::EPFields,epalg::EPAlg, epmat::EPMat)
     @extract X : av va a b μ s siteflagave siteflagvar
-    @extract epalg : beta beta_maxent minvar maxvar epsconv damp
+    @extract epalg : alpha beta_vec minvar maxvar epsconv damp
     @extract epmat : KK KKPD invKKPD lb ub KY v
 
     for i in eachindex(b)
@@ -19,8 +19,8 @@ function eponesweep!(X::EPFields,epalg::EPAlg, epmat::EPMat)
     # KY = βF'y
     # v¯ = Σ(KY + Da) (original ep)
     # mul!(v,invKKPD, (KY + a./b))
-    # v¯ = Σ(KY + Da) + Σ * beta_maxent (maxent-ep)
-    v .= invKKPD * (KY + a./b) + invKKPD * beta_maxent
+    # v¯ = Σ(KY + Da) + Σ * beta_vec (maxent-ep)
+    v .= invKKPD * (KY + a./b) + invKKPD * beta_vec
     
 
     for i in eachindex(av)

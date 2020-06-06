@@ -1,6 +1,7 @@
 # TODO generalize this methods for maxent probability distriburions that depends not only in biomass
 
-maxent_P(v::Real, β::Real, lb::Real, ub::Real) = β == 0 ? 1/(ub - lb) : β/(exp(β*(ub-v)) - exp(β*(lb - v)))
+maxent_P(v::Real, beta::Real, lb::Real, ub::Real) = 
+    beta == 0 ? one(beta)/(ub - lb) : beta/(exp(beta*(ub-v)) - exp(beta*(lb - v)))
 
 """
     Resample over the politope but using the maxent distribution
@@ -12,7 +13,7 @@ maxent_P(v::Real, β::Real, lb::Real, ub::Real) = β == 0 ? 1/(ub - lb) : β/(ex
     - maxiter: max number of iterations before return, even in nsamples is not collected
     - divs: number of divitions for discretizing biomass space to compute Z. (sorry if this is uggly)
 """
-function maxent_hr_idxs(metnet::MetNet, hrout_β0::HRout, biomider, β; 
+function maxent_hr_idxs(metnet::MetNet, hrout_β0::HRout, biomider, beta; 
         nsamples = size(hrout_β0, 1),
         maxiter = 100 * nsamples,
         verbose = true,
@@ -41,7 +42,7 @@ function maxent_hr_idxs(metnet::MetNet, hrout_β0::HRout, biomider, β;
     for it in 1:maxiter
         rindx = rand(samples_β0_iter) # pick a random sample index
         robj_sample = obj_samples_β0[rindx] # random sample
-        p_rsample = maxent_P(robj_sample, β, obj_lb, obj_ub) # maxent probability
+        p_rsample = maxent_P(robj_sample, beta, obj_lb, obj_ub) # maxent probability
         
         # Resampling
         if rand() < p_rsample
@@ -57,7 +58,7 @@ function maxent_hr_idxs(metnet::MetNet, hrout_β0::HRout, biomider, β;
     return maxent_samples_idxs
 end
 
-function maxent_hr(metnet::MetNet, hrout_β0::HRout, obj_ider::IDER_TYPE, β; 
+function maxent_hr(metnet::MetNet, hrout_β0::HRout, obj_ider::IDER_TYPE, beta; 
         drop_samples = true, 
         nsamples = size(hrout_β0, 1),
         maxiter = 100 * nsamples,
@@ -66,13 +67,13 @@ function maxent_hr(metnet::MetNet, hrout_β0::HRout, obj_ider::IDER_TYPE, β;
     if isempty(hrout_β0.hrsamples)
         error("HRout hrsamples is empty, samples was probably dropped!!!")
     end
-    idxs = maxent_hr_idxs(metnet, hrout_β0, obj_ider, β; 
+    idxs = maxent_hr_idxs(metnet, hrout_β0, obj_ider, beta; 
         nsamples = nsamples, maxiter = maxiter, verbose = verbose)
     return HRout(metnet, view(hrout_β0.hrsamples, idxs,:), drop_samples = drop_samples)
 end
 
 
-function maxent_hr(metnet::MetNet, obj_ider::IDER_TYPE = "", β::Real = 0.0;
+function maxent_hr(metnet::MetNet, obj_ider::IDER_TYPE = "", beta::Real = 0.0;
         nsamples = 10_000, maxiter = 1e10, 
         drop_samples = true,
         verbose = true,
@@ -84,7 +85,7 @@ function maxent_hr(metnet::MetNet, obj_ider::IDER_TYPE = "", β::Real = 0.0;
     samples = zeros(nsamples, size(metnet, 2))
     
     verbose && (print("it 0: samples [0 / $(nsamples)]        \r"); flush(stdout))
-    if β == 0
+    if beta == 0
         for (it, sample) in enumerate(eachrow(samples))
             sample .= hrsample!(hr)
             verbose && it % upfrec == 0 && (print("it: $it  samples [$it / $(nsamples)]   \r"); flush(stdout))
@@ -99,7 +100,7 @@ function maxent_hr(metnet::MetNet, obj_ider::IDER_TYPE = "", β::Real = 0.0;
         for it in 1:floor(Int, maxiter)
             sample = hrsample!(hr)
             obj_val = sample[obj_idx]
-            p_sample = maxent_P(obj_val, β, obj_lb, obj_ub) # maxent probability
+            p_sample = maxent_P(obj_val, beta, obj_lb, obj_ub) # maxent probability
             if rand() < p_sample
                 verbose && spos % upfrec == 0 && 
                     (print("it: $it  samples [$(spos -1) / $(nsamples)]   obj_val: $(obj_val)         \r"); flush(stdout))

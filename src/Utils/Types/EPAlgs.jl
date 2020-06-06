@@ -2,8 +2,8 @@
 # The original type did not include beta_maxent vector
 
 struct EPAlg{T<:AbstractFloat}
-    beta::T
-    beta_maxent::Vector{T}
+    alpha::T
+    beta_vec::Vector{T}
     minvar::T
     maxvar::T
     epsconv::T

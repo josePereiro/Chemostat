@@ -29,7 +29,7 @@ const EPOUT_ALPHA_INF_CACHE_FILE = joinpath(TEST_CACHE_DIR, "epout_alpha_inf.jls
 function create_epout_alpha_inf_cache()
     isfile(EPOUT_ALPHA_INF_CACHE_FILE) && return
     metnet = deserialize(METNET_CACHE_FILE)
-    epout = Chemostat.MaxEntEP.maxent_ep(metnet, α = Inf)
+    epout = Chemostat.MaxEntEP.maxent_ep(metnet, alpha = Inf)
     serialize(EPOUT_ALPHA_INF_CACHE_FILE, epout)
     flush(stdout)
     println("created $EPOUT_ALPHA_INF_CACHE_FILE")
@@ -41,7 +41,7 @@ const EPOUT_ALPHA_FIN_CACHE_FILE = joinpath(TEST_CACHE_DIR, "epout_alpha_fin.jls
 function create_epout_alpha_fin_cache()
     isfile(EPOUT_ALPHA_FIN_CACHE_FILE) && return
     metnet = deserialize(METNET_CACHE_FILE)
-    epout = Chemostat.MaxEntEP.maxent_ep(metnet, α = 1e11)
+    epout = Chemostat.MaxEntEP.maxent_ep(metnet, alpha = 1e11)
     serialize(EPOUT_ALPHA_FIN_CACHE_FILE, epout)
     flush(stdout)
     println("created $EPOUT_ALPHA_FIN_CACHE_FILE")
@@ -103,7 +103,7 @@ function create_boundle_cache()
             print("xi: [$(ξi)/ $(length(ξs))] beta: [$(βi)/ $(length(βs))] \r");flush(stdout)
                 
             βv[obj_idx] = β
-            epout = Chemostat.MaxEntEP.maxent_ep(model; α = 1e11, βv = βv, verbose = verbose_)
+            epout = Chemostat.MaxEntEP.maxent_ep(model; alpha = 1e11, beta_vec = βv, verbose = verbose_)
             Chemostat.Utils.add_data!(boundle, ξ, β, :ep, epout)
             @test true
         end

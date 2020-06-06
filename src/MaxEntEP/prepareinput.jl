@@ -2,7 +2,7 @@
 
 # TODO remove Y unused parameter
 # TODO remove alpha Inf code
-function prepareinput(K, Y, lb, ub, beta, verbose, solution, expval)
+function prepareinput(K, Y, lb, ub, alpha, verbose, solution, expval)
 
     M,N = size(K)
     verbose && M >= N && @warn("M = $M ≥ N = $N")
@@ -12,18 +12,11 @@ function prepareinput(K, Y, lb, ub, beta, verbose, solution, expval)
 
     scalefact = zero(eltype(K))
 
-    updatefunction = if beta == Inf
-        eponesweepT0!
-    else
-        eponesweep!
-    end
+    updatefunction = alpha == Inf ? eponesweepT0! : eponesweep!
 
     scalefact = max(maximum(abs.(lb)), maximum(abs.(ub)))
-    if solution === nothing
-        epfield = EPFields(N,expval,scalefact)
-    else
+    epfield = isnothing(solution) ? epfield = EPFields(N,expval,scalefact) :
         epfield = deepcopy(solution.sol) # preserve the original solution!
-    end
 
     return updatefunction, scalefact, epfield
 end

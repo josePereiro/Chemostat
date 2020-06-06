@@ -2,7 +2,7 @@
 
 function eponesweepT0!(epfields::EPFields, epalg::EPAlg, epmatT0::EPMatT0)
     @extract epfields : av va a b μ s siteflagave siteflagvar
-    @extract epalg : beta beta_maxent minvar maxvar epsconv damp
+    @extract epalg : alpha beta_vec minvar maxvar epsconv damp
     @extract epmatT0 : Σy Σw G lb ub vy vw Y
 
 
@@ -30,7 +30,7 @@ function eponesweepT0!(epfields::EPFields, epalg::EPAlg, epmatT0::EPMatT0)
     # Original ep
     # mul!(vw,Σw, aw ./ bw - G'*(ay ./ by)) # (?) mean vector of independent variables (epmat)
     # ep-maxent
-    vw = Σw * (aw ./ bw - G'*(ay ./ by)) + Σw * beta_maxent
+    vw = Σw * (aw ./ bw - G'*(ay ./ by)) + Σw * beta_vec
 
     mul!(vy,G,vw) # (?) mean vector of dependent variables (epmat)
     for i in eachindex(vy) vy[i] = -vy[i] + Y[i] end

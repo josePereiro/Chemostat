@@ -4,11 +4,13 @@ _clear__epout_β0_cache_() = global _epout_β0_cache_ = Dict()
 """
     Make MaxEnt-EP but applaying MaxEnt starting from a EP solution at beta zero.
     It is important to pass a epout solution computed with beta zero.
-    It is faster than the fully integrated version 'maxent_ep' but least accurate.
+    It is faster than the fully integrated version 'maxent_ep' but less accurate.
     It is used for secundary computations as estimating a beta which lead to a 
-    given objective value and so use this beta for the fully integrated version of the algorithm
+    given objective value and so use this beta for the fully integrated version of 
+    the algorithm
 """
-function fast_maxent_ep(model::MetNet, epout_β0::EPout, α::Real,  βv::Vector)
+function fast_maxent_ep(model::MetNet, epout_β0::EPout, 
+        alpha::Real,  beta_vec::Vector)
 
     #= Anna's code scales fluxes to [-1,1], but it 
     doesn't rescale a,d back to the original range =#
@@ -27,9 +29,9 @@ function fast_maxent_ep(model::MetNet, epout_β0::EPout, α::Real,  βv::Vector)
         S = model.S
         b = model.b
         D = Diagonal(1.0 ./ d)
-        invΣ = Matrix(α*S'*S + D)
+        invΣ = Matrix(alpha*S'*S + D)
         Σ = inv(invΣ)
-        v = Σ*(α*S'*b + D*a)
+        v = Σ*(alpha*S'*b + D*a)
 
         _clear__epout_β0_cache_()
         _epout_β0_cache_[epout_β0] = Dict()
@@ -38,7 +40,7 @@ function fast_maxent_ep(model::MetNet, epout_β0::EPout, α::Real,  βv::Vector)
     end
 
     #= From Cossios papar (see README) =#
-    w = v + Σ * βv
+    w = v + Σ * beta_vec
     wn = (d .* w - diag(Σ) .* a) ./ (d .- diag(Σ)) # mean of the non-truncated marginals
     Σnn = d .* diag(Σ) ./ (d .- diag(Σ)) # variances of the non-truncated marginals
 

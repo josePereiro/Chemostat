@@ -6,12 +6,12 @@ function epconverge!(epfield::EPFields, epmat::M, epalg::EPAlg, eponesweep!::T) 
 
     returnstatus = :unconverged
     iter = 0
-    verbose && print(stderr, "Converging with β=$(epalg.beta) epsconv=$(epsconv) maxiter=$(maxiter):\n")
+    verbose && print(stderr, "Converging with β=$(epalg.alpha) epsconv=$(epsconv) maxiter=$(maxiter):\n")
     
     # sweep ep till maxiter is reached or max(errav, errvar) < epsconv
     while iter < maxiter
         iter += 1
-        # eponesweep! will be eponesweepT0! or eponesweep depending on beta
+        # eponesweep! will be eponesweepT0! or eponesweep depending on alpha
         (errav, errvar, errμ, errs) = eponesweep!(epfield, epalg, epmat)
         if (verbose)
             @printf(stderr, 
