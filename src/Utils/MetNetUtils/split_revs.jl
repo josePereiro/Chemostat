@@ -5,8 +5,8 @@ using SparseArrays
 """
     Returns a new MetNet with no reversible reactions.
 """
-function split_revs(metnet::MetNet) # TODO Add tests
-    M, N = metnet.M, metnet.N
+function split_revs(metnet::MetNet, verbose = false) # TODO Add tests
+    M, N = size(metnet)
     revs = [isrev(metnet, i) for i in 1:N]
     
     M_, N_ = M, N + count(revs)
@@ -46,13 +46,13 @@ function split_revs(metnet::MetNet) # TODO Add tests
         _check_and_push!(c_, bkwd_idx - 1, 0.0) # The objective, if splitted, will be the fwd reaction,
         _check_and_push!(grRules_, bkwd_idx - 1, grRules_[fwd_idx])
         _check_and_push!(subSystems_, bkwd_idx - 1, subSystems_[fwd_idx])
-        _check_and_push!(genes_, bkwd_idx - 1, genes_[fwd_idx])
+        # _check_and_push!(genes_, bkwd_idx - 1, genes_[fwd_idx])
 
     end
 
-    N_ != N && (@warn("Only use this method after MetabolicEP.preprocess!!!"); flush(stdout))
+    verbose && N_ != N && (@warn("Only use this method after MetabolicEP.preprocess!!!"); flush(stdout))
     
-    return MetNet(S = S_,c = c_,lb = lb_, ub = ub_, 
+    return MetNet(metnet, S = S_,c = c_,lb = lb_, ub = ub_, 
         genes = genes_, grRules = grRules_, rxns = rxns_, 
         rxnNames =  rxnNames_, rev = rev_, subSystems = subSystems_)
 end
