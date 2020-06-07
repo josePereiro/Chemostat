@@ -21,6 +21,7 @@ function add_rxn(metnet::MetNet, rxnid::AbstractString; kwargs...)
     rxnNames_ = copy(metnet.rxnNames)
     rev_ = copy(metnet.rev)
     subSystems_ = copy(metnet.subSystems)
+    intake_info_ = deepcopy(metnet.intake_info)
     
     mets_info = Dict(get(kwargs, :mets, Dict()))
     for (met, stoi_coe) in mets_info
@@ -39,6 +40,7 @@ function add_rxn(metnet::MetNet, rxnid::AbstractString; kwargs...)
     
     return MetNet(S_,b_, c_, lb_, ub_, 
         genes_, rxnGeneMat_, grRules_, mets_, rxns_, 
-        metNames_, metFormulas_, rxnNames_, rev_, subSystems_)
+        metNames_, metFormulas_, rxnNames_, rev_, subSystems_, 
+        intake_info_)
     
 end

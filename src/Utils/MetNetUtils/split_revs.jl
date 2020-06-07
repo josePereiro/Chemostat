@@ -54,5 +54,6 @@ function split_revs(metnet::MetNet, verbose = false) # TODO Add tests
     
     return MetNet(metnet, S = S_,c = c_,lb = lb_, ub = ub_, 
         genes = genes_, grRules = grRules_, rxns = rxns_, 
-        rxnNames =  rxnNames_, rev = rev_, subSystems = subSystems_)
+        rxnNames =  rxnNames_, rev = rev_, subSystems = subSystems_, 
+        Dict())
 end

@@ -80,6 +80,7 @@ function read_mat(filename::String)
         subSystems = ["NA"]
     end
     return MetNet(S, b, c,  lb, ub, genes, rxnGeneMat, grRules,
-                  mets,rxns,metNames,metFormulas, rxnNames,rev,subSystems)
+                  mets,rxns,metNames,metFormulas, rxnNames,rev,subSystems, 
+                  Dict())
 
 end
