@@ -26,7 +26,7 @@ Ch = Chemostat;
 # ### Loading cache
 # This notebook use the cached data from [toy_model_computation.ipynb](./toy_model_computation.ipynb)
 
-cache_file = "toy_model_cache.jls"#"toy_model_cache.jls"
+cache_file = "toy_model_cache2.jls"#"toy_model_cache.jls"
 boundle = deserialize(cache_file)
 sort!(boundle.ξs)
 sort!(boundle.βs)
@@ -225,4 +225,4 @@ gif_file = "toy_model__stoi_err_vs_beta.gif"
 cp("tmp.gif", gif_file, force = true)
 gif
 # -
-
+rm("tmp.gif", force = true)
