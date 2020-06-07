@@ -52,8 +52,8 @@ function split_revs(metnet::MetNet, verbose = false) # TODO Add tests
 
     verbose && N_ != N && (@warn("Only use this method after MetabolicEP.preprocess!!!"); flush(stdout))
     
-    return MetNet(metnet, S = S_,c = c_,lb = lb_, ub = ub_, 
+    return MetNet(metnet; S = S_,c = c_,lb = lb_, ub = ub_, 
         genes = genes_, grRules = grRules_, rxns = rxns_, 
         rxnNames =  rxnNames_, rev = rev_, subSystems = subSystems_, 
-        Dict())
+        intake_info = Dict())
 end
