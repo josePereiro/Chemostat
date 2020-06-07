@@ -1,11 +1,14 @@
 #TODO make test for this
 """
-    Example of 'exchanges_info' = Dict("gt" => Dict("ub" => 100.0, "c" => 10.0))
+    Example of 'intake_info' = Dict("gt" => Dict("ub" => 100.0, "c" => 10.0))
 """
-function apply_bound!(metnet::MetNet, ξ, exchanges_info::Dict)
+function apply_bound!(metnet::MetNet, ξ, intake_info::Dict = Dict())
     ξ < 0 && error("ξ must be positive")
+
+    merge!(metnet.intake_info, intake_info);
+    isempty(metnet.intake_info) && error("intake info is empty, you must provide one!!!")
     
-    for (exch, exch_info) in exchanges_info
+    for (exch, exch_info) in metnet.intake_info
         
         !haskey(exch_info, "c") && error("'c' not defined for exchange '$(rxns(metnet, exch))'");
         
