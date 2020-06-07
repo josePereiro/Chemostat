@@ -26,11 +26,14 @@ Ch = Chemostat;
 # ### Loading cache
 # This notebook use the cached data from [toy_model_computation.ipynb](./toy_model_computation.ipynb)
 
-cache_file = "toy_model_cache2.jls"#"toy_model_cache.jls"
+cache_file = "toy_model_cache.jls"
 boundle = deserialize(cache_file)
 sort!(boundle.ξs)
 sort!(boundle.βs)
 println(cache_file, " loaded!!!")
+
+println("xis: ", boundle.ξs)
+println("betas: ", boundle.βs)
 
 # ---
 # ## Plots
@@ -49,7 +52,7 @@ println(cache_file, " loaded!!!")
 metnet = Ch.Utils.get_data(boundle, ξ, :net)
 fbaout = Ch.Utils.get_data(boundle, ξ, :fba)
 ps = []
-βs_ = boundle.βs[5:end] # Select βs to plot
+βs_ = boundle.βs[6:end] # Select βs to plot
 βs_ = [βs_; reverse(βs_)]
 iders_ = metnet.rxns
 
@@ -85,8 +88,12 @@ end every 1
 
 # saving gif
 gif_file = "toy_model__all_marginals__varying_beta.gif"
-cp("tmp.gif", gif_file, force = true)
+cp(gif.filename, gif_file, force = true)
+println(relpath(gif_file), " created!!!")
 gif
+# -
+
+rm(gif.filename, force = true);
 
 # +
 # Plot the marginals as function of ξs
@@ -142,8 +149,12 @@ end every 1
 
 # saving gif
 gif_file = "toy_model__all_marginals__varying_xi.gif"
-cp("tmp.gif", gif_file, force = true)
+cp(gif.filename, gif_file, force = true)
+println(relpath(gif_file), " created!!!")
 gif
+# -
+
+rm(gif.filename, force = true);
 
 # +
 # Plot stoi err asfunctio of xi
@@ -181,8 +192,12 @@ end every 1
 
 # saving gif
 gif_file = "toy_model__stoi_err_vs_xi.gif"
-cp("tmp.gif", gif_file, force = true)
+cp(gif.filename, gif_file, force = true)
+println(relpath(gif_file), " created!!!")
 gif
+# -
+rm(gif.filename, force = true);
+
 # +
 # Plot stoi err asfunctio of xi
 ξ = boundle.ξs[10] # Select ξ to plot
@@ -222,7 +237,10 @@ end every 1
 
 # saving gif
 gif_file = "toy_model__stoi_err_vs_beta.gif"
-cp("tmp.gif", gif_file, force = true)
+cp(gif.filename, gif_file, force = true)
+println(relpath(gif_file), " created!!!")
 gif
 # -
-rm("tmp.gif", force = true)
+rm(gif.filename, force = true);
+
+
