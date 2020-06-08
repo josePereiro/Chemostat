@@ -7,4 +7,5 @@ struct EPout{T<:Real} <: AbstractOut
     va::Vector{T}
     sol::EPFields{T}
     status::Symbol
+    iter::Integer
 end

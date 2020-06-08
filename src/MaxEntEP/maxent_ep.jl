@@ -38,15 +38,15 @@ function maxent_ep(K::AbstractArray{T,2}, Y::Array{T,1}, lb::Array{T,1}, ub::Arr
 
     #= Here is were all the work is done, this function will 
     call updatealg till convergence or maxiter is reached =#
-    returnstatus = epconverge!(epfield, epmat, epalg, updatealg)
+    returnstatus, iter = epconverge!(epfield, epmat, epalg, updatealg)
 
     #= Scale back μ, s, av, va of epfield and lub, llb and Y =#
     scaleepfield!(epfield,lub,llb,Y,scalefact)
     if alpha < Inf
-        return  EPout(epfield.μ,epfield.s, epfield.av, epfield.va, epfield, returnstatus)
+        return  EPout(epfield.μ, epfield.s, epfield.av, epfield.va, epfield, returnstatus, iter)
     else
         idx = epmat.idx
-        return  EPout(epfield.μ[idx],epfield.s[idx],epfield.av[idx],epfield.va[idx], epfield, returnstatus)
+        return  EPout(epfield.μ[idx],epfield.s[idx],epfield.av[idx],epfield.va[idx], epfield, returnstatus, iter)
     end
 end
 

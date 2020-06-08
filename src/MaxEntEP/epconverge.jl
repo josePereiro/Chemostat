@@ -31,5 +31,5 @@ function epconverge!(epfield::EPFields, epmat::M, epalg::EPAlg, eponesweep!::T) 
         flush(stderr)
     end
 
-    return returnstatus
+    return returnstatus, iter
 end

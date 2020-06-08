@@ -47,5 +47,5 @@ function fast_maxent_ep(model::MetNet, epout_β0::EPout,
     # Fix case of blocked reactoins
     tns = Truncated.(Normal.(wn, sqrt.(Σnn)), model.lb, model.ub)
 
-    return EPout(wn, Σnn, mean.(tns), var.(tns), epout_β0.sol, epout_β0.status)
+    return EPout(wn, Σnn, mean.(tns), var.(tns), epout_β0.sol, epout_β0.status, epout_β0.iter)
 end
