@@ -91,8 +91,8 @@ function create_boundle_cache()
         fbaout = Chemostat.FBA.fba(model, obj_ider)
         
         # Add to boundle
-        Chemostat.Utils.add_data!(boundle, ξ, :net, model)
-        Chemostat.Utils.add_data!(boundle, ξ, :fba, fbaout)
+        boundle[ξ, :net] =  model
+        boundle[ξ, :fba] = fbaout
         
         # MaxEnt-EP
         βv = zeros(size(model, 2))
@@ -104,7 +104,7 @@ function create_boundle_cache()
                 
             βv[obj_idx] = β
             epout = Chemostat.MaxEntEP.maxent_ep(model; alpha = 1e11, beta_vec = βv, verbose = verbose_)
-            Chemostat.Utils.add_data!(boundle, ξ, β, :ep, epout)
+            boundle[ξ, β, :ep] = epout
             @test true
         end
     end

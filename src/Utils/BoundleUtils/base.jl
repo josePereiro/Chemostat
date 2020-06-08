@@ -1,6 +1,6 @@
 function Base.haskey(boundle::ChstatBoundle, ξ::Real, data_key::Symbol)
     try
-        return Base.haskey(get_data(boundle, ξ), data_key)
+        return Base.haskey(boundle[ξ], data_key)
     catch KeyError end
     return false
 end
@@ -10,7 +10,7 @@ Base.haskey(boundle::ChstatBoundle, ξs::Vector, data_key::Symbol) =
 
 function Base.haskey(boundle::ChstatBoundle, ξ::Real, β::Real, data_key::Symbol)
     try
-        return Base.haskey(get_data(boundle, ξ, β), data_key)
+        return Base.haskey(boundle[ξ, β], data_key)
     catch KeyError end
     return false
     

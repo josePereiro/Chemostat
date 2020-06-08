@@ -10,8 +10,8 @@ function test_out_getters()
     for getter in getters
 
         for (ξi, ξ) in enumerate(ξs)
-            model = Chemostat.Utils.get_data(boundle, ξ, :net)
-            fbaout = Chemostat.Utils.get_data(boundle, ξ, :fba)
+            model = boundle[ξ, :net]
+            fbaout = boundle[ ξ, :fba]
             
             # Indexing using ξ, data_key
             @test all(getter(boundle, ξ, :fba) .== getter(fbaout))
@@ -28,7 +28,7 @@ function test_out_getters()
                             getter(model, fbaout, rand_idxs[1]))
 
             for (βi, β) in enumerate(βs)
-                epout = Chemostat.Utils.get_data(boundle, ξ, β, :ep)
+                epout = boundle[ξ, β, :ep]
 
                 # Indexing using ξ, β, data_key
                 @test all(getter(boundle, ξ, β, :ep) .== getter(epout))

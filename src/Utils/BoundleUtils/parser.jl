@@ -1,2 +1,4 @@
-parse_ξ(chdata, ξ::Real) = ξ in chdata.ξs ? ξ : ξ isa Int ? chdata.ξs[ξ] : error("ξ: $ξ not found!!!")
-parse_β(chdata, β::Real) = β in chdata.βs ? β : β isa Int ? chdata.βs[β] : error("β: $β not found!!!")
+parse_ξ(boundle, ξ::Real) = 
+    ξ in boundle.ξs ? ξ : ξ isa Int ? boundle.ξs[ξ] : error("ξ: $ξ not found!!!")
+parse_β(boundle, β::Real) = 
+    β in boundle.βs ? β : β isa Int ? boundle.βs[β] : error("β: $β not found!!!")

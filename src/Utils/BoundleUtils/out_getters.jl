@@ -2,7 +2,7 @@
 # indexing using ξ, data_key
 function _apply_out_getter(getter::Function, 
         boundle::ChstatBoundle, ξ::Real, data_key::Symbol)
-    return getter(get_data(boundle, ξ, data_key))
+    return getter(boundle[ξ, data_key])
 end
 
 # indexing using ξ, data_key, ider(s)
@@ -10,8 +10,8 @@ function _apply_out_getter(getter::Function,
         boundle::ChstatBoundle, ξ::Real, data_key::Symbol, 
         ider, metnet_data_key::Symbol = metnet_data_key)
     
-    metnet = get_data(boundle, ξ, metnet_data_key)
-    out = get_data(boundle, ξ, data_key)
+    metnet = boundle[ξ, metnet_data_key]
+    out = boundle[ξ, data_key]
 
     return getter(metnet, out, ider)
 end
@@ -25,15 +25,15 @@ _apply_out_getter(getter::Function,
 # indexing using ξ, β, data_key
 function _apply_out_getter(getter::Function, 
         boundle::ChstatBoundle, ξ::Real, β::Real, data_key::Symbol)
-    return getter(get_data(boundle, ξ, β, data_key))
+    return getter(boundle[ξ, β, data_key])
 end
 # indexing using ξ, β, data_key, ider(s)
 function _apply_out_getter(getter::Function, boundle::ChstatBoundle, 
         ξ::Real, β::Real, data_key::Symbol, 
         ider, metnet_data_key::Symbol = metnet_data_key)
     
-    metnet = get_data(boundle, ξ, metnet_data_key)
-    out = get_data(boundle, ξ, β, data_key)
+    metnet = boundle[ξ, metnet_data_key]
+    out = boundle[ξ, β, data_key]
 
     return getter(metnet, out, ider)
 end

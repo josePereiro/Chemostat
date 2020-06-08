@@ -3,11 +3,11 @@ function collect_data(fun::Function, boundle::ChstatBoundle,
     data = []
     for key in data_keys
         if haskey(boundle, ξ, key)
-            d = get_data(boundle, ξ, key)
+            d = boundle[ξ, key]
             fun(d) && push!(data, d)
         end
         if haskey(boundle, ξ, β, key)
-            d = get_data(boundle, ξ, β, key)
+            d = boundle[ξ, β, key]
             fun(d) && push!(data, d)
         end
     end

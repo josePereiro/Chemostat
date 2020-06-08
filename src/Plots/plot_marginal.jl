@@ -60,7 +60,7 @@ function plot_marginal!(p, boundle::ChstatBoundle,
         ider::IDER_TYPE, metnet_data_key::Symbol = metnet_data_key; 
         kwargs...)
 
-    metnet = get_data(boundle, ξ, metnet_data_key)
+    metnet = boundle[ξ, metnet_data_key]
     outs = collect_data(d -> d isa AbstractOut, boundle, ξ, β, data_keys)
     plot_marginal!(p, metnet, outs, ider; kwargs...)
     return p
