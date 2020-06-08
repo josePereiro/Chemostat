@@ -13,3 +13,6 @@ function collect_data(fun::Function, boundle::ChstatBoundle,
     end
     return data
 end
+
+collect_data(boundle::ChstatBoundle, ξ::Real, β::Real, data_keys::Vector) = 
+    collect_data((x) -> true, boundle, ξ::Real, β::Real, data_keys::Vector)
