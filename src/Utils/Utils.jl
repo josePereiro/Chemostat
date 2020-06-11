@@ -26,7 +26,6 @@ module Utils
     import Distributions: Normal, Truncated, mean, var, pdf
     import LinearAlgebra: normalize, qr, diag, nullspace
     import Base: isequal, size, ==
-    import JSON: json, parse
     import MAT: matread
     
     include("General/General.jl")
