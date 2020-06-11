@@ -11,13 +11,12 @@ struct EPFields{T<:AbstractFloat}
     siteflagvar::BitArray{1}
 end
 
-function EPFields(N::Int, expval, scalefact)
+function EPFields(N::Int, expval, T)
     
     siteflagvar = trues(N)
     siteflagave = trues(N)
     
-    expave, expvar = parseexpval!(expval, siteflagave, siteflagvar, scalefact)
-    T = typeof(scalefact)
+    expave, expvar = parseexpval!(expval, siteflagave, siteflagvar)
     av = zeros(T,N)
     var = zeros(T,N)
 
@@ -31,5 +30,5 @@ function EPFields(N::Int, expval, scalefact)
     EPFields(av, var, zeros(T,N), ones(T,N), zeros(T,N), ones(T,N), siteflagave, siteflagvar)
 end
 
-EPFields(N::Int,expval::Nothing,scalefact,T) = 
+EPFields(N::Int, expval::Nothing, T) = 
     EPFields(zeros(T,N), zeros(T,N), zeros(T,N), ones(T,N), zeros(T,N), ones(T,N), trues(N), trues(N))

@@ -2,20 +2,18 @@
 
 # TODO remove Y unused parameter
 # TODO remove alpha Inf code
-function prepareinput(K, Y, lb, ub, alpha, verbose, solution, expval)
+function prepareinput(S, b, lb, ub, alpha, verbose, solution, expval)
 
-    M,N = size(K)
+    M,N = size(S)
     verbose && M >= N && @warn("M = $M ≥ N = $N")
     all(lb .<= ub) || error("lower bound fluxes > upper bound fluxes. Consider swapping lower and upper bounds")
 
     verbose && println(stderr, "Analyzing a $M × $N stoichiometric matrix.")
 
-    scalefact = zero(eltype(K))
-
     updatefunction = alpha == Inf ? eponesweepT0! : eponesweep!
 
     scalefact = max(maximum(abs.(lb)), maximum(abs.(ub)))
-    epfield = isnothing(solution) ? epfield = EPFields(N,expval,scalefact) :
+    epfield = isnothing(solution) ? epfield = EPFields(N, expval, eltype(S)) :
         epfield = deepcopy(solution.sol) # preserve the original solution!
 
     return updatefunction, scalefact, epfield
