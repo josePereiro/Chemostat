@@ -7,8 +7,11 @@ function fva_preprocess(S,b,lb,ub,rxns;
     blocked = falses(n)
     upfrec = floor(Int, n/upfrec)
     for i=1:n
+        
+        show_progress = verbose && (i == 1 || i % upfrec == 0 || i == n)
+        show_progress && (print("fva_processing [$i / $n]        \r"); flush(stdout))
+
         ei[i] = -1.0
-        verbose && i % upfrec == 0 && (print("fva_processing [$i / $n]        \r"); flush(stdout))
         sol = linprog(ei, S, b, b, lb, ub, ClpSolver())
         isempty(sol.sol) && error("FVA fails to find a solution maximixing rxn $(rxns[i])")
         ub[i] = min(ub[i], sol.sol[i])
