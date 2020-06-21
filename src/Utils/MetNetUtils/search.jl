@@ -1,9 +1,10 @@
-function search(model, hint; maxprint = 50, 
+function search(model, hint, fun = (x) -> false; maxprint = 50, 
     fields = [:rxns, :mets, :rxnNames, :metNames, :genes])
 
 hint = string(hint)
 hint == "" && (println("0 found!!!"), return)
 
+fun_ = [] # custom filter
 eqs_ = [] # equals
 stw_ = [] # starts with
 ctn_ = [] # contains
@@ -13,6 +14,7 @@ up = uppercase
 up_hint = up(hint)
 for field in fields
     dat = getfield(model, field)
+    push!(fun_, map(idx -> (dat[idx], idx), findall(fun, dat))...)
     push!(eqs_, map(idx -> (dat[idx], idx), findall(x-> up(x) == up_hint, dat))...)
     push!(stw_, map(idx -> (dat[idx], idx), findall(x-> startswith(up(x), up_hint), dat))...)
     push!(ctn_, map(idx -> (dat[idx], idx), findall(x-> occursin(up_hint, up(x)), dat))...)
@@ -20,7 +22,7 @@ for field in fields
 end
 
 # print
-all_res = [sort!(eqs_); sort!(stw_); sort!(ctn_); sort!(edw_)] |> unique
+all_res = [sort!(fun_); sort!(eqs_); sort!(stw_); sort!(ctn_); sort!(edw_)] |> unique
 c = 0
 println("$(length(all_res)) found!!!")
 for (res, idx) in all_res
