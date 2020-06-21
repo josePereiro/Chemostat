@@ -13,41 +13,50 @@ up = uppercase
 up_hint = up(hint)
 for field in fields
     dat = getfield(model, field)
-    push!(eqs_, filter(x-> up(x) == up_hint, dat)...)
-    push!(stw_, filter(x-> startswith(up(x), up_hint), dat)...)
-    push!(ctn_, filter(x-> occursin(up_hint, up(x)), dat)...)
-    push!(edw_, filter(x-> endswith(up(x), up_hint), dat)...)   
+    push!(eqs_, map(idx -> (dat[idx], idx), findall(x-> up(x) == up_hint, dat))...)
+    push!(stw_, map(idx -> (dat[idx], idx), findall(x-> startswith(up(x), up_hint), dat))...)
+    push!(ctn_, map(idx -> (dat[idx], idx), findall(x-> occursin(up_hint, up(x)), dat))...)
+    push!(edw_, map(idx -> (dat[idx], idx), findall(x-> endswith(up(x), up_hint), dat))...)
 end
 
 # print
 all_res = [sort!(eqs_); sort!(stw_); sort!(ctn_); sort!(edw_)] |> unique
 c = 0
 println("$(length(all_res)) found!!!")
-for res in all_res
+for (res, idx) in all_res
     
-    # I know maybe this is not the best way :)
-    # This is only printing in bold the matches
-    ci = 1 # current index
-    while true
-        hr_ = findnext(up_hint, up(res), ci)
-        
-        # No more hint
-        if isnothing(hr_)
-            print(res[ci:end])
-            break;
-        end
-        
-        # no-hint before hint
-        print(res[ci:(first(hr_) - 1)])
-
-        # hint
-        printstyled(res[hr_], bold = true)
-
-        ci = first(hr_) + length(hint)
-        ci > length(res) && break
-    end
+    print(idx, ": ")
+    _print_bold(res, hint)
+    
     println()
     c == maxprint && (println("..."), return)
     c += 1
 end
+end
+
+function _print_bold(text, in_bold)
+    up_in_bold = uppercase(in_bold)
+    up_text = uppercase(text)
+
+    # I know maybe this is not the best way :)
+    # This is only printing in bold the matches
+    ci = 1 # current index
+    while true
+        hr_ = findnext(up_in_bold, up_text, ci)
+        
+        # No more hint
+        if isnothing(hr_)
+            print(text[ci:end])
+            break;
+        end
+        
+        # no-hint before hint
+        print(text[ci:(first(hr_) - 1)])
+
+        # hint
+        printstyled(text[hr_], bold = true)
+
+        ci = first(hr_) + length(in_bold)
+        ci > length(text) && break
+    end
 end
