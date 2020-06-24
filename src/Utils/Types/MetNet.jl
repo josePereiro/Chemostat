@@ -20,7 +20,7 @@ struct MetNet{T<:Real}
     metFormulas::AbstractVector{String} # metabolites formula M elements (**)
     rxnNames::AbstractVector{String} # reactions long-names N elements (**)
     rev::AbstractVector{Bool} # reversibility of reactions N elements
-    subSystems::AbstractVector{String} # cellular component of fluxes N elements
+    subSystems::AbstractVector # cellular component of fluxes N elements
     intake_info::Dict # Information required for enforcing the Chemostat bounds
 end
 
