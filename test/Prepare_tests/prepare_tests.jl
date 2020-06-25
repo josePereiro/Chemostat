@@ -54,7 +54,7 @@ const FBAOUT_CACHE_FILE = joinpath(TEST_CACHE_DIR, "fbaout.jls")
 function create_fbaout_cache()
     isfile(FBAOUT_CACHE_FILE) && return
     metnet = deserialize(METNET_CACHE_FILE)
-    fbaout = Chemostat.FBA.fba(metnet, "biom")
+    fbaout = Chemostat.LP.fba(metnet, "biom")
     serialize(FBAOUT_CACHE_FILE, fbaout)
     flush(stdout)
     println("created $FBAOUT_CACHE_FILE")
@@ -88,7 +88,7 @@ function create_boundle_cache()
         model = Chemostat.Utils.fva_preprocess(model, verbose = verbose_)
         
         # FBA
-        fbaout = Chemostat.FBA.fba(model, obj_ider)
+        fbaout = Chemostat.LP.fba(model, obj_ider)
         
         # Add to boundle
         boundle[ξ, :net] =  model
