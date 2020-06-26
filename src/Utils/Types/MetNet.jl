@@ -48,25 +48,61 @@ function MetNet(S::AbstractMatrix, b::AbstractVector,
         ["IN"], Dict()) 
 end
 
+function reshape_mat_dict!(mat_dict; S::DataType = String, 
+    F::DataType = Float64, N::DataType = Int)
+    # String vectors
+    for k in ["comps", "metNames", "metFormulas", 
+            "rxnFrom", "rxnNames", "genes", "inchis", 
+            "grRules", "mets", "rxns"]
+        !haskey(mat_dict, k) && continue
+        mat_dict[k] = mat_dict[k] |> vec .|> S;
+    end
+
+    # Float vectors
+    for k in ["b", "lb", "ub", "c"]
+        !haskey(mat_dict, k) && continue
+        mat_dict[k] = mat_dict[k] |> vec .|> Float64;
+    end
+
+    # Integer vectors
+    for k in ["metComps"]
+        !haskey(mat_dict, k) && continue
+        mat_dict[k] = floor.(Int, mat_dict[k] |> vec);
+    end
+
+    # S
+    if haskey(mat_dict, "S")
+        mat_dict["S"] = Matrix{F}(mat_dict["S"])
+    end
+
+    # Matrices
+    for k in ["rxnGeneMat"]
+        !haskey(mat_dict, k) && continue
+        mat_dict[k] = mat_dict[k] |> Matrix
+    end
+
+    return mat_dict
+end
+
 # For COBRA .mat compatible files
 function MetNet(mat_model::Dict, T = Float64) 
-    mat_model = deepcopy(mat_model)
+    mat_model = reshape_mat_dict!(deepcopy(mat_model))
 
-    S = Matrix(mat_model["S"])
-    b = collect(vec(mat_model["b"]))
-    c = get(mat_model, "c", [0.0]) |> vec |> collect
-    lb = mat_model["lb"] |> vec |> collect
-    ub = mat_model["ub"] |> vec |> collect
-    genes = get(mat_model, "genes", [""]) |> vec |> collect
-    rxnGeneMat = get(mat_model, "rxnGeneMat", []) |> Matrix |> collect
-    grRules = get(mat_model, "grRules", [""]) |> vec |> collect
-    mets = get(mat_model, "mets", fake_metsid(size(S, 1))) |> vec |> collect
-    rxns = get(mat_model, "rxns", fake_rxnsid(size(S, 2))) |> vec |> collect
-    metNames = get(mat_model, "metNames", [""]) |> vec |> collect
-    metFormulas = get(mat_model, "metFormulas", [""]) |> vec |> collect
-    rxnNames = get(mat_model, "rxnNames", [""]) |> vec |> collect
-    rev = get(mat_model, "rev", []) |> vec |> collect
-    subSystems = get(mat_model, "subSystems", [""]) |> vec |> collect
+    S = mat_model["S"]
+    b = mat_model["b"]
+    c = get(mat_model, "c", [0.0])
+    lb = mat_model["lb"]
+    ub = mat_model["ub"]
+    genes = get(mat_model, "genes", [""]) 
+    rxnGeneMat = get(mat_model, "rxnGeneMat", [])
+    grRules = get(mat_model, "grRules", [""])
+    mets = get(mat_model, "mets", fake_metsid(size(S, 1)))
+    rxns = get(mat_model, "rxns", fake_rxnsid(size(S, 2)))
+    metNames = get(mat_model, "metNames", [""])
+    metFormulas = get(mat_model, "metFormulas", [""])
+    rxnNames = get(mat_model, "rxnNames", [""])
+    rev = get(mat_model, "rev", [])
+    subSystems = get(mat_model, "subSystems", [""])
     intake_info = get(mat_model, "intake_info", Dict())
 
     return MetNet{T}(S, b, c, lb, ub, genes, 
