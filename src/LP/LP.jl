@@ -8,7 +8,7 @@ import ..Utils: rxnindex, FBAout, MetNet, IDER_TYPE
 
 include("fba.jl")
 include("fva.jl")
-
+include("fva_preprocess.jl")
 
 end
 

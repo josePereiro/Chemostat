@@ -3,6 +3,7 @@ module Chemostat
 include("Utils/Utils.jl")
 
 include("LP/LP.jl")
+include("Test/Test.jl")
 include("SteadyState/SteadyState.jl")
 include("MaxEntEP/MaxEntEP.jl")
 include("MaxEntHR/MaxEntHR.jl")

@@ -16,15 +16,7 @@ function fva_preprocess(S,b,lb,ub,rxns;
         show_progress = verbose && (i == 1 || i % upfrec == 0 || i == n)
         show_progress && (print("fva_processing [$i / $n]        \r"); flush(stdout))
 
-        ei[i] = -1.0
-        sol = linprog(ei, S, b, b, lb, ub, ClpSolver())
-        isempty(sol.sol) && error("FVA fails to find a solution maximixing rxn $(rxns[i])")
-        ub[i] = min(ub[i], sol.sol[i])
-        ei[i] = +1.0
-        sol = linprog(ei, S, b, b, lb, ub, ClpSolver())
-        isempty(sol.sol) && error("FVA fails to find a solution minimaxing rxn $(rxns[i])")
-        lb[i] = max(lb[i], sol.sol[i])
-        ei[i] = 0.0
+        lb[i], ub[i] = fva(S, b, lb, ub, i) .|> first
 
         if lb[i] == ub[i]
             blocked[i] = true

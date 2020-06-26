@@ -32,7 +32,6 @@ module Utils
     include("Types/Types.jl")
     include("MetNetUtils/MetNetUtils.jl")
     include("OutUtils/OutUtils.jl")
-    include("TestUtils/TetsUtils.jl")
     include("BoundleUtils/BoundleUtils.jl")
     
 end

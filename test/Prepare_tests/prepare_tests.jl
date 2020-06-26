@@ -16,7 +16,7 @@ end
 const METNET_CACHE_FILE = joinpath(TEST_CACHE_DIR, "metnet.jls")
 function create_metnet_cache()
     isfile(METNET_CACHE_FILE) && return
-    metnet = Chemostat.Utils.toy_model()
+    metnet = Chemostat.Test.toy_model()
     serialize(METNET_CACHE_FILE, metnet)
     flush(stdout)
     println("created $METNET_CACHE_FILE")
@@ -85,7 +85,7 @@ function create_boundle_cache()
         # Model
         model = deserialize(METNET_CACHE_FILE)
         Chemostat.SteadyState.apply_bound!(model, ξ, intake_info)
-        model = Chemostat.Utils.fva_preprocess(model, verbose = verbose_)
+        model = Chemostat.LP.fva_preprocess(model, verbose = verbose_)
         
         # FBA
         fbaout = Chemostat.LP.fba(model, obj_ider)
