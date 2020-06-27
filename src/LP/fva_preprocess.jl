@@ -2,6 +2,7 @@
 function fva_preprocess(S,b,lb,ub,rxns; 
         verbose = false, eps = 0.0, 
         ignored = [], # rxns skip preprocess
+        protected = [], # rxns skip blocking
         upfrec = 10)
         
     b, lb, ub = copy(b), copy(lb), copy(ub)
@@ -16,13 +17,17 @@ function fva_preprocess(S,b,lb,ub,rxns;
         show_progress = verbose && (i == 1 || i % upfrec == 0 || i == n)
         show_progress && (print("fva_processing [$i / $n]        \r"); flush(stdout))
 
-        lb[i], ub[i] = fva(S, b, lb, ub, i) .|> first
+        lb_, ub_ = fva(S, b, lb, ub, i) .|> first
 
-        if lb[i] == ub[i]
+        if lb_ == ub_ # blocking
+            i in protected && continue
             blocked[i] = true
-            ub[i] += eps
-            lb[i] -= eps
+            lb[i], ub[i] = lb_ - eps, ub_ + eps
+        else
+            lb[i] = lb_
+            ub[i] = ub_
         end
+
     end
     verbose && (println("fva_processing done!!!                                           "); flush(stdout))
     idxb = findall(blocked)
@@ -37,9 +42,12 @@ end
 
 function fva_preprocess(metnet::MetNet; 
             verbose = false, eps = 0.0, return_blocked = false,
-            ignored = [] # rxns skip preprocess
+            ignored = [], # rxns skip preprocess
+            protected = [] # rxns skip bloking
+
         )
     ignored = map((r) -> rxnindex(metnet, r), ignored)
+    protected = map((r) -> rxnindex(metnet, r), protected)
 
     S_, b_, lb_, ub_, rxns_, idxb_ = fva_preprocess(metnet.S, metnet.b, metnet.lb, 
         metnet.ub, metnet.rxns; verbose = verbose, eps = eps, ignored = ignored);
