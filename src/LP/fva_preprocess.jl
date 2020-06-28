@@ -16,16 +16,17 @@ function fva_preprocess(S,b,lb,ub,rxns;
     _bidx = trues(n)
     _bidx[ignored] .= false
     non_ignored = findall(_bidx)
+    nn = length(non_ignored) 
     for i in non_ignored
 
         show_progress = verbose && (i == 1 || i % upfrec == 0 || i == n)
-        show_progress && (print("fva_processing [$i / $n]        \r"); flush(stdout))
+        show_progress && (print("fva_processing [$i / $nn]        \r"); flush(stdout))
 
-        fvalb[i], fvaub[i] = fva(S, b, fvalb, fvaub, i) .|> first
+        fvalb[i], fvaub[i] = fva(S, b, fvalb, fvaub, i; verbose = false) .|> first
 
     end
 
-    verbose && (println("fva_processing done!!!", " "^50); flush(stdout))
+    verbose && (println("done!!!", " "^100); flush(stdout))
 
     return del_blocked(S, b, fvalb, fvaub, rxns; 
                     eps = eps, protected = protected)

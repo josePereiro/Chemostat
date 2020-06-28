@@ -1,3 +1,4 @@
+# TODO fully implement this function
 function interchange_rxn!(model::MetNet, rxn1_ider::IDER_TYPE, rxn2_ider::IDER_TYPE)
     rxn1_idx = rxnindex(model, rxn1_ider)
     rxn2_idx = rxnindex(model, rxn2_ider)

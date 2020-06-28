@@ -22,6 +22,10 @@ function del_blocked(S, b, lb, ub, rxns; eps = 0.0, protected = [])
 end
 
 function del_blocked(model::MetNet; eps = 0.0, protected = [])
+    protected = map((r) -> rxnindex(model, r), protected)
     S, b, lb, ub, rxns = model.S, model.b, model.lb, model.ub, model.rxns
-    return del_blocked(S, b, lb, ub, rxns; eps = eps, protected = protected)
+    S_, b_, lb_, ub_, rxns_, blocked = 
+        del_blocked(S, b, lb, ub, rxns; eps = eps, protected = protected)
+    model = MetNet(model; S = S_, b = b_, lb = lb_, ub = ub_, rxns = rxns_)
+    return model
 end
