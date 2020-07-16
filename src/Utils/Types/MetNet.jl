@@ -9,8 +9,8 @@ struct MetNet{T<:Real}
     S::AbstractMatrix{T} # Stoichiometric matrix M x N sparse (*)
     b::AbstractVector{T} # right hand side of equation  S ν = b (*)
     c::AbstractVector{Float64} # reaction index of biomass 
-    lb::AbstractVector{T} # fluxes lower bound M elements vector (*)
-    ub::AbstractVector{T} # fluxes upper bound M elements vector (*)
+    lb::AbstractVector{T} # fluxes lower bound N elements vector (*)
+    ub::AbstractVector{T} # fluxes upper bound N elements vector (*)
     genes::AbstractVector{String} # gene names 
     rxnGeneMat::AbstractMatrix{Float64} # 
     grRules::AbstractVector{String} # gene-reaction rule N elements vector of strings (and / or allowed)
