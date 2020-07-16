@@ -13,7 +13,7 @@ function del_rxn(model::MetNet, iders::Vector)
                 S = view(model.S, 1:M, left_idxs), c = _check_and_get(model.c),
                 lb = view(model.lb, left_idxs), ub = view(model.ub, left_idxs),
                 genes = _check_and_get(model.genes), grRules = _check_and_get(model.grRules),
-                rxns = view(model.rxns, left_idxs), metNames = _check_and_get(model.metNames),
+                rxns = view(model.rxns, left_idxs), rxnNames = _check_and_get(model.rxnNames),
                 rev = _check_and_get(model.rev), subSystems = _check_and_get(model.subSystems), 
                 intake_info = intake_info_)
 end
