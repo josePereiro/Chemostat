@@ -15,7 +15,6 @@ function split_revs(metnet::MetNet, verbose = false) # TODO Add tests
     c_ = copy(metnet.c)
     lb_ = copy(metnet.lb)
     ub_ = copy(metnet.ub)
-    genes_ = copy(metnet.genes)
     grRules_ = copy(metnet.grRules)
     rxns_ = copy(metnet.rxns)
     rxnNames_ = copy(metnet.rxnNames)
@@ -46,14 +45,12 @@ function split_revs(metnet::MetNet, verbose = false) # TODO Add tests
         _check_and_push!(c_, bkwd_idx - 1, 0.0) # The objective, if splitted, will be the fwd reaction,
         _check_and_push!(grRules_, bkwd_idx - 1, grRules_[fwd_idx])
         _check_and_push!(subSystems_, bkwd_idx - 1, subSystems_[fwd_idx])
-        # _check_and_push!(genes_, bkwd_idx - 1, genes_[fwd_idx])
 
     end
 
     verbose && N_ != N && (@warn("Only use this method after MetabolicEP.preprocess!!!"); flush(stdout))
     
-    return MetNet(metnet; S = S_,c = c_,lb = lb_, ub = ub_, 
-        genes = genes_, grRules = grRules_, rxns = rxns_, 
+    return MetNet(metnet; S = S_,c = c_,lb = lb_, ub = ub_, grRules = grRules_, rxns = rxns_, 
         rxnNames =  rxnNames_, rev = rev_, subSystems = subSystems_, 
         intake_info = Dict())
 end

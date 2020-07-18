@@ -39,13 +39,15 @@ function MetNet(S::AbstractMatrix, b::AbstractVector,
                 T = Float64,  
                 metNames =  fake_metNames(size(S,1)), 
                 metFormulas = fake_metFormulas(size(S,1)), 
-                rxnNames = fake_rxnNames(size(S,2)))
+                rxnNames = fake_rxnNames(size(S,2)), 
+                intake_info = Dict())
     
     M,N = size(S);
     return MetNet{T}(S, b, zeros(Float64,N), lb, ub, 
-        ["NA"], SparseMatrixCSC{Float64,Int64}(zeros(1,1)),
-        ["NA"], mets, rxns, metNames, metFormulas, rxnNames, (lb .< 0.0) .& (ub .> 0.0), 
-        ["IN"], Dict()) 
+        ["NA"], zeros(1,1),
+        ["NA"], mets, rxns, 
+        metNames, metFormulas, rxnNames, [], 
+        ["IN"], intake_info) 
 end
 
 function reshape_mat_dict!(mat_dict; S::DataType = String, 
@@ -90,24 +92,17 @@ function MetNet(mat_model::Dict, T = Float64)
 
     S = mat_model["S"]
     b = mat_model["b"]
-    c = get(mat_model, "c", [0.0])
     lb = mat_model["lb"]
     ub = mat_model["ub"]
-    genes = get(mat_model, "genes", [""]) 
-    rxnGeneMat = get(mat_model, "rxnGeneMat", [])
-    grRules = get(mat_model, "grRules", [""])
     mets = get(mat_model, "mets", fake_metsid(size(S, 1)))
     rxns = get(mat_model, "rxns", fake_rxnsid(size(S, 2)))
-    metNames = get(mat_model, "metNames", [""])
-    metFormulas = get(mat_model, "metFormulas", [""])
-    rxnNames = get(mat_model, "rxnNames", [""])
-    rev = get(mat_model, "rev", [])
-    subSystems = get(mat_model, "subSystems", [""])
-    intake_info = get(mat_model, "intake_info", Dict())
 
-    return MetNet{T}(S, b, c, lb, ub, genes, 
-        rxnGeneMat, grRules, mets, rxns, metNames, 
-        metFormulas, rxnNames, rev, subSystems, intake_info)
+    return MetNet(S, b, lb, ub, rxns, mets;
+            T = T,  
+            metNames =  get(mat_model, "metNames", fake_metNames(size(S,1))), 
+            metFormulas = get(mat_model, "metFormulas", fake_metFormulas(size(S,1))), 
+            rxnNames = get(mat_model, "rxnNames", fake_rxnNames(size(S,2))), 
+            intake_info = get(mat_model, "intake_info", Dict()))
 end
 
 """

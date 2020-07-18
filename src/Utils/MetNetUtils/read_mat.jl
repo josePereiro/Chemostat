@@ -39,7 +39,7 @@ function read_mat(filename::String)
         mets = String[ string(X[key1]["mets"][i])  for i=1:length(X[key1]["mets"]) ]
         if length(unique(mets)) != M
             mets = String["met$i" for i=1:M]
-            warn("not unique list if metabolite names")
+            @warn "not unique list if metabolite names"
         end
     else
         mets = String["met$i" for i=1:M]
@@ -49,7 +49,7 @@ function read_mat(filename::String)
         rxns = String[ string(X[key1]["rxns"][i])  for i=1:length(X[key1]["rxns"])]
         if length(unique(rxns)) != N
             rxns = String["rxn$i" for i=1:N]
-            warn("not unique list of reaction names")
+            @warn "not unique list of reaction names"
         end
     else
         rxns = String["rxn$i" for i=1:N]
