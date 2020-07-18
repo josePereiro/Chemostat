@@ -30,6 +30,8 @@ fake_metFormulas(M) = ["X" for i in 1:M]
 
 fake_rxnsid(N) = ["r$i" for i in 1:N]
 fake_rxnNames(N) = ["RXN $i" for i in 1:N]
+fake_subSystems(N) = ["Net" for i in 1:N]
+
 
 # Minimum simple Constructor
 function MetNet(S::AbstractMatrix, b::AbstractVector, 
@@ -40,6 +42,7 @@ function MetNet(S::AbstractMatrix, b::AbstractVector,
                 metNames =  fake_metNames(size(S,1)), 
                 metFormulas = fake_metFormulas(size(S,1)), 
                 rxnNames = fake_rxnNames(size(S,2)), 
+                subSystems = fake_subSystems(size(S,2)),
                 intake_info = Dict())
     
     M,N = size(S);
@@ -87,7 +90,7 @@ function reshape_mat_dict!(mat_dict; S::DataType = String,
 end
 
 # For COBRA .mat compatible files
-function MetNet(mat_model::Dict, T = Float64) 
+function MetNet(mat_model::Dict, T = nothing) 
     mat_model = reshape_mat_dict!(deepcopy(mat_model))
 
     S = mat_model["S"]
@@ -98,10 +101,11 @@ function MetNet(mat_model::Dict, T = Float64)
     rxns = get(mat_model, "rxns", fake_rxnsid(size(S, 2)))
 
     return MetNet(S, b, lb, ub, rxns, mets;
-            T = T,  
+            T = isnothing(T) ? eltype(S) : T,  
             metNames =  get(mat_model, "metNames", fake_metNames(size(S,1))), 
             metFormulas = get(mat_model, "metFormulas", fake_metFormulas(size(S,1))), 
             rxnNames = get(mat_model, "rxnNames", fake_rxnNames(size(S,2))), 
+            subSystems = get(mat_model, "subSystems", fake_subSystems(size(S,2))),
             intake_info = get(mat_model, "intake_info", Dict()))
 end
 
@@ -124,6 +128,6 @@ function MetNet(metnet::MetNet; kwargs...)
         end
     end
     # TODO include a T_default ?
-    T = get(kwargs, :T, Float64)
+    T = get(kwargs, :T, nothing)
     return MetNet(metnet_dict, T)
 end
