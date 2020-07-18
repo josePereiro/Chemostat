@@ -55,6 +55,7 @@ end
 
 function reshape_mat_dict!(mat_dict; S::DataType = String, 
     F::DataType = Float64, N::DataType = Int)
+    # ----------------- Typed -----------------
     # String vectors
     for k in ["comps", "metNames", "metFormulas", 
             "rxnFrom", "rxnNames", "genes", "inchis", 
@@ -80,10 +81,17 @@ function reshape_mat_dict!(mat_dict; S::DataType = String,
         mat_dict["S"] = Matrix{F}(mat_dict["S"])
     end
 
+    # ----------------- Type free -----------------
     # Matrices
     for k in ["rxnGeneMat"]
         !haskey(mat_dict, k) && continue
         mat_dict[k] = mat_dict[k] |> Matrix
+    end
+
+    # Vectors
+    for k in ["subSystems", "rev"]
+        !haskey(mat_dict, k) && continue
+        mat_dict[k] = mat_dict[k] |> vec |> collect
     end
 
     return mat_dict
