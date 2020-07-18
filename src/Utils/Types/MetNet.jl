@@ -50,7 +50,7 @@ function MetNet(S::AbstractMatrix, b::AbstractVector,
         ["NA"], zeros(1,1),
         ["NA"], mets, rxns, 
         metNames, metFormulas, rxnNames, [], 
-        ["IN"], intake_info) 
+        subSystems, intake_info) 
 end
 
 function reshape_mat_dict!(mat_dict; S::DataType = String, 
