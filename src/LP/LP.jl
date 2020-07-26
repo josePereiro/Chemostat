@@ -9,7 +9,6 @@ import ..Utils: rxnindex, FBAout, MetNet, IDER_TYPE, del_blocked
 include("fba.jl")
 include("fva.jl")
 include("fva_preprocess.jl")
-include("fva_check.jl")
 
 end
 
