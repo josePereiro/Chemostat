@@ -1,19 +1,11 @@
 # Code derived from metabolicEP (https://github.com/anna-pa-m/Metabolic-EP)
 function fva_preprocess(S,b,lb,ub,rxns; 
-        fix = nothing, # [(rxni, val, eps)]
         verbose = false, eps = 0.0, 
         ignored = [], # rxns skip preprocess
         protected = [], # rxns skip blocking
         upfrec = 10)
         
     fvalb, fvaub = (lb, ub) .|> copy
-
-    if !isnothing(fix)
-        for (rxni, val, eps) in fix
-            fvalb[rxni] = val - eps
-            fvaub[rxni] = val + eps
-        end
-    end
 
     m, n = size(S)
     ei = zeros(n)
