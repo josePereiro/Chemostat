@@ -13,9 +13,9 @@ function fva(S, b, lb, ub, idxs = eachindex(lb);
     end
     
     n = length(idxs)
-    for (fva_col, orig_col, sense) in [(fvalb, lb, 1), (fvaub, ub, -1)]
+    for (i, idx) in enumerate(idxs)
 
-        for (i, idx) in enumerate(idxs)
+        for (fva_col, sense) in [(fvalb, 1), (fvaub, -1)]
 
             show_progress = verbose && sense == 1 && (i == 1 || i % upfrec == 0 || i == n)
             show_progress && (print("fva[$i / $n]        \r"); flush(stdout))
@@ -32,13 +32,33 @@ function fva(S, b, lb, ub, idxs = eachindex(lb);
             isempty(sol.sol) && error("FBA failed, empty solution returned!!!")
             
             fva_col[idx] = sol.sol[idx]
-            if !isnothing(check_obj)
+            sv[idx] = zero(sense)
+        end
+
+        # check obj
+        # This just check that the obj_val is unchanged
+        if !isnothing(check_obj)
+            # check both first (this use the premize that only a few rxns will affect the biomass)
+            fbaout = fba(S, b, fvalb, fvaub, check_obj);
+            if !isapprox(fbaout.obj_val, obj_val; atol = check_obj_atol)
+                # Check lb effect
+                ub_ = fvaub[idx] # temp ub
+                fvaub[idx] = ub[idx] # back to original ub
                 fbaout = fba(S, b, fvalb, fvaub, check_obj);
                 if !isapprox(fbaout.obj_val, obj_val; atol = check_obj_atol)
-                    fva_col[idx] = orig_col[idx]
+                    fvalb[idx] = lb[idx] # if change, back to origin
                 end
+                fvaub[idx] = ub_ # restore ub
+
+                # Check ub effect
+                lb_ = fvalb[idx] # temp lb
+                fvalb[idx] = lb[idx] # back to original lb
+                fbaout = fba(S, b, fvalb, fvaub, check_obj);
+                if !isapprox(fbaout.obj_val, obj_val; atol = check_obj_atol)
+                    fvaub[idx] = ub[idx] # if change, back to origin
+                end
+                fvalb[idx] = lb_ # restore lb
             end
-            sv[idx] = zero(sense)
         end
     end
 
