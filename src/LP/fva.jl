@@ -31,7 +31,8 @@ function fva(S, b, lb, ub, idxs = eachindex(lb);
                 ClpSolver());
             isempty(sol.sol) && error("FBA failed, empty solution returned!!!")
             
-            fva_col[idx] = sol.sol[idx]
+            x = sol.sol[idx]
+            fva_col[idx] = abs(x) < zeroth ? zero(x) : x
             sv[idx] = zero(sense)
         end
 
