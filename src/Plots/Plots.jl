@@ -6,7 +6,7 @@ module Plots
 import ..Utils: logspace, rxnindex, marginal, rxns, ChstatBoundle,
     lb, ub, MetNet, EPout, HRout, hists, μ, σ, FBAout, pdf_maxval, av, va,
     parse_β, parse_ξ, metnet_data_key, AbstractOut, IDER_TYPE, met_rxns, collect_data
-import Distributions: mean, var, pdf, std, truncated, Normal
+import Distributions: mean, var, pdf, std, truncated, Normal, Truncated
 import LinearAlgebra: normalize
 import Plots: plot, plot!, scatter, scatter!, histogram, histogram!, distinguishable_colors
 

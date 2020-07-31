@@ -2,33 +2,38 @@ const ep_color = :red
 const fba_color = :blue
 const hr_color = :black
 
+function plot_marginal!(p, μ::Real, σ::Real, lb::Real, ub::Real;
+        h = 1, lw = 5,
+        color = :black,
+        label = "", kwargs...)
+
+    sσ = sqrt(σ)
+    tN = Truncated(Normal(μ, sσ), lb, ub) 
+    global_max_ = μ <= lb ? lb : μ >= ub ? ub : μ 
+    margin_ = abs(ub - lb) * 0.1
+    if sσ == 0.0 || !(-Inf < pdf(tN, global_max_) < Inf)
+        plot!(p, [lb - margin_, ub + margin_], [0.0, 0.0]; 
+            label = "")
+        plot!(p, [av, av], [0.0, h]; 
+            label = label, color = color, lw = lw, kwargs...)
+    else
+        Plots.plot!(p, x -> pdf(tN, x), lb - margin_, ub + margin_; 
+            lw = lw, label = label, color = color, kwargs...)
+    end
+    return plot!(p; kwargs...)
+end
+
 # Single out
 function plot_marginal!(p, metnet::MetNet, out::Union{FBAout, EPout}, ider; 
-        h = 1, 
-        lw = 5,
         color = out isa FBAout ? fba_color : ep_color,
         label = rxns(metnet, ider), kwargs...)
         
     lb_ = lb(metnet, ider)
     ub_ = ub(metnet, ider)
 
-    av_ = av(metnet, out, ider);
     μ_ = μ(metnet, out, ider);
     σ_ = σ(metnet, out, ider);
-    sσ_ = sqrt(σ_)
-    tN = marginal(metnet, out, ider)
-    local_max_ = μ_ <= lb_ ? lb_ : μ_ >= ub_ ? ub_ : μ_ # local max
-    margin_ = abs(ub_ - lb_) * 0.1
-    if sσ_ == 0.0 || !(-Inf < pdf(tN, local_max_) < Inf)
-        plot!(p, [lb_ - margin_, ub_ + margin_], [0.0, 0.0]; 
-            label = "", color = color, lw = lw, kwargs...)
-        plot!(p, [av_, av_], [0.0, h]; 
-            label = label, color = color, lw = lw, kwargs...)
-    else
-        Plots.plot!(p, x -> pdf(tN, x), lb_ - margin_, ub_ + margin_; 
-            lw = 3, label = label, color = color, kwargs...)
-    end
-
+    plot_marginal!(p, μ_, σ_, lb_, ub_; color = color, label = label, kwargs...)
 end
 
 
