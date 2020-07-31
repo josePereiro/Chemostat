@@ -1,7 +1,7 @@
 name = "Chemostat"
 uuid = "c5987326-81b3-11ea-28dd-b531745de20f"
 authors = ["josePereiro"]
-version = "0.5.0"
+version = "0.5.1"
 
 [deps]
 Clp = "e2554f3b-3117-50c0-817c-e040a3ddf72d"
