@@ -1,7 +1,5 @@
 module Chemostat
 
-import Requires: @require
-
 include("Utils/Utils.jl")
 
 include("LP/LP.jl")
