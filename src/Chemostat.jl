@@ -11,7 +11,7 @@ include("MaxEntEP/MaxEntEP.jl")
 include("MaxEntHR/MaxEntHR.jl")
 
 function __init__()
-    @require Plots="4076af6c-e467-56ae-b986-b466b2749572" include("Plots/Plots.jl")
+    @require Plots="91a5bcdd-55d7-5caf-9e0b-520d859cae80" include("Plots/Plots.jl")
 end
 
 end # module
