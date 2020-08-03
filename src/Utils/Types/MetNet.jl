@@ -98,8 +98,8 @@ function reshape_mat_dict!(mat_dict; S::DataType = String,
 end
 
 # For COBRA .mat compatible files
-function MetNet(mat_model::Dict, T = nothing) 
-    mat_model = reshape_mat_dict!(deepcopy(mat_model))
+function MetNet(mat_model::Dict, T = nothing; reshape = true) 
+    reshape && (mat_model = reshape_mat_dict!(deepcopy(mat_model)))
 
     S = mat_model["S"]
     b = mat_model["b"]
@@ -121,7 +121,7 @@ end
     Create a new MetNet from a template but overwriting the fields
     of the template with the given as kwargs
 """
-function MetNet(metnet::MetNet; kwargs...)
+function MetNet(metnet::MetNet; reshape = false, kwargs...)
     kwargs = Dict(kwargs)
     
     metnet_dict = Dict()
@@ -135,7 +135,5 @@ function MetNet(metnet::MetNet; kwargs...)
             metnet_dict[k] = kwargs[sk]
         end
     end
-    # TODO include a T_default ?
-    T = get(kwargs, :T, nothing)
-    return MetNet(metnet_dict, T)
+    return MetNet(metnet_dict; reshape = reshape)
 end
