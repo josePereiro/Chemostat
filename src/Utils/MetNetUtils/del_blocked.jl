@@ -26,6 +26,5 @@ function del_blocked(model::MetNet; eps = 0.0, protected = [])
     S, b, lb, ub, rxns = model.S, model.b, model.lb, model.ub, model.rxns
     S_, b_, lb_, ub_, rxns_, blocked = 
         del_blocked(S, b, lb, ub, rxns; eps = eps, protected = protected)
-    model = MetNet(model; S = S_, b = b_, lb = lb_, ub = ub_, rxns = rxns_)
-    return model
+    return MetNet(model; reshape = true, S = S_, b = b_, lb = lb_, ub = ub_, rxns = rxns_)
 end

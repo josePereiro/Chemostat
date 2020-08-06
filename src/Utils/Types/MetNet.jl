@@ -54,30 +54,33 @@ function MetNet(S::AbstractMatrix, b::AbstractVector,
 end
 
 function reshape_mat_dict!(mat_dict; S::DataType = String, 
-    F::DataType = Float64, N::DataType = Int)
+    F::DataType = Float64, N::DataType = Int, I::DataType = Int64)
     # ----------------- Typed -----------------
     # String vectors
     for k in ["comps", "metNames", "metFormulas", 
             "rxnFrom", "rxnNames", "genes", "inchis", 
             "grRules", "mets", "rxns"]
         !haskey(mat_dict, k) && continue
+        mat_dict[k] isa Vector{S} && continue
         mat_dict[k] = mat_dict[k] |> vec .|> S;
     end
 
     # Float vectors
     for k in ["b", "lb", "ub", "c"]
         !haskey(mat_dict, k) && continue
-        mat_dict[k] = mat_dict[k] |> vec .|> Float64;
+        mat_dict[k] isa Vector{F} && continue
+        mat_dict[k] = mat_dict[k] |> vec .|> F;
     end
 
     # Integer vectors
     for k in ["metComps"]
         !haskey(mat_dict, k) && continue
-        mat_dict[k] = floor.(Int, mat_dict[k] |> vec);
+        mat_dict[k] isa Vector{I} && continue
+        mat_dict[k] = floor.(I, mat_dict[k] |> vec);
     end
 
     # S
-    if haskey(mat_dict, "S")
+    if haskey(mat_dict, "S") && !(mat_dict["S"] isa Matrix{F})
         mat_dict["S"] = Matrix{F}(mat_dict["S"])
     end
 
@@ -85,12 +88,14 @@ function reshape_mat_dict!(mat_dict; S::DataType = String,
     # Matrices
     for k in ["rxnGeneMat"]
         !haskey(mat_dict, k) && continue
+        mat_dict[k] isa Matrix && continue
         mat_dict[k] = mat_dict[k] |> Matrix
     end
 
     # Vectors
     for k in ["subSystems", "rev"]
         !haskey(mat_dict, k) && continue
+        mat_dict[k] isa Vector && continue
         mat_dict[k] = mat_dict[k] |> vec |> collect
     end
 
@@ -121,7 +126,7 @@ end
     Create a new MetNet from a template but overwriting the fields
     of the template with the given as kwargs
 """
-function MetNet(metnet::MetNet; reshape = false, kwargs...)
+function MetNet(metnet::MetNet; reshape = true, kwargs...)
     kwargs = Dict(kwargs)
     
     metnet_dict = Dict()

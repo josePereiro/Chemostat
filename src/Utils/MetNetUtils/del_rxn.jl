@@ -9,7 +9,7 @@ function del_rxn(model::MetNet, iders::Vector)
     intake_info_ = deepcopy(model.intake_info)
     foreach(rxn -> delete!(intake_info_, rxn), model.rxns[to_del_idxs])
     
-    return MetNet(model; 
+    return MetNet(model; reshape = true,
                 S = view(model.S, 1:M, left_idxs), c = _check_and_get(model.c),
                 lb = view(model.lb, left_idxs), ub = view(model.ub, left_idxs),
                 genes = _check_and_get(model.genes), grRules = _check_and_get(model.grRules),

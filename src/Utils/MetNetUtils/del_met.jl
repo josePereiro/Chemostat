@@ -9,7 +9,7 @@ function del_met(model::MetNet, iders::Vector)
     
     _check_and_get(v::AbstractVector) = length(v) == M ? view(v, left_idxs) : v
     
-    return MetNet(model; 
+    return MetNet(model; reshape = true,
                 S = view(model.S, left_idxs, 1:N),
                 b = view(model.b, left_idxs),
                 mets = view(model.mets, left_idxs), 

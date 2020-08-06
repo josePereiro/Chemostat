@@ -26,6 +26,6 @@ function add_met(metnet::MetNet, metid::AbstractString; kwargs...)
     metNames_ = vcat(metnet.metNames, get(kwargs, :metName, metNames_default))
     metFormulas_ = vcat(metnet.metFormulas, get(kwargs, :metFormula, metFormulas_default))
     
-    return MetNet(metnet; S = S_, b = b_, mets = mets_, 
+    return MetNet(metnet; reshape = true, S = S_, b = b_, mets = mets_, 
                     metNames = metNames_, metFormulas = metFormulas_)
 end
