@@ -25,7 +25,7 @@ module Utils
     import StatsBase: AbstractHistogram, Histogram, fit
     import Distributions: Normal, Truncated, mean, var, pdf
     import LinearAlgebra: normalize, qr, diag, nullspace
-    import Base: isequal, size, ==
+    import Base: isequal, size, ==, hash
     import MAT: matread
     
     include("General/General.jl")
