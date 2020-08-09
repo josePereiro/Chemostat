@@ -25,9 +25,9 @@ function fba(S, b, lb, ub, obj_idx::Integer, cost_idx::Integer)
     return fba(S, b, lb_, ub_, cost_idx; sense = 1.0)
 end
 
-function fba(model::MetNet, obj_ider::IDER_TYPE)
+function fba(model::MetNet, obj_ider::IDER_TYPE; sense = -1.0)
     obj_idx = rxnindex(model, obj_ider)
-    return fba(model.S, model.b, model.lb, model.ub, obj_idx)
+    return fba(model.S, model.b, model.lb, model.ub, obj_idx; sense = sense)
 end
 
 function fba(model::MetNet, obj_ider::IDER_TYPE, cost_ider::IDER_TYPE)
