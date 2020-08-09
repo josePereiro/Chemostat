@@ -8,3 +8,5 @@ function ==(metnet1::MetNet, metnet2::MetNet)
 end
 
 isequal(metnet1::MetNet, metnet2::MetNet) = metnet1 == metnet2
+
+hash(m::MetNet) = hash((m.S, m.b, m.lb, m.ub))
