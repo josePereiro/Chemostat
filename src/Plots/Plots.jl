@@ -8,7 +8,7 @@ import ..Utils: logspace, rxnindex, marginal, rxns, ChstatBoundle,
     parse_β, parse_ξ, metnet_data_key, AbstractOut, IDER_TYPE, met_rxns, collect_data
 import Distributions: mean, var, pdf, std, truncated, Normal, Truncated
 import LinearAlgebra: normalize
-# import Plots: plot, plot!, scatter, scatter!, histogram, histogram!, distinguishable_colors
+import Plots: plot, plot!, scatter, scatter!, histogram, histogram!, distinguishable_colors
 
 include("plot_marginal.jl")
 # include("plot_xi.jl")

@@ -12,15 +12,15 @@ function plot_marginal!(p, μ::Real, σ::Real, lb::Real, ub::Real;
     global_max_ = μ <= lb ? lb : μ >= ub ? ub : μ 
     margin_ = abs(ub - lb) * 0.1
     if sσ == 0.0 || !(-Inf < pdf(tN, global_max_) < Inf)
-        Plots.plot!(p, [lb - margin_, ub + margin_], [0.0, 0.0]; 
+        plot!(p, [lb - margin_, ub + margin_], [0.0, 0.0]; 
             label = "")
-        Plots.plot!(p, [av, av], [0.0, h]; 
+        plot!(p, [μ, μ], [0.0, h]; 
             label = label, color = color, lw = lw, kwargs...)
     else
-        Plots.Plots.plot!(p, x -> pdf(tN, x), lb - margin_, ub + margin_; 
+        plot!(p, x -> pdf(tN, x), lb - margin_, ub + margin_; 
             lw = lw, label = label, color = color, kwargs...)
     end
-    return Plots.plot!(p; kwargs...)
+    return plot!(p; kwargs...)
 end
 
 # Single out
@@ -45,7 +45,7 @@ function plot_marginal!(p, metnet::MetNet, out::HRout, ider;
     ub_ = ub(metnet, ider)
     margin_ = abs(ub_ - lb_) * 0.1
     hist = hists(metnet, out, ider)
-    Plots.plot!(p, normalize(hist, mode = :pdf); 
+    plot!(p, normalize(hist, mode = :pdf); 
         xaxis = [lb_ - margin_, ub_ + margin_],
         label = label, color = color, kwargs...)
 end
