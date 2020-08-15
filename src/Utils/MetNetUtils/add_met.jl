@@ -1,3 +1,4 @@
+# TODO: make vectorized version
 """
     Returns a metnet with the added metabolite metid.
 

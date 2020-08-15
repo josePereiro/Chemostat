@@ -14,6 +14,9 @@ ub(metnet::MetNet, ider::IDER_TYPE) = metnet.ub[rxnindex(metnet, ider)]
 lb(metnet::MetNet) = metnet.lb
 lb(metnet::MetNet, ider::IDER_TYPE) = metnet.lb[rxnindex(metnet, ider)]
 
+b(metnet::MetNet) = metnet.b
+b(metnet::MetNet, ider::IDER_TYPE) = metnet.b[rxnindex(metnet, ider)]
+
 bounds(metnet::MetNet, ider::IDER_TYPE) = (idx = rxnindex(metnet, ider); (metnet.lb[idx], metnet.ub[idx]))
 
 S(metnet::MetNet, metider, rxnider::IDER_TYPE) = 

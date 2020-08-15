@@ -1,4 +1,5 @@
 #TODO fully implement this!!!
+# TODO: vectorize this
 function add_rxn(metnet::MetNet, rxnid::AbstractString; kwargs...)
     rxnid in metnet.rxns && error("rxn ($rxnid) already in the model!!!")
     kwargs = Dict(kwargs)
