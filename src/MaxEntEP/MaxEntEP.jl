@@ -17,6 +17,7 @@ import LinearAlgebra: diag, rmul!, inv!, Hermitian, cholesky!, Diagonal, mul!
 import Printf: @printf
 import SpecialFunctions: erf
 import Distributions: Truncated, Normal, mean, var
+import ProgressMeter: Progress, update!, finish!, ProgressThresh
 
 import ..Utils: AbstractEPMat, EPAlg, EPFields, EPMat, EPMatT0, EPout, MetNet
 
