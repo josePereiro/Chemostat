@@ -19,7 +19,7 @@ b(metnet::MetNet, ider::IDER_TYPE) = metnet.b[rxnindex(metnet, ider)]
 
 bounds(metnet::MetNet, ider::IDER_TYPE) = (idx = rxnindex(metnet, ider); (metnet.lb[idx], metnet.ub[idx]))
 
-S(metnet::MetNet, metider, rxnider::IDER_TYPE) = 
+S(metnet::MetNet, metider::IDER_TYPE, rxnider::IDER_TYPE) = 
     metnet.S[metindex(metnet, metider), rxnindex(metnet, rxnider)]
 
 rxn_mets(metnet::MetNet, ider::IDER_TYPE) = findall(metnet.S[:,rxnindex(metnet, ider)] .!= 0.0)

@@ -2,11 +2,15 @@
 """
     Example of 'intake_info' = Dict("gt" => Dict("ub" => 100.0, "c" => 10.0))
 """
-function apply_bound!(metnet::MetNet, ξ, intake_info::Dict = Dict())
+function apply_bound!(metnet::MetNet, ξ, intake_info::Dict = Dict();
+        emptyfirst = false, ignore_miss = false)
     ξ < 0 && error("ξ must be positive")
 
-    merge!(metnet.intake_info, intake_info);
-    isempty(metnet.intake_info) && error("intake info is empty, you must provide one!!!")
+    emptyfirst && empty!(metnet.intake_info)
+    for (exch, exch_info) in intake_info
+        ignore_miss && !(exch in metnet.rxns) && continue
+        metnet.intake_info[exch] = exch_info
+    end
     
     for (exch, exch_info) in metnet.intake_info
         
