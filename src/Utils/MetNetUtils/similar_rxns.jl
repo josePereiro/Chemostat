@@ -1,36 +1,49 @@
-function similar_rxns(model::MetNet; 
-    verbose = true)
+"""
+    Findall the reaction that transforms the same elements
+    if we define: r1 = 2A -> 2B, r2 = B <-> A, r3 = A <- B, r4 = A + B -> 
+    the method will returns [[r1, r2, r3]]
+    This method only use the information in the binary S. 
+    Bounds are not relevant either.
+"""
+function similar_rxns(model::MetNet; verbose = true)
 
     M, N = size(model)
     # collecting react and prods hashs
-    _rxn_hashs = Vector{Tuple{UInt64,UInt64}}(undef, N)
-    for r in 1:N
-        reacts = hash(Set(rxn_reacts(model, r)))
-        prods = hash(Set(rxn_prods(model, r)))
-        _rxn_hashs[r] = (reacts, prods)
+    # (prods_hash, react_hash) => reaction idxs
+    # (react_hash, prods_hash) => reaction idxs
+    hash_table = Dict{Tuple{UInt64,UInt64}, Vector{Int}}()
+    for rxni in 1:N
+        rhash = hash(Set(rxn_reacts(model, rxni)))
+        phash = hash(Set(rxn_prods(model, rxni)))
+        rxnis = get!(hash_table, (rhash, phash), Int[])
+        push!(rxnis, rxni)
     end
 
+    # Form pairs
+    similars = Vector{Vector{Int}}()
+    for (fkey, frxnis) in hash_table
 
-    # find similar reactions
-    similars_ = []
-    for r1 in 1:N - 1
+        bkey = fkey |> reverse
+        brxnis = get(hash_table, bkey, Int[])
 
-        cr_reacts, cr_prods = _rxn_hashs[r1]
-        
-        for r2 in r1 + 1:N
+        sims_ = union(frxnis, brxnis)
+        length(sims_) > 1 && push!(similars, sims_)
 
-            r_reacts, r_prods = _rxn_hashs[r2]
-            
-            if (cr_reacts == r_prods) && (r_reacts == cr_prods) 
-                push!(similars_, (r1, r2))
+        # deleting
+        delete!(hash_table, fkey)
+        delete!(hash_table, bkey)
 
-                if verbose
-                    println(model.rxns[r1], " === ", model.rxns[r2])
-                    println(model.rxns[r1], ": ", rxn_str(model, r1))
-                    println(model.rxns[r2], ": ", rxn_str(model, r2), "\n")
-                end
+    end
+
+    if verbose
+        for rxnis in similars
+            println("Similars ", length(rxnis))
+            for rxni in rxnis
+                println(model.rxns[rxni], " [", rxni, "]: ", rxn_str(model, rxni))
             end
+            println()
         end
     end
-    return similars_
+    return similars
 end
+
