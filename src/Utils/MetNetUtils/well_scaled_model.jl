@@ -3,8 +3,10 @@
 """
 function nzabs_range(col::AbstractArray{<:Number})
     nzabs = filter(!iszero, col) .|> abs
+    isempty(nzabs) && return (zero(eltype(nzabs)), zero(eltype(nzabs)))
     return (minimum(nzabs), maximum(nzabs))
 end
+
 
 """
     returns (a, n) so that s ≈ a^n. a ∈ (0, b]
@@ -20,10 +22,11 @@ factorize(s::Real, b::Real) = factorize(s, float(b))
 """
     Compute the future size of the scaled model
 """
-compute_well_scaled_size(model, b = 100.0) = size(model) .+ sum(max.(last.(factorize.(abs.(model.S[model.S .!= 0]), b)) .- 1, 0))
+compute_well_scaled_size(model::MetNet, b = 100.0) = size(model) .+ sum(max.(last.(factorize.(abs.(model.S[model.S .!= 0]), b)) .- 1, 0))
 
 const LIFT_TAG = "LIFT"
-function well_scaled_model(model, b = 100.0; lift_bound = 99999.0)
+function well_scaled_model(model::MetNet, b::Real = 100.0; 
+        lift_bound::Real = 99999.0)
 
     ## Inferring final size
     eM, eN = compute_well_scaled_size(model, b)
@@ -86,5 +89,6 @@ function well_scaled_model(model, b = 100.0; lift_bound = 99999.0)
         update!(prog, rxni)
     end
     finish!(prog)
+
     return exp_model
 end
