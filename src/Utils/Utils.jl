@@ -27,6 +27,7 @@ module Utils
     import LinearAlgebra: normalize, qr, diag, nullspace
     import Base: isequal, size, ==, hash
     import MAT: matread
+    import ProgressMeter: Progress, update!, finish!
     
     include("General/General.jl")
     include("Types/Types.jl")
