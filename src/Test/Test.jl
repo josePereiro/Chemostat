@@ -4,7 +4,8 @@
 module Test
 
     import SparseArrays: SparseMatrixCSC
-    import ..Utils: MetNet, lb!, add_costs, EPout, EPFields
+    import ..Utils: MetNet, lb!, EPout, EPFields, expanded_model, 
+                    Met, Rxn, set_met!, set_rxn!
     import ..LP: fva_preprocess
 
     include("lineal_model.jl")

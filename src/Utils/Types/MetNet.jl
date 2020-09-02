@@ -1,58 +1,74 @@
 # Code derived from metabolicEP (https://github.com/anna-pa-m/Metabolic-EP)
 
-#=
-    The * mark the relevant fields for EP algorithm, 
-    and the ** the relevante for other methods in this package,
-    the rest are untouched, so they may be contain dummy values sometimes!!!
-=#
-struct MetNet{T<:Real}
-    S::AbstractMatrix{T} # Stoichiometric matrix M x N sparse (*)
-    b::AbstractVector{T} # right hand side of equation  S ν = b (*)
-    c::AbstractVector{Float64} # reaction index of biomass 
-    lb::AbstractVector{T} # fluxes lower bound N elements vector (*)
-    ub::AbstractVector{T} # fluxes upper bound N elements vector (*)
-    genes::AbstractVector{String} # gene names 
-    rxnGeneMat::AbstractMatrix{Float64} # 
-    grRules::AbstractVector{String} # gene-reaction rule N elements vector of strings (and / or allowed)
-    mets::AbstractVector{String} # metabolites short-name M elements (**)
-    rxns::AbstractVector{String} # reactions short-name N elements (*)
-    metNames::AbstractVector{String} # metabolites long-names M elements (**)
-    metFormulas::AbstractVector{String} # metabolites formula M elements (**)
-    rxnNames::AbstractVector{String} # reactions long-names N elements (**)
-    rev::AbstractVector{Bool} # reversibility of reactions N elements
-    subSystems::AbstractVector # cellular component of fluxes N elements
-    intake_info::Dict # Information required for enforcing the Chemostat bounds
-end
-
 fake_metsid(M) = ["M$i" for i in 1:M]
-fake_metNames(M) = ["MET $i" for i in 1:M]
-fake_metFormulas(M) = ["X" for i in 1:M]
-
 fake_rxnsid(N) = ["r$i" for i in 1:N]
-fake_rxnNames(N) = ["RXN $i" for i in 1:N]
-fake_subSystems(N) = ["Net" for i in 1:N]
 
+struct MetNet{T<:Real}
 
-# Minimum simple Constructor
-function MetNet(S::AbstractMatrix, b::AbstractVector, 
-                lb::AbstractVector, ub::AbstractVector, 
-                rxns::AbstractVector = fake_rxnsid(size(S,2)), 
-                mets::AbstractVector = fake_metsid(size(S,1));
-                T = Float64,  
-                metNames =  fake_metNames(size(S,1)), 
-                metFormulas = fake_metFormulas(size(S,1)), 
-                rxnNames = fake_rxnNames(size(S,2)), 
-                subSystems = fake_subSystems(size(S,2)),
-                intake_info = Dict())
+    # Fields important for modeling
+    S::AbstractMatrix{T} # Stoichiometric matrix M x N sparse
+    b::AbstractVector{T} # right hand side of equation  S ν = b 
+    lb::AbstractVector{T} # fluxes lower bound N elements vector
+    ub::AbstractVector{T} # fluxes upper bound N elements vector
+    c::AbstractVector{T} # reaction index of biomass
+    rxns::Vector{String} # reactions short-name N elements
+    mets::Vector{String} # metabolites short-name M elements
+    intake_info::Dict # Information required for enforcing the Chemostat bounds
     
-    M,N = size(S);
-    return MetNet{T}(S, b, zeros(Float64,N), lb, ub, 
-        ["NA"], zeros(1,1),
-        ["NA"], mets, rxns, 
-        metNames, metFormulas, rxnNames, [], 
-        subSystems, intake_info) 
+    # Mustly for compatibility with COBRA
+    metNames # metabolites long-names M elements
+    rxnNames # reactions long-names N elements
+    metFormulas # metabolites formula M elements
+    genes # gene names 
+    rxnGeneMat # 
+    grRules # gene-reaction rule N elements vector of strings (and / or allowed)
+    rev # reversibility of reactions N elements
+    subSystems # cellular component of fluxes N elements
+
+    
+    function MetNet{T}(;kwargs...) where {T<:Real}
+        kwargs = Dict(kwargs)
+
+        # Just for better errors printing
+        function checkget(k, T2) 
+            !haskey(kwargs, k) && error("Mandatoty field '$k' not found!!!")
+            dat = kwargs[k]
+            !(dat isa T2) && error("'$k' is a '$(typeof(dat))', expected '$T2'")
+            return dat
+        end
+
+        # LP fields
+        S = checkget(:S, AbstractMatrix{T})
+        M, N = size(S)
+        b = checkget(:b, AbstractVector{T})
+        lb = checkget(:lb, AbstractVector{T})
+        ub = checkget(:ub, AbstractVector{T})
+        c = checkget(:c, AbstractVector{T})
+        rxns = get(kwargs, :rxns, fake_rxnsid(N))
+        mets = get(kwargs, :mets, fake_metsid(N))
+        intake_info = get(kwargs, :intake_info, Dict())
+
+        # Others
+        metNames = get(kwargs, :metNames, nothing)
+        rxnNames = get(kwargs, :rxnNames, nothing)
+        metFormulas = get(kwargs, :metFormulas, nothing)
+        genes = get(kwargs, :genes, nothing)
+        rxnGeneMat = get(kwargs, :rxnGeneMat, nothing)
+        grRules = get(kwargs, :grRules, nothing)
+        rev = get(kwargs, :rev, nothing)
+        subSystems = get(kwargs, :subSystems, nothing)
+
+        new{T}(S, b, lb, ub, c, rxns, mets, intake_info, 
+            metNames, rxnNames, metFormulas, genes, 
+            rxnGeneMat, grRules, rev, subSystems)
+
+    end
 end
 
+# Helpers
+MetNet(;kwargs...) = MetNet{Float64}(;kwargs...)
+
+# For compatibility with cobra mat models
 function reshape_mat_dict!(mat_dict; S::DataType = String, 
     F::DataType = Float64, N::DataType = Int, I::DataType = Int64)
     # ----------------- Typed -----------------
@@ -103,41 +119,30 @@ function reshape_mat_dict!(mat_dict; S::DataType = String,
 end
 
 # For COBRA .mat compatible files
-function MetNet(mat_model::Dict, T = nothing; reshape = true) 
+function MetNet(mat_model::Dict; reshape = false) 
     reshape && (mat_model = reshape_mat_dict!(deepcopy(mat_model)))
-
-    S = mat_model["S"]
-    b = mat_model["b"]
-    lb = mat_model["lb"]
-    ub = mat_model["ub"]
-    mets = get(mat_model, "mets", fake_metsid(size(S, 1)))
-    rxns = get(mat_model, "rxns", fake_rxnsid(size(S, 2)))
-
-    return MetNet(S, b, lb, ub, rxns, mets;
-            T = isnothing(T) ? eltype(S) : T,  
-            metNames =  get(mat_model, "metNames", fake_metNames(size(S,1))), 
-            metFormulas = get(mat_model, "metFormulas", fake_metFormulas(size(S,1))), 
-            rxnNames = get(mat_model, "rxnNames", fake_rxnNames(size(S,2))), 
-            subSystems = get(mat_model, "subSystems", fake_subSystems(size(S,2))),
-            intake_info = get(mat_model, "intake_info", Dict()))
+    net = Dict()
+    for (k, dat) in mat_model
+        net[Symbol(k)] = dat
+    end
+    return MetNet(;net...)
 end
 
 """
     Create a new MetNet from a template but overwriting the fields
     of the template with the given as kwargs
 """
-function MetNet(metnet::MetNet; reshape = true, kwargs...)
-    kwargs = Dict(kwargs)
-    
+function MetNet(metnet::MetNet; reshape = false, net...)
+    net = Dict(net)
+
     metnet_dict = Dict()
     for field in fieldnames(typeof(metnet))
-        metnet_dict[string(field)] = getfield(metnet, field)
+        metnet_dict[field] = getfield(metnet, field)
     end
     
     for (k, v) in metnet_dict
-        sk = Symbol(k)
-        if haskey(kwargs, sk)
-            metnet_dict[k] = kwargs[sk]
+        if haskey(net, k)
+            metnet_dict[k] = net[k]
         end
     end
     return MetNet(metnet_dict; reshape = reshape)
