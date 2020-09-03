@@ -1,6 +1,6 @@
 struct EPMat{T<:AbstractFloat} <: AbstractEPMat
-    KK::AbstractArray{T,2}
-    KKPD::AbstractArray{T,2}
+    KKc::AbstractArray{T,2} # A container of KK = βF'F (Its diag will change)
+    dKKbk::AbstractVector{T} # Store the original diag of KK = βF'F
     invKKPD::Matrix{T}
     KY::Vector{T}
     v::Vector{T}
@@ -9,11 +9,8 @@ struct EPMat{T<:AbstractFloat} <: AbstractEPMat
 end
 
 function EPMat(K::AbstractArray{T}, Y::Vector{T}, lb::Vector{T}, ub::Vector{T}, alpha::T) where T <: Real
+    alpha == Inf && error("For Inf alpha use 'EPMatT0'")
     M,N = size(K)
-    KKPD = Matrix(alpha * K' * K)
-    if alpha != Inf
-        return EPMat(copy(KKPD), copy(KKPD), zeros(T,N,N), alpha * K' * Y, zeros(T,N),lb,ub)
-    else
-        error("I really should not be here")
-    end
+    KKc = Matrix(alpha * K' * K)
+    return EPMat(copy(KKc), diag(KKc), zeros(T,N,N), alpha * K' * Y, zeros(T,N), lb, ub)
 end

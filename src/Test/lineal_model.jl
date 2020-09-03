@@ -6,12 +6,18 @@ function lineal_S(M = 3)
         S[i,i] = 1.0
         S[i,i+1] = -1.0
     end
-    return SparseMatrixCSC{Float64,Int64}(S)
+    return S
 end
 
 function simple_lineal_MetNet(M)
-    S = lineal_S(M)
-    M,N = size(S)
-    return MetNet(S, zeros(Float64, M), zeros(Float64,N), ones(Float64, N))
+    net = Dict()
+    net[:S] = lineal_S(M)
+    M,N = size(net[:S])
+    net[:c] = zeros(N)
+    net[:b] = zeros(M)
+    net[:lb] = zeros(N)
+    net[:ub] = ones(N)
+
+    return MetNet(net; reshape = false)
 end
 

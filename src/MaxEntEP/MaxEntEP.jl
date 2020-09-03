@@ -13,7 +13,7 @@ module MaxEntEP
 
 import SparseArrays: SparseMatrixCSC
 import ExtractMacro: @extract
-import LinearAlgebra: diag, rmul!, inv!, Hermitian, cholesky!, Diagonal, mul!
+import LinearAlgebra: diag, rmul!, inv!, Hermitian, cholesky!, Diagonal, mul!, diagind
 import Printf: @printf
 import SpecialFunctions: erf
 import Distributions: Truncated, Normal, mean, var

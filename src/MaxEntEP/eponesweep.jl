@@ -3,15 +3,17 @@
 function eponesweep!(X::EPFields,epalg::EPAlg, epmat::EPMat)
     @extract X : av va a b μ s siteflagave siteflagvar
     @extract epalg : alpha beta_vec minvar maxvar epsconv damp
-    @extract epmat : KK KKPD invKKPD lb ub KY v
+    @extract epmat : KKc dKKbk invKKPD lb ub KY v
 
-    for i in eachindex(b)
-        # KK = βF'F
-        # Σ^-1 = (KK + D)
-        KKPD[i,i] = KK[i,i] + 1.0/b[i]
-    end
+
+    # KK = βF'F
+    # KK = KKc if diag(KKc) = dKKbk
+    # Σ^-1 = (KK + D)
+    KKdi = diagind(KKc);
+    KKc[KKdi] = dKKbk + (1.0 ./ b)
+
     # Σ
-    inplaceinverse!(invKKPD,KKPD)
+    inplaceinverse!(invKKPD,KKc)
 
     minerr = typemin(av[1])
     errav,errva,errμ,errs = minerr,minerr,minerr,minerr

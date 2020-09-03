@@ -1,6 +1,6 @@
 # Code derived from metabolicEP (https://github.com/anna-pa-m/Metabolic-EP)
 
-function inplaceinverse!(dest::AbstractArray,source::AbstractArray)
+function inplaceinverse!(dest::AbstractArray, source::AbstractArray)
     dest = copyto!(dest, source)
     inv!(cholesky!(Hermitian(dest)))
 end
