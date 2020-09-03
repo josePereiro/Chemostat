@@ -26,13 +26,13 @@ compute_well_scaled_size(model::MetNet, b = 100.0) = size(model) .+ sum(max.(las
 
 const LIFT_TAG = "LIFT"
 function well_scaled_model(model::MetNet, b::Real = 100.0; 
-        lift_bound::Real = 99999.0)
+        lift_bound::Real = 99999.0, verbose = true)
 
     ## Inferring final size
     eM, eN = compute_well_scaled_size(model, b)
     exp_model = expanded_model(model, eM, eN)
 
-    prog = Progress(size(model, 1); desc = "Scaling   ")
+    verbose && (prog = Progress(size(model, 1); desc = "Scaling   "))
     for (rxni, rxn) in model.rxns |> enumerate
         metis = rxn_mets(model, rxni)
         mets = model.mets[metis]
@@ -86,9 +86,9 @@ function well_scaled_model(model::MetNet, b::Real = 100.0;
 
             end
         end
-        update!(prog, rxni)
+        verbose && update!(prog, rxni)
     end
-    finish!(prog)
+    verbose && finish!(prog)
 
     return exp_model
 end

@@ -68,63 +68,10 @@ end
 # Helpers
 MetNet(;kwargs...) = MetNet{Float64}(;kwargs...)
 
-# For compatibility with cobra mat models
-function reshape_mat_dict!(mat_dict; S::DataType = String, 
-    F::DataType = Float64, N::DataType = Int, I::DataType = Int64)
-    # ----------------- Typed -----------------
-    # String vectors
-    for k in ["comps", "metNames", "metFormulas", 
-            "rxnFrom", "rxnNames", "genes", "inchis", 
-            "grRules", "mets", "rxns"]
-        !haskey(mat_dict, k) && continue
-        mat_dict[k] isa Vector{S} && continue
-        mat_dict[k] = mat_dict[k] |> vec .|> S;
-    end
-
-    # Float vectors
-    for k in ["b", "lb", "ub", "c"]
-        !haskey(mat_dict, k) && continue
-        mat_dict[k] isa Vector{F} && continue
-        mat_dict[k] = mat_dict[k] |> vec .|> F;
-    end
-
-    # Integer vectors
-    for k in ["metComps"]
-        !haskey(mat_dict, k) && continue
-        mat_dict[k] isa Vector{I} && continue
-        mat_dict[k] = floor.(I, mat_dict[k] |> vec);
-    end
-
-    # S
-    if haskey(mat_dict, "S") && !(mat_dict["S"] isa Matrix{F})
-        mat_dict["S"] = Matrix{F}(mat_dict["S"])
-    end
-
-    # ----------------- Type free -----------------
-    # Matrices
-    for k in ["rxnGeneMat"]
-        !haskey(mat_dict, k) && continue
-        mat_dict[k] isa Matrix && continue
-        mat_dict[k] = mat_dict[k] |> Matrix
-    end
-
-    # Vectors
-    for k in ["subSystems", "rev"]
-        !haskey(mat_dict, k) && continue
-        mat_dict[k] isa Vector && continue
-        mat_dict[k] = mat_dict[k] |> vec |> collect
-    end
-
-    return mat_dict
-end
-
-# For COBRA .mat compatible files
-function MetNet(mat_model::Dict; reshape = false) 
-    reshape && (mat_model = reshape_mat_dict!(deepcopy(mat_model)))
-    net = Dict()
-    for (k, dat) in mat_model
-        net[Symbol(k)] = dat
-    end
+# For COBRA .mat files use reshape
+function MetNet(model_dict::Dict; reshape = false) 
+    net = to_symbol_dict(model_dict)
+    reshape && (net = reshape_mat_dict(net))
     return MetNet(;net...)
 end
 
@@ -146,4 +93,63 @@ function MetNet(metnet::MetNet; reshape = false, net...)
         end
     end
     return MetNet(metnet_dict; reshape = reshape)
+end
+
+# For compatibility with cobra mat models
+function reshape_mat_dict(mat_dict::Dict; S::DataType = String, 
+    F::DataType = Float64, N::DataType = Int, I::DataType = Int64)
+
+    new_dict::Dict = Dict()
+
+    function _reshape!(rshf::Function, k::Symbol, T::Type)
+        !haskey(mat_dict, k) && return
+        dat = mat_dict[k]
+        new_dict[k] = dat isa T ? deepcopy(dat) : rshf(dat)
+    end
+
+    # ----------------- Typed -----------------
+    # String vectors
+    for k in [:comps, :metNames, :metFormulas, 
+            :rxnFrom, :rxnNames, :genes, :inchis, 
+            :grRules, :mets, :rxns]
+        _reshape!(k, Vector{S}) do dat
+            dat |> vec .|> S
+        end
+    end
+
+    # Float vectors
+    for k in [:b, :lb, :ub, :c]
+        _reshape!(k, Vector{F}) do dat
+            dat |> vec .|> F
+        end
+    end
+
+    # Integer vectors
+    for k in [:metComps]
+        _reshape!(k, Vector{I}) do dat
+            floor.(I, dat |> vec)
+        end
+    end
+
+    # S
+    _reshape!(:S, Matrix{F}) do dat
+        Matrix{F}(dat)
+    end
+
+    # ----------------- Type free -----------------
+    # Matrices
+    for k in [:rxnGeneMat]
+        _reshape!(k, Matrix) do dat
+            Matrix(dat)
+        end
+    end
+
+    # Vectors
+    for k in [:subSystems, :rev]
+        _reshape!(k, Matrix) do dat
+            dat |> vec |> collect
+        end
+    end
+
+    return mat_dict
 end
