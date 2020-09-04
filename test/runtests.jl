@@ -1,7 +1,7 @@
-using Chemostat
 using Test
 using Random
 using Serialization
+using Chemostat
 
     @testset "Chemostat.jl" begin
     
