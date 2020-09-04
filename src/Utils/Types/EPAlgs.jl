@@ -3,7 +3,7 @@
 
 struct EPAlg{T<:AbstractFloat}
     alpha::T
-    beta_vec::Vector{T}
+    beta_vec::AbstractVector{T}
     minvar::T
     maxvar::T
     epsconv::T

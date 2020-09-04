@@ -21,7 +21,7 @@ module Utils
     
     import MathProgBase.HighLevelInterface: linprog
     import Clp: ClpSolver
-    import SparseArrays: SparseMatrixCSC, spzeros, findnz, sparsevec, sparse
+    import SparseArrays: SparseMatrixCSC, SparseVector, spzeros, findnz, sparsevec, sparse
     import StatsBase: AbstractHistogram, Histogram, fit
     import Distributions: Normal, Truncated, mean, var, pdf
     import LinearAlgebra: normalize, qr, diag, nullspace

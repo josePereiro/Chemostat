@@ -10,7 +10,7 @@ _clear__epout_β0_cache_() = global _epout_β0_cache_ = Dict()
     the algorithm
 """
 function fast_maxent_ep(model::MetNet, epout_β0::EPout, 
-        alpha::Real,  beta_vec::Vector)
+        alpha::Real,  beta_vec::AbstractVector)
 
     #= Anna's code scales fluxes to [-1,1], but it 
     doesn't rescale a,d back to the original range =#

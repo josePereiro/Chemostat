@@ -11,7 +11,7 @@ https://doi.org/10.1371/journal.pcbi.1006823.
 
 module MaxEntEP
 
-import SparseArrays: SparseMatrixCSC
+import SparseArrays: SparseMatrixCSC, SparseVector, spzeros, sparse
 import ExtractMacro: @extract
 import LinearAlgebra: diag, rmul!, inv!, Hermitian, cholesky!, Diagonal, mul!, diagind
 import Printf: @printf

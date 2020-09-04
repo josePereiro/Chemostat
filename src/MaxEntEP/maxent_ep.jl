@@ -35,7 +35,7 @@ Input (optional arguments).
 
 function maxent_ep(S::AbstractArray{T,2}, b::Array{T,1}, lb::Array{T,1}, ub::Array{T,1};
         alpha::Real=1e7,      # inverse temperature
-        beta_vec::Vector{T} = T[], # maxent inverse temperature vector
+        beta_vec::AbstractVector{T} = T[], # maxent inverse temperature vector
         verbose::Bool=true,  # output verbosity
         damp::Real=0.9,      # damp ∈ (0,1) newfield = damp * oldfield + (1-damp)* newfield
         epsconv::Real=1e-6,  # convergence criterion

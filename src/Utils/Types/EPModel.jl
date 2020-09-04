@@ -2,8 +2,8 @@
 struct EPModel{T<:Real}
     scalefact::T
     updatealg!::Function
-    epfield::EPFields
+    epfield::EPFields{T}
     epmat::AbstractEPMat
     alpha::T
-    beta_vec::Vector{T}
+    beta_vec::SparseVector{T, Int}
 end
