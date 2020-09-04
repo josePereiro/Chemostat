@@ -49,14 +49,14 @@ struct MetNet{T<:Real}
         intake_info = get(kwargs, :intake_info, Dict())
 
         # Others
-        metNames = get(kwargs, :metNames, nothing)
-        rxnNames = get(kwargs, :rxnNames, nothing)
-        metFormulas = get(kwargs, :metFormulas, nothing)
-        genes = get(kwargs, :genes, nothing)
-        rxnGeneMat = get(kwargs, :rxnGeneMat, nothing)
-        grRules = get(kwargs, :grRules, nothing)
-        rev = get(kwargs, :rev, nothing)
-        subSystems = get(kwargs, :subSystems, nothing)
+        metNames = get(kwargs, :metNames, [])
+        rxnNames = get(kwargs, :rxnNames, [])
+        metFormulas = get(kwargs, :metFormulas, [])
+        genes = get(kwargs, :genes, [])
+        rxnGeneMat = get(kwargs, :rxnGeneMat, [])
+        grRules = get(kwargs, :grRules, [])
+        rev = get(kwargs, :rev, [])
+        subSystems = get(kwargs, :subSystems, [])
 
         new{T}(S, b, lb, ub, c, rxns, mets, intake_info, 
             metNames, rxnNames, metFormulas, genes, 

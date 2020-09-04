@@ -5,6 +5,9 @@ function converge_ep!(epmodel::EPModel{T};
         maxiter::Int=2000,   # maximum iteration count
         maxvar::Real=1e50,   # maximum numerical variance
         minvar::Real=1e-50,  # minimum numerical variance
+        iter0 = 0,           # the started iteration count
+        drop_epfield = true  # if the final EPout object will export the EPField
+        
     ) where {T<:Real}
 
     @extract epmodel : scalefact updatealg! epfield epmat beta_vec alpha
@@ -17,7 +20,7 @@ function converge_ep!(epmodel::EPModel{T};
     @extract epalg : maxiter verbose epsconv
 
     returnstatus = :unconverged
-    iter = 0
+    iter = iter0
     
     # sweep ep till maxiter is reached or max(errav, errvar) < epsconv
     # alpha = epalg.alpha epsconv maxiter
@@ -47,9 +50,14 @@ function converge_ep!(epmodel::EPModel{T};
     #= Scale back μ, s, av, va of epfield and lub, llb and Y =#
     scaleepfield!(epfield, scalefact)
     if alpha < Inf
-        return  EPout(epfield.μ, epfield.s, epfield.av, epfield.va, epfield, returnstatus, iter)
+        μ, σ = epfield.μ, epfield.s
+        av, va = epfield.av, epfield.va
+        sol = drop_epfield ? epfield : nothing
     else
         idx = epmat.idx
-        return  EPout(epfield.μ[idx],epfield.s[idx],epfield.av[idx],epfield.va[idx], epfield, returnstatus, iter)
+        μ, σ = epfield.μ[idx], epfield.s[idx]
+        av ,va = epfield.av[idx], epfield.va[idx]
+        sol = drop_epfield ? epfield : nothing
     end
+    return  EPout(μ, σ, av, va, sol, returnstatus, iter)
 end
