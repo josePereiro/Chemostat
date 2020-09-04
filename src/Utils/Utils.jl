@@ -19,7 +19,6 @@
 """
 module Utils
     
-    import FileIO
     import MathProgBase.HighLevelInterface: linprog
     import Clp: ClpSolver
     import SparseArrays: SparseMatrixCSC, spzeros, findnz, sparsevec, sparse
@@ -37,6 +36,5 @@ module Utils
     include("MetNetUtils/MetNetUtils.jl")
     include("OutUtils/OutUtils.jl")
     include("BoundleUtils/BoundleUtils.jl")
-    include("SimulationUtils/SimulationUtils.jl")
     
 end
