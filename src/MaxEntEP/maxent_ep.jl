@@ -43,45 +43,13 @@ function maxent_ep(S::AbstractArray{T,2}, b::Array{T,1}, lb::Array{T,1}, ub::Arr
         maxvar::Real=1e50,   # maximum numerical variance
         minvar::Real=1e-50,  # minimum numerical variance
         solution::Union{EPout{T}, Nothing}=nothing,  # start from a solution
-        expval=nothing # fix posterior probability experimental values for std and mean
+        expval=nothing, # fix posterior probability experimental values for std and mean
     ) where T<:Real
 
+    epmodel = EPModel(S, b, lb, ub; alpha = alpha, beta_vec = beta_vec, solution = solution, expval= expval)
 
-    # making  a local copy to rescale
-    llb = copy(lb) 
-    lub = copy(ub)
-
-    #= 
-    Create EPField, set scale factor and return updatealg (updatefunction),
-    depending on alpha (eponesweepT0! or eponesweep).
-    The scalefactor is just the maximum absolute bound (lb or ub).
-    If a solution is not given, the EPfield will be fresh
-    =#
-    updatealg, scalefact, epfield = prepareinput(S,b,llb,lub, alpha, verbose, solution, expval)
-
-    #=
-    Scale down μ, s, av, va of epfield and lub, llb and Y using the 
-    previous computed scalefactor.
-    If epfield is fresh, it only will have effect on lub, llb and Y
-    =#
-    scaleepfield!(epfield,lub,llb,b,1.0/scalefact) # rescaling fields in [0,1]
-
-    epmat = alpha < Inf ? EPMat(S, b, llb, lub, alpha) : EPMatT0(S,b,llb, lub)
-    beta_vec = prepare_βv(epmat, beta_vec)
-    epalg = EPAlg(alpha, beta_vec, minvar, maxvar, epsconv, damp, maxiter, verbose)
-
-    #= Here is were all the work is done, this function will 
-    call updatealg till convergence or maxiter is reached =#
-    returnstatus, iter = epconverge!(epfield, epmat, epalg, updatealg)
-
-    #= Scale back μ, s, av, va of epfield and lub, llb and Y =#
-    scaleepfield!(epfield,lub,llb,b,scalefact)
-    if alpha < Inf
-        return  EPout(epfield.μ, epfield.s, epfield.av, epfield.va, epfield, returnstatus, iter)
-    else
-        idx = epmat.idx
-        return  EPout(epfield.μ[idx],epfield.s[idx],epfield.av[idx],epfield.va[idx], epfield, returnstatus, iter)
-    end
+    return converge_ep!(epmodel; verbose = verbose, damp = damp, epsconv = epsconv, 
+        maxiter = maxiter, maxvar = maxvar, minvar = minvar)
 end
 
 function maxent_ep(metnet::MetNet; kwargs...)

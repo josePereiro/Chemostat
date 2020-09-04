@@ -19,7 +19,7 @@ import SpecialFunctions: erf
 import Distributions: Truncated, Normal, mean, var
 import ProgressMeter: Progress, update!, finish!, ProgressThresh
 
-import ..Utils: AbstractEPMat, EPAlg, EPFields, EPMat, EPMatT0, EPout, MetNet
+import ..Utils: AbstractEPMat, EPAlg, EPFields, EPMat, EPMatT0, EPout, MetNet, EPModel
 
 include("compute_mom5d.jl")
 include("epconverge.jl")
@@ -34,6 +34,7 @@ include("prepare_beta_v.jl")
 include("prepareinput.jl")
 include("scaleepfield.jl")
 include("utils.jl")
-# include("Q_sigma.jl")
+include("converge_ep!.jl")
+include("EPModel.jl")
 
 end

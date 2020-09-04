@@ -2,7 +2,7 @@
 
 # TODO remove Y unused parameter
 # TODO remove alpha Inf code
-function prepareinput(S, b, lb, ub, alpha, verbose, solution, expval)
+function prepareinput(S, lb, ub, alpha, verbose, solution, expval)
 
     M,N = size(S)
     verbose && M >= N && @warn("M = $M ≥ N = $N")
