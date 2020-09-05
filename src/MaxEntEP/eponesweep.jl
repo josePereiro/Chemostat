@@ -1,7 +1,7 @@
 # Code derived from metabolicEP (https://github.com/anna-pa-m/Metabolic-EP)
 
-function eponesweep!(X::EPFields,epalg::EPAlg, epmat::EPMat)
-    @extract X : av va a b μ s siteflagave siteflagvar
+function eponesweep!(epfields::EPFields{T}, epalg::EPAlg, epmat::EPMat) where T
+    @extract epfields : av va a b μ s siteflagave siteflagvar
     @extract epalg : alpha beta_vec minvar maxvar epsconv damp
     @extract epmat : KKc dKKbk invKKPD lb ub KY v
 
@@ -15,8 +15,6 @@ function eponesweep!(X::EPFields,epalg::EPAlg, epmat::EPMat)
     # Σ
     inplaceinverse!(invKKPD,KKc)
 
-    minerr = typemin(av[1])
-    errav,errva,errμ,errs = minerr,minerr,minerr,minerr
     
     # KY = βF'y
     # v¯ = Σ(KY + Da) (original ep)
@@ -24,7 +22,8 @@ function eponesweep!(X::EPFields,epalg::EPAlg, epmat::EPMat)
     # v¯ = Σ(KY + Da) + Σ * beta_vec (maxent-ep)
     v .= invKKPD * (KY + a./b) + invKKPD * beta_vec
     
-
+    
+    errav = errva = errμ = errs = typemin(T)
     for i in eachindex(av)
         # Parameters of the tilted (Confirmed)
         newμ,news = newμs(invKKPD[i,i],a[i],b[i],v[i],lb[i],ub[i],minvar, maxvar)

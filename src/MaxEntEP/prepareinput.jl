@@ -13,8 +13,8 @@ function prepareinput(S, lb, ub, alpha, verbose, solution, expval)
     updatefunction = alpha == Inf ? eponesweepT0! : eponesweep!
 
     scalefact = max(maximum(abs.(lb)), maximum(abs.(ub)))
-    epfield = isnothing(solution) ? epfield = EPFields(N, expval, eltype(S)) :
-        epfield = deepcopy(solution.sol) # preserve the original solution!
+    epfields = isnothing(solution) ? epfields = EPFields(N, expval, eltype(S)) :
+        epfields = deepcopy(solution.sol) # preserve the original solution!
 
-    return updatefunction, scalefact, epfield
+    return updatefunction, scalefact, epfields
 end

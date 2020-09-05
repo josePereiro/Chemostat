@@ -36,5 +36,6 @@ module Utils
     include("MetNetUtils/MetNetUtils.jl")
     include("OutUtils/OutUtils.jl")
     include("BoundleUtils/BoundleUtils.jl")
+    include("EPModelUtils/EPModelUtils.jl")
     
 end

@@ -11,30 +11,30 @@ https://doi.org/10.1371/journal.pcbi.1006823.
 
 module MaxEntEP
 
-import SparseArrays: SparseMatrixCSC, SparseVector, spzeros, sparse
-import ExtractMacro: @extract
-import LinearAlgebra: diag, rmul!, inv!, Hermitian, cholesky!, Diagonal, mul!, diagind
-import Printf: @printf
-import SpecialFunctions: erf
-import Distributions: Truncated, Normal, mean, var
-import ProgressMeter: Progress, update!, finish!, ProgressThresh
+    import SparseArrays: SparseMatrixCSC, SparseVector, spzeros, sparse
+    import ExtractMacro: @extract
+    import LinearAlgebra: diag, rmul!, inv!, Hermitian, cholesky!, Diagonal, mul!, diagind
+    import Printf: @printf
+    import SpecialFunctions: erf
+    import Distributions: Truncated, Normal, mean, var
+    import ProgressMeter: Progress, update!, finish!, ProgressThresh
 
-import ..Utils: AbstractEPMat, EPAlg, EPFields, EPMat, EPMatT0, EPout, MetNet, EPModel
+    import ..Utils: AbstractEPMat, EPAlg, EPFields, EPMat, EPMatT0, EPout, MetNet, EPModel
 
-include("compute_mom5d.jl")
-include("epconverge.jl")
-include("eponesweep.jl")
-include("eponesweepT0.jl")
-include("fast_maxent_ep.jl")
-include("matchmom.jl")
-include("maxent_ep.jl")
-include("newav.jl")
-include("newμs.jl")
-include("prepare_beta_v.jl")
-include("prepareinput.jl")
-include("scaleepfield.jl")
-include("utils.jl")
-include("converge_ep!.jl")
-include("EPModel.jl")
+    include("compute_mom5d.jl")
+    include("epconverge.jl")
+    include("eponesweep.jl")
+    include("eponesweepT0.jl")
+    include("fast_maxent_ep.jl")
+    include("matchmom.jl")
+    include("maxent_ep.jl")
+    include("newav.jl")
+    include("newμs.jl")
+    include("prepare_beta_v.jl")
+    include("prepareinput.jl")
+    include("scaleepfield.jl")
+    include("utils.jl")
+    include("converge_ep!.jl")
+    include("EPModel.jl")
 
 end

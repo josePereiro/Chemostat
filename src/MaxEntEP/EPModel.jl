@@ -13,8 +13,8 @@ function EPModel(S::AbstractArray{T,2}, b::Array{T,1}, lb::Array{T,1}, ub::Array
     # The scalefactor is just the maximum absolute bound (lb or ub).
     scalefact = max(maximum(abs.(lb)), maximum(abs.(ub)))
 
-    # Create EPField, If a solution is not given, the EPfield will be fresh
-    epfield = isnothing(solution) ? EPFields(N, expval, eltype(S)) : 
+    # Create EPFields, If a solution is not given, the EPfields will be fresh
+    epfields = isnothing(solution) ? EPFields(N, expval, eltype(S)) : 
         deepcopy(solution.sol) # preserve the original solution!
 
     # making a local copy to rescale
@@ -23,11 +23,11 @@ function EPModel(S::AbstractArray{T,2}, b::Array{T,1}, lb::Array{T,1}, ub::Array
     lb = copy(b)
 
     #=
-    Scale down μ, s, av, va of epfield and lub, llb and Y using the 
+    Scale down μ, s, av, va of epfields and lub, llb and Y using the 
     previous computed scalefactor.
-    If epfield is fresh, it only will have effect on lub, llb and Y
+    If epfields is fresh, it only will have effect on lub, llb and Y
     =#
-    scaleepfield!(epfield, 1.0/scalefact, lub, llb, lb) # scaling fields in [0,1]
+    scaleepfield!(epfields, 1.0/scalefact, lub, llb, lb) # scaling fields in [0,1]
 
     epmat = alpha < Inf ? EPMat(S, lb, llb, lub, alpha) : EPMatT0(S, lb, llb, lub)
 
@@ -36,7 +36,7 @@ function EPModel(S::AbstractArray{T,2}, b::Array{T,1}, lb::Array{T,1}, ub::Array
 
     beta_vec = prepare_βv(epmat, beta_vec)
 
-    return EPModel(scalefact, updatealg!, epfield, epmat, alpha, beta_vec)
+    return EPModel{T}(scalefact, updatealg!, epfields, epmat, alpha, beta_vec)
 
 end
 

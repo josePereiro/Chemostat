@@ -1,6 +1,6 @@
 # # Code derived from metabolicEP (https://github.com/anna-pa-m/Metabolic-EP)
 
-# function epconverge!(epfield::EPFields, epmat::M, epalg::EPAlg, eponesweep!::T) where {T<:Function,M<:AbstractEPMat}
+# function epconverge!(epfields::EPFields, epmat::M, epalg::EPAlg, eponesweep!::T) where {T<:Function,M<:AbstractEPMat}
     
 #     @extract epalg : maxiter verbose epsconv alpha beta_vec
 
@@ -14,7 +14,7 @@
 #     while iter < maxiter
 #         iter += 1
 #         # eponesweep! will be eponesweepT0! or eponesweep depending on alpha
-#         (errav, errvar, errμ, errs) = eponesweep!(epfield, epalg, epmat)
+#         (errav, errvar, errμ, errs) = eponesweep!(epfields, epalg, epmat)
 
 #         max_err = max(errav, errvar)
 #         if max_err < epsconv

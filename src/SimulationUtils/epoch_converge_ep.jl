@@ -1,4 +1,4 @@
-
+# I break down ep in several epoch to be able to cache partial results
 function epoch_converge_ep!(epmodel::EPModel; 
         epochlen::Int = 10,
         maxiter::Int=2000,  
@@ -7,9 +7,7 @@ function epoch_converge_ep!(epmodel::EPModel;
         after_epoch = (epout) -> (false, nothing),
         kwargs...
     )
-
-    # --------------------  MAXENT-EP WHILE LOOP  --------------------  
-    # I break down ep in several epoch to be able to cache partial results
+    
     epout = nothing
     curr_iter = 0
 
@@ -26,6 +24,7 @@ function epoch_converge_ep!(epmodel::EPModel;
                         verbose = false,
                         iter0 = curr_iter,
                         maxiter = curr_iter + epochlen, 
+                        drop_epfields = false # We need the epfields to update the epmodel
                     )
 
             curr_iter = epout.iter
