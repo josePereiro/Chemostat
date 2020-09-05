@@ -1,25 +1,31 @@
 const EMPTY_SPOT = ""
 # This just prepare the metnet to hold more elements by making 
 # all the numerical fields larger
-function expanded_model(metnet::MetNet, newM::Int, newN::Int)
+function expanded_model(metnet::MetNet{T}, newM::Int, newN::Int) where T
     M, N = size(metnet)
     @assert all((newM, newN) .> (M, N))
 
-    function setfirsts!(col1, col2)
-        L = min(length(col1), length(col2))
-        col1[1:L] .= col2[1:L]
-        return col1
+    function _similar_copy(col, fill, newdim)
+        L = length(col)
+        newcol = similar(col, newdim)
+        newcol[L:end] .= fill
+        newcol[1:L] .= col[1:L]
+        return newcol
     end
     
+    
     net = Dict()
-    net[:S] = zeros(newM, newN)
+
+    net[:S] = similar(metnet.S, newM, newN)
+    net[:S][M:end, N:end] .= zero(T)
     net[:S][1:M, 1:N] .= metnet.S
-    net[:b] = setfirsts!(zeros(newM), metnet.b)
-    net[:c] = setfirsts!(zeros(newN), metnet.c)
-    net[:lb] = setfirsts!(zeros(newN), metnet.lb)
-    net[:ub] = setfirsts!(zeros(newN), metnet.ub)
-    net[:rxns] = setfirsts!(fill(EMPTY_SPOT, newN), metnet.rxns)
-    net[:mets] = setfirsts!(fill(EMPTY_SPOT, newM), metnet.mets)
+
+    net[:b] = _similar_copy(metnet.b, 0, newM)
+    net[:c] = _similar_copy(metnet.c, 0, newN)
+    net[:lb] = _similar_copy(metnet.lb, 0, newN)
+    net[:ub] = _similar_copy(metnet.ub, 0, newN)
+    net[:rxns] = _similar_copy(metnet.rxns, EMPTY_SPOT, newN)
+    net[:mets] = _similar_copy(metnet.mets, EMPTY_SPOT, newM)
     
     return MetNet(metnet; reshape = false, net...)
 end

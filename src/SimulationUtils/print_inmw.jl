@@ -31,6 +31,17 @@ function tagprintln_inmw(ss...; tag::String = wtag(stdout))
     println_inmw(ss...)
 end
 
+function tagprint_ifmw(ss...; tag::String = wtag(stdout))
+    !isempty(tag) && println_ifmw(tag)
+    print_ifmw(ss...)
+end
+
+function tagprintln_ifmw(ss...; tag::String = wtag(stdout))
+    !isempty(tag) && println_ifmw(tag)
+    println_ifmw(ss...)
+end
+
+
 function string_err(err; max_len = 10000)
     s = sprint(showerror, err, catch_backtrace())
     return length(s) > max_len ? s[1:max_len] * "\n..." : s
