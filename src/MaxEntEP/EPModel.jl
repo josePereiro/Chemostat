@@ -1,4 +1,4 @@
-function EPModel(S::AbstractArray{T,2}, b::Array{T,1}, lb::Array{T,1}, ub::Array{T,1};
+function EPModel(S::AbstractArray{T,2}, b::AbstractArray{T}, lb::AbstractArray{T}, ub::AbstractArray{T};
         alpha::Real=1e7,      # inverse temperature
         beta_vec::AbstractVector{T} = spzeros(T, size(S, 2)), # maxent inverse temperature vector
         solution::Union{EPout{T}, Nothing} = nothing,  # start from a solution
