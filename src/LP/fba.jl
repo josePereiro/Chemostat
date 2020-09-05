@@ -31,11 +31,23 @@ end
 
 function fba(model::MetNet, obj_ider::IDER_TYPE; kwargs...)
     obj_idx = rxnindex(model, obj_ider)
-    return fba(model.S, model.b, model.lb, model.ub, obj_idx; kwargs...)
+    return fba(_extract_dense(model, [:S, :b, :lb, :ub])..., obj_idx; kwargs...)
 end
 
 function fba(model::MetNet, obj_ider::IDER_TYPE, cost_ider::IDER_TYPE; kwargs...)
     obj_idx = rxnindex(model, obj_ider)
     cost_idx = rxnindex(model, cost_ider)
-    return fba(model.S, model.b, model.lb, model.ub, obj_idx, cost_idx; kwargs...)
+    return fba(_extract_dense(model, [:S, :b, :lb, :ub])..., obj_idx, cost_idx; kwargs...)
+end
+
+function _extract_dense(model, fields)
+    extracted = []
+    for f in fields
+        dat = getfield(model, f)
+        if dat isa AbstractArray{<:Number} && issparse(dat)
+            dat = Array(dat)
+        end
+        push!(extracted, dat)
+    end
+    return extracted
 end
