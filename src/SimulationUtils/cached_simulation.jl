@@ -16,9 +16,7 @@ function cached_simulation(;
         epconv_kwargs::Dict = Dict(), # kwargs for the ep convergence alg
         fba_kwargs::Dict = Dict(),
         sim_id = 1, # this should uniquely identify the simulation
-        on_hello::Function = () -> nothing,
         verbose = true,
-        testing = false,
         clear_cache = true,
         cache_dir = nothing,
         use_seed = true
@@ -44,7 +42,9 @@ function cached_simulation(;
     
     # ------------------------------------------------------------------
     # FBA
-    fbaout = isnothing(costider) ? fba(model, objider) : fba(model, objider, costider)
+    fbaout = isnothing(costider) ? 
+        fba(model, objider; fba_kwargs...) : 
+        fba(model, objider, costider; fba_kwargs...)
     objidx = rxnindex(model, objider)
     fba_objval = av(model, fbaout, objider) 
     verbose && tagprintln_inmw("FBA FINISHED", 
@@ -109,6 +109,7 @@ function cached_simulation(;
         # UPDATE BETA VEC
         # This just add the desire betas to the vector
         _update_beta_vec!(βi, beta_vec, beta_info)
+        epmodel.beta_vec .= beta_vec
 
         # ------------------------------------------------------------------
         # TOP LEVEL BETA CACHE
@@ -121,33 +122,36 @@ function cached_simulation(;
         # EPOUT SEED CACHE OR PARTIAL BETA CACHE
         # If use_seed = true a epout seed will be use.
         # This allows to start from a known solution, presumably 
-        # closer to the nest than a random one
-        # if a partial result is available, it will be used
+        # closer to the next than a random one.
+        # If a partial result is available, it will be used
         # to update the epmodel, if not, I'll try to find a 
         # top seed (The result of the first beta). 
         partial_beta_id = (:PARTIAL, hash(beta_vec), sim_id)
         partial_beta_cfile = temp_cache_file(partial_beta_id)
 
-        if βi != 1 # Not the first time
-            seed = nothing
-            use_epout_seed = use_seed && (isfile(partial_beta_cfile) || isfile(epout_seed_cfile))
-            if use_epout_seed
-                epout_id = isfile(partial_beta_cfile) ? partial_beta_id : epout_seed_id
-                seed = load_cache(epout_id; verbose = verbose, 
-                    headline = "EPOUT SEED LOADED")
-            end
-            
-            # I will reset if explicitly say so
-            reset_epmodel = !use_seed 
-            if reset_epmodel
-                seed = load_cache(epfield_seed_id; verbose = verbose, 
-                    headline = "EPFIELD SEED LOADED")
-            end
+        
+        seed = nothing
+        use_epout_seed = use_seed && (isfile(partial_beta_cfile) || isfile(epout_seed_cfile))
+        if use_epout_seed
+            epout_id = isfile(partial_beta_cfile) ? partial_beta_id : epout_seed_id
+            seed = load_cache(epout_id; verbose = verbose, 
+                headline = "EPOUT SEED LOADED")
+        end
+        
+        # I will reset if explicitly say so
+        reset_epmodel = !use_seed 
+        if reset_epmodel
+            seed = load_cache(epfield_seed_id; verbose = verbose, 
+                headline = "EPFIELD SEED LOADED")
+        end
 
-            isnothing(seed) && error("Seed not found!!!")
+        if !isnothing(seed) 
             update_solution!(epmodel, seed)
             seed = nothing
             GC.gc()
+        else
+            verbose && tagprintln_inmw("NOT SEEDING", 
+                "\nsim id: ", sim_id, "\n")
         end
 
         # ------------------------------------------------------------------
@@ -160,6 +164,7 @@ function cached_simulation(;
 
         cur_epout_cfile = nothing
         epout = epoch_converge_ep!(epmodel;
+                epconv_kwargs...,
                 epochlen = epochlen,
 
                 before_epoch = function(epout)
@@ -180,13 +185,13 @@ function cached_simulation(;
                     ep_objval = epout.av[objidx]
 
                     verbose && tagprintln_inmw("EPOCH FINISHED", 
-                        "\nsim id:                   ", sim_id, 
-                        "\niter:                     ", epout.iter,
-                        "\nmax beta:                 ", maximum(beta_vec), 
-                        "\nstoi err (min/mean/max):  ", (minimum(stoierr), mean(stoierr), maximum(stoierr)),
-                        "\nfba_objval:               ", fba_objval,
-                        "\nep_objval:                ", ep_objval,
-                        "\nep status:                ", epout.status,
+                        "\nsim id:                      ", sim_id, 
+                        "\niter:                        ", epout.iter,
+                        "\nmax beta:                    ", maximum(beta_vec), 
+                        "\nep stoi err (min/mean/max):  ", (minimum(stoierr), mean(stoierr), maximum(stoierr)),
+                        "\nfba_objval:                  ", fba_objval,
+                        "\nep_objval:                   ", ep_objval,
+                        "\nep status:                   ", epout.status,
                         "\n")
                     return (false, nothing)
                 end
@@ -195,7 +200,7 @@ function cached_simulation(;
 
         # ------------------------------------------------------------------
         # CACHE SEED
-        if use_seed && βi == 1
+        if use_seed
             save_cache(epout_seed_id, epout; verbose = verbose, 
                 headline = "EPOUT SEED SAVED")
         end
@@ -204,6 +209,14 @@ function cached_simulation(;
         # CACHE TOP BETA RESULT
         save_cache(top_beta_id, epout; verbose = verbose, 
                 headline = "TOP BETA EPOUT SAVED")
+
+        # ------------------------------------------------------------------
+        # FINISHING
+        # Letting a gap in printing for easy find
+        verbose && tagprintln_inmw("BETA PROCESSING FINISHED", 
+            "\nsim id:          ", sim_id, 
+            "\n\n\n"
+        )
 
     end
 
