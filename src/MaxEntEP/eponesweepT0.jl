@@ -1,6 +1,6 @@
 # Code derived from metabolicEP (https://github.com/anna-pa-m/Metabolic-EP)
 
-function eponesweepT0!(epfields::EPFields, epalg::EPAlg, epmatT0::EPMatT0)
+function eponesweepT0!(epfields::EPFields, epalg::EPAlg, epmatT0::EPMatT0, stat = Dict())
     @extract epfields : av va a b μ s siteflagave siteflagvar
     @extract epalg : alpha beta_vec minvar maxvar epsconv damp
     @extract epmatT0 : Σy Σw G lb ub vy vw Y

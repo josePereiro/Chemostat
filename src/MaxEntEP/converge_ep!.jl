@@ -10,8 +10,9 @@ function converge_ep!(epmodel::EPModel{T};
         
     ) where {T<:Real}
 
-    @extract epmodel : scalefact updatealg! epfields epmat beta_vec alpha
+    @extract epmodel : scalefact updatealg! epfields epmat beta_vec alpha stat
 
+    stat[:converge_init_time] = time()
     epalg = EPAlg(alpha, beta_vec, minvar, maxvar, epsconv, damp, maxiter, verbose)
 
     #= Here is were all the work is done, this function will 
@@ -29,7 +30,9 @@ function converge_ep!(epmodel::EPModel{T};
     while iter < maxiter
         iter += 1
         # eponesweep! will be eponesweepT0! or eponesweep depending on alpha
-        (errav, errvar, errμ, errs) = updatealg!(epfields, epalg, epmat)
+        stat[:elapsed_eponesweep] = @elapsed begin
+            (errav, errvar, errμ, errs) = updatealg!(epfields, epalg, epmat, stat)
+        end
 
         max_err = max(errav, errvar)
         if max_err < epsconv
@@ -37,12 +40,21 @@ function converge_ep!(epmodel::EPModel{T};
             break
         end
 
-        verbose && update!(prog, max_err; showvalues = [
-            (:iter, iter),
-            (:maxiter, maxiter),
-            (:alpha, alpha),
-            (:max_beta, max_beta)
-        ])
+        if verbose 
+            stat = epmodel.stat
+            sweep_time = time() - stat[:elapsed_eponesweep]
+            inv_time = stat[:elapsed_eponesweep_inv]
+            inv_frac = round(inv_time * 100/ sweep_time; digits = 3)
+
+            update!(prog, max_err; showvalues = [
+                (:iter, iter),
+                (:maxiter, maxiter),
+                (:alpha, alpha),
+                (:max_beta, max_beta),
+                (:sweep_time, sweep_time),
+                (:inv_time, string(inv_time, " [", inv_frac, " %]")),
+            ])
+        end
     end
 
     verbose && (finish!(prog); flush(stderr))

@@ -1,7 +1,7 @@
 # Code derived from metabolicEP (https://github.com/anna-pa-m/Metabolic-EP)
 # The original type did not include beta_maxent vector
 
-struct EPAlg{T<:AbstractFloat}
+struct EPAlg{T<:Real}
     alpha::T
     beta_vec::AbstractVector{T}
     minvar::T

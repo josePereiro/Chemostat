@@ -36,7 +36,7 @@ function EPModel(S::AbstractArray{T,2}, b::AbstractArray{T}, lb::AbstractArray{T
 
     beta_vec = prepare_βv(epmat, beta_vec)
 
-    return EPModel{T}(scalefact, updatealg!, epfields, epmat, alpha, beta_vec)
+    return EPModel{T}(scalefact, updatealg!, epfields, epmat, alpha, beta_vec, Dict())
 
 end
 

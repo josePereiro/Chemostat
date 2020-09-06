@@ -6,4 +6,5 @@ struct EPModel{T<:Real}
     epmat::AbstractEPMat
     alpha::T
     beta_vec::SparseVector{T, Int}
+    stat::Dict # Just data about the ep run
 end
