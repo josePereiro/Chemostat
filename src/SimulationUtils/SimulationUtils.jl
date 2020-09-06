@@ -4,7 +4,8 @@ module SimulationUtils
     import Serialization: serialize, deserialize
     import SparseArrays
     import SparseArrays: spzeros, SparseMatrixCSC, SparseVector
-    import ..Chemostat.Utils: EPModel, rxnindex, struct_to_dict, compress_dict, 
+    import ..Chemostat.Utils: EPModel, EPout,
+                              rxnindex, struct_to_dict, compress_dict, 
                               av, norm_abs_stoi_err, update_solution!
     import ..Chemostat.Test: empty_epout
     import ..Chemostat.MaxEntEP: converge_ep!

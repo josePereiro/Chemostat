@@ -39,6 +39,10 @@ function cached_simulation(;
 
     T = eltype(model.S)
     M, N = size(model)
+
+    # ------------------------------------------------------------------
+    # SIMDATA
+    simdata = Dict{Any, Any}()
     
     # ------------------------------------------------------------------
     # FBA
@@ -49,6 +53,7 @@ function cached_simulation(;
     fba_objval = av(model, fbaout, objider) 
     verbose && tagprintln_inmw("FBA FINISHED", 
         "\nsim id:          ", sim_id, 
+        "\nmodel size:      ", (M, N),
         "\nobjider:         ", objider, 
         "\nfba objval:      ", fba_objval,
         "\ncostider:        ", isnothing(costider) ? "Not set" : costider,
@@ -59,6 +64,7 @@ function cached_simulation(;
     # ------------------------------------------------------------------
     # SAVE AND DROP FBAOUT
     fbaout_id = (:FBAOUT_ID, sim_id)
+    simdata[:fba] = fbaout_id
     save_cache(fbaout_id, fbaout; 
         verbose = verbose, headline = "FBAOUT SAVED")
     fbaout = nothing
@@ -114,9 +120,10 @@ function cached_simulation(;
         # ------------------------------------------------------------------
         # TOP LEVEL BETA CACHE
         # It contains a epout. It will be loaded on demand
-        top_beta_id = (:TOP, hash(beta_vec), sim_id)
-        cfile = temp_cache_file(top_beta_id)
-        isfile(cfile) && continue
+        top_epout_id = (:TOP_EPOUT, hash(beta_vec), sim_id)
+        simdata[(:ep, βi)] = top_epout_id
+        top_epout_cfile = temp_cache_file(top_epout_id)
+        isfile(top_epout_cfile) && continue
 
         # ------------------------------------------------------------------
         # EPOUT SEED CACHE OR PARTIAL BETA CACHE
@@ -126,18 +133,27 @@ function cached_simulation(;
         # If a partial result is available, it will be used
         # to update the epmodel, if not, I'll try to find a 
         # top seed (The result of the first beta). 
-        partial_beta_id = (:PARTIAL, hash(beta_vec), sim_id)
-        partial_beta_cfile = temp_cache_file(partial_beta_id)
+        partial_epout_id = (:PARTIAL_EPOUT, hash(beta_vec), sim_id)
+        partial_epout_cfile = temp_cache_file(partial_epout_id)
+        best_epout_id = (:BEST_EPOUT, partial_epout_id)
+        best_epout_cfile = temp_cache_file(best_epout_id)
+        best_err_id = (:BEST_ERR, partial_epout_id)
+        best_err_cfile = temp_cache_file(best_err_id)
 
-        
+
+        # Select the available epout seed
         seed = nothing
-        use_epout_seed = use_seed && (isfile(partial_beta_cfile) || isfile(epout_seed_cfile))
+        seed_id = isfile(partial_epout_cfile) ? partial_epout_id : 
+                    isfile(best_epout_cfile) ? best_epout_id : 
+                        isfile(epout_seed_cfile) ? epout_seed_id : 
+                            nothing
+        
+        use_epout_seed = use_seed && !isnothing(seed_id)
         if use_epout_seed
-            epout_id = isfile(partial_beta_cfile) ? partial_beta_id : epout_seed_id
-            seed = load_cache(epout_id; verbose = verbose, 
+            seed = load_cache(seed_id; verbose = verbose, 
                 headline = "EPOUT SEED LOADED")
         end
-        
+
         # I will reset if explicitly say so
         reset_epmodel = !use_seed 
         if reset_epmodel
@@ -158,6 +174,7 @@ function cached_simulation(;
         # PROCESSING BETA
         verbose && tagprintln_inmw("STARTING BETA PROCESSING", 
             "\nsim id:      ", sim_id, 
+            "\nmodel size:  ", (M, N),
             "\nbeta count:  [", βi, "/", bcount, "]", 
             "\nmax beta:    ", maximum(beta_vec), 
             "\n")
@@ -175,39 +192,67 @@ function cached_simulation(;
 
                     # ------------------------------------------------------------------
                     # SAVE PARTIAL RESULT
-                    save_cache(partial_beta_id, epout; verbose = verbose,
+                    save_cache(partial_epout_id, epout::EPout; verbose = verbose,
                         headline = "PARTIAL RESULT SAVED")
 
-                    # Computing stoi error
+                    # ------------------------------------------------------------------
+                    # COMPUTING STOI ERR
                     model = load_cache(model_id; verbose = false);
                     isnothing(model) && error(string("Model cache is missing, model_id: ", model_id))
                     stoierr = norm_abs_stoi_err(model[:S], epout.av, model[:b])
+                    min_stoierr, mean_stoierr, max_stoierr = minimum(stoierr), mean(stoierr), maximum(stoierr)
                     ep_objval = epout.av[objidx]
+
+                    # ------------------------------------------------------------------
+                    # SAVE BEST ERR
+                    best_err = (isfile(best_err_cfile) && isfile(best_epout_cfile)) ?
+                         load_cache(best_err_id; verbose = false) : Inf
+                    if max_stoierr < best_err
+                        save_cache(best_epout_id, epout::EPout; verbose = verbose,
+                            headline = "BEST RESULT SAVED")
+                        save_cache(best_err_id, max_stoierr::Number; verbose = false)
+                    end
+
+                    # ------------------------------------------------------------------
+                    # stats
+                    stat = epmodel.stat
+                    sweep_time = stat[:elapsed_eponesweep]
+                    inv_time = stat[:elapsed_eponesweep_inv]
+                    inv_frac = round(inv_time * 100/ sweep_time; digits = 3)
 
                     verbose && tagprintln_inmw("EPOCH FINISHED", 
                         "\nsim id:                      ", sim_id, 
-                        "\niter:                        ", epout.iter,
+                        "\nmodel size:                  ", (M, N),
+                        "\nep iter:                     ", epout.iter,
                         "\nmax beta:                    ", maximum(beta_vec), 
-                        "\nep stoi err (min/mean/max):  ", (minimum(stoierr), mean(stoierr), maximum(stoierr)),
+                        "\nep stoi err (min/mean/max):  ", (min_stoierr, mean_stoierr, max_stoierr),
                         "\nfba_objval:                  ", fba_objval,
                         "\nep_objval:                   ", ep_objval,
                         "\nep status:                   ", epout.status,
+                        "\nepoch time(s):               ", sweep_time,
+                        "\nlast inv time(s):            ", inv_time, " [", inv_frac, " %]",
                         "\n")
                     return (false, nothing)
+                end,
+
+                onerr = function(epout, err)
+                    tagprintln_inmw("ERROR DURING EP\n", string_err(err))
+                    !isfile(best_epout_cfile) && error("EP could not recover from error. Best epout file is missing!!")
+                    return true, load_cache(best_epout_id, verbose = verbose;
+                            headline = "BEST EPOUT LOADED AND RETURNED")
                 end
 
         ) # epoch_converge_ep!
 
         # ------------------------------------------------------------------
-        # CACHE SEED
+        # SEED RESULT
         if use_seed
-            save_cache(epout_seed_id, epout; verbose = verbose, 
-                headline = "EPOUT SEED SAVED")
+            save_cache(epout_seed_id, epout::EPout; verbose = verbose, 
+                    headline = "EPOUT SEED SAVED")
         end
-
         # ------------------------------------------------------------------
         # CACHE TOP BETA RESULT
-        save_cache(top_beta_id, epout; verbose = verbose, 
+        save_cache(top_epout_id, epout::EPout; verbose = verbose, 
                 headline = "TOP BETA EPOUT SAVED")
 
         # ------------------------------------------------------------------
@@ -215,10 +260,10 @@ function cached_simulation(;
         # Letting a gap in printing for easy find
         verbose && tagprintln_inmw("BETA PROCESSING FINISHED", 
             "\nsim id:          ", sim_id, 
-            "\n\n\n"
+            "\n\n\n\n\n\n\n\n\n\n"
         )
 
-    end
+    end # for βi in 1:bcount
 
     # ------------------------------------------------------------------
     # DROP EPMODEL
@@ -227,18 +272,10 @@ function cached_simulation(;
 
     # ------------------------------------------------------------------
     # LOAD RESULTS
-    clear_cache && verbose && tagprintln_inmw("RELOADING RESULTS\n")
-    simdata = Dict()
-    simdata[:fba] = load_cache(fbaout_id; verbose = false)
-
-    for βi in 1:bcount
-
-        # UPDATE BETA VEC
-        # I used the beta_vec hash as id
-        _update_beta_vec!(βi, beta_vec, beta_info)
-
-        top_beta_id = (:TOP, hash(beta_vec), sim_id)
-        simdata[(:ep, βi)] = load_cache(top_beta_id; verbose = false)
+    clear_cache && verbose && tagprintln_inmw("RELOADING RESULTS", 
+        "\nCount: ", length(simdata), "\n")
+    for (k, dat_id) in simdata
+        simdata[k] = load_cache(dat_id; verbose = false)
     end
 
     # ------------------------------------------------------------------

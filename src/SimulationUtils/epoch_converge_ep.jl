@@ -2,7 +2,7 @@
 function epoch_converge_ep!(epmodel::EPModel; 
         epochlen::Int = 10,
         maxiter::Int=2000,  
-        onerr = (err) -> rethrow(err),
+        onerr = (epout, err) -> rethrow(err),
         before_epoch = (epout) -> (false, nothing),
         after_epoch = (epout) -> (false, nothing),
         kwargs...
@@ -38,7 +38,7 @@ function epoch_converge_ep!(epmodel::EPModel;
 
         err isa InterruptException && rethrow(err)
 
-        ret, dat = onerr(err)
+        ret, dat = onerr(epout, err)
         ret && return dat
 
     end # try
