@@ -24,7 +24,9 @@ function eponesweepT0!(epfields::EPFields, epalg::EPAlg, epmatT0::EPMatT0, stat 
     
     # All fields in epmat are updated from the epfields of last sweep
     # (?) covariance matrix of independent variables (epmat)
-    Σw = inv(Diagonal(1.0 ./ bw) + G' * Diagonal( 1.0 ./ by ) * G) 
+    stat[:elapsed_eponesweep_inv] = @elapsed begin
+        Σw = inv(Diagonal(1.0 ./ bw) + G' * Diagonal( 1.0 ./ by ) * G) 
+    end
     #fast_similarity_inv!(Σw, bw,  by, G)
     mul!(Σy,G*Σw,G') # (?) covariance matrix of dependent variables (epmat)
     # Original ep
