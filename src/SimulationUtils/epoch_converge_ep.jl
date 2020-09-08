@@ -13,9 +13,13 @@ function epoch_converge_ep!(epmodel::EPModel;
 
     try
 
+        
         while (isnothing(epout) || epout.iter == 0) || # First time
-            (maxiter > curr_iter && # Till maxiter 
+                (maxiter > curr_iter && # Till maxiter 
                 epout.status != :converged) # Or converged
+            
+            # For fast feed back the first epoch has length 1
+            epochlen_ = (isnothing(epout) || epout.iter == 0) ? 1 : epochlen
 
             ret, dat = before_epoch(epout)
             ret && return dat
@@ -23,7 +27,7 @@ function epoch_converge_ep!(epmodel::EPModel;
             epout = converge_ep!(epmodel; kwargs...,
                         verbose = false,
                         iter0 = curr_iter,
-                        maxiter = curr_iter + epochlen, 
+                        maxiter = curr_iter + epochlen_, 
                         drop_epfields = false # We need the epfields to update the epmodel
                     )
 

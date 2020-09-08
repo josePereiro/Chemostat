@@ -115,7 +115,7 @@ function cached_simulation(;
         # UPDATE BETA VEC
         # This just add the desire betas to the vector
         _update_beta_vec!(βi, beta_vec, beta_info)
-        epmodel.beta_vec .= beta_vec
+        epmodel.beta_vec .= beta_vec #TODO: package this
 
         # ------------------------------------------------------------------
         # TOP LEVEL BETA CACHE
@@ -229,8 +229,8 @@ function cached_simulation(;
                         "\nfba_objval:                  ", fba_objval,
                         "\nep_objval:                   ", ep_objval,
                         "\nep status:                   ", epout.status,
-                        "\nepoch time(s):               ", sweep_time,
-                        "\nlast inv time(s):            ", inv_time, " [", inv_frac, " %]",
+                        "\nlast sweep time(s):          ", sweep_time,
+                        "\nlast inv! time(s):            ", inv_time, " [", inv_frac, " % of the sweep time]",
                         "\n")
                     return (false, nothing)
                 end,
