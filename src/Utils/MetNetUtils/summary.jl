@@ -85,14 +85,14 @@ end
 
 function _print_rxn_summary(metnet, ider)
     idx = rxnindex(metnet, ider)
-    printstyled(" rxn[$idx]: ", metnet.rxns[idx], " (", metnet.rxnNames[idx], ")\n", color = info_color)
+    printstyled(" rxn[$idx]: ", metnet.rxns[idx], " (", get(metnet.rxnNames, idx, ""), ")\n", color = info_color)
     printstyled(" lb: ", metnet.lb[idx], ", ub: ", metnet.ub[idx], "\n" , color = info_color)
     printstyled(" ", rxn_str(metnet, idx), "\n" , color = info_color)
 end
 
 function _print_met_summary(metnet, ider)
     idx = metindex(metnet, ider)
-    printstyled(" met[$idx]: ", metnet.mets[idx], " (", metnet.metNames[idx], ")\n", color = info_color)
+    printstyled(" met[$idx]: ", metnet.mets[idx], " (", get(metnet.metNames, idx, ""), ")\n", color = info_color)
     printstyled(" ", balance_str(metnet, ider), color = info_color)
 end
 

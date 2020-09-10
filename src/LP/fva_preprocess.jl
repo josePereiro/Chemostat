@@ -12,21 +12,20 @@ function fva_preprocess(S,b,lb,ub,rxns;
     blocked = falses(n)
     upfrec = floor(Int, n/upfrec)
 
+    
     # FVA
     _bidx = trues(n)
     _bidx[ignored] .= false
     non_ignored = findall(_bidx)
     nn = length(non_ignored) 
+
+    prog = Progress(nn; desc = "Doing FVA  ")
     for i in non_ignored
-
-        show_progress = verbose && (i == 1 || i % upfrec == 0 || i == n)
-        show_progress && (print("fva_processing [$i / $nn]        \r"); flush(stdout))
-
         fvalb[i], fvaub[i] = fva(S, b, fvalb, fvaub, i; verbose = false) .|> first
-
+        verbose && update!(prog, i)
     end
 
-    verbose && (println("done!!!", " "^100); flush(stdout))
+    verbose && finish!(prog)
 
     return del_blocked(S, b, fvalb, fvaub, rxns; 
                     eps = eps, protected = protected)

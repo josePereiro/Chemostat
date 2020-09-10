@@ -151,5 +151,5 @@ function reshape_mat_dict(mat_dict::Dict; S::DataType = String,
         end
     end
 
-    return mat_dict
+    return new_dict
 end

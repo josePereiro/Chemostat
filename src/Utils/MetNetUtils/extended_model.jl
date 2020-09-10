@@ -3,7 +3,7 @@ const EMPTY_SPOT = ""
 # all the numerical fields larger
 function expanded_model(metnet::MetNet{T}, newM::Int, newN::Int) where T
     M, N = size(metnet)
-    @assert all((newM, newN) .> (M, N))
+    @assert all((newM, newN) .>= (M, N))
 
     function _similar_copy(col, fill, newdim)
         L = length(col)
