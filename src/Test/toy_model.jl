@@ -45,6 +45,6 @@ function  toy_model(;resp_cost::Real = -0.1, E_demand::Real = 5.0)
     model = expanded_model(model, M + 1, N + 1)
     # Add cost met
     set_met!(model, M + 1, Met("cost"; rxns = ["resp"], S = [resp_cost]))
-    set_rxn!(model, N + 1, Rxn("tot_cost"; rxns = ["cost"], S = [1.0], lb = 0.0, ub = 1.0))
+    set_rxn!(model, N + 1, Rxn("tot_cost"; mets = ["cost"], S = [1.0], lb = 0.0, ub = 1.0))
     return fva_preprocess(model)
 end

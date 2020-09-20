@@ -272,7 +272,7 @@ function cached_simulation(;
 
     # ------------------------------------------------------------------
     # LOAD RESULTS
-    clear_cache && verbose && tagprintln_inmw("RELOADING RESULTS", 
+    verbose && tagprintln_inmw("RELOADING RESULTS", 
         "\nCount: ", length(simdata), "\n")
     for (k, dat_id) in simdata
         simdata[k] = load_cache(dat_id; verbose = false)
