@@ -204,14 +204,14 @@ end
     return (ξ, data)
 end
 
-function boundle_data!(boundle, ξ, βs, data)
+function bundle_data!(bundle, ξ, βs, data)
 
-    Ch.Utils.add_data!(boundle, ξ, :net, data[(ξ, :net)])
-    Ch.Utils.add_data!(boundle, ξ, :fba, data[(ξ, :fba)])
+    Ch.Utils.add_data!(bundle, ξ, :net, data[(ξ, :net)])
+    Ch.Utils.add_data!(bundle, ξ, :fba, data[(ξ, :fba)])
     
     for β in βs
-        Ch.Utils.add_data!(boundle, ξ, β, :ep, data[(ξ, β, :ep)])
-        Ch.Utils.add_data!(boundle, ξ, β, :hr, data[(ξ, β, :hr)])
+        Ch.Utils.add_data!(bundle, ξ, β, :ep, data[(ξ, β, :ep)])
+        Ch.Utils.add_data!(bundle, ξ, β, :hr, data[(ξ, β, :hr)])
     end
 end
 
@@ -223,10 +223,10 @@ remote_results = pmap(process_xi, eachindex(ξs));
 # ### Saving results
 
 # +
-boundle = Ch.Utils.ChstatBoundle()
+bundle = Ch.Utils.ChstatBundle()
 
 for (ξ, data) in remote_results
-    boundle_data!(boundle, ξ, βs, data)
+    bundle_data!(bundle, ξ, βs, data)
 end
 
 println("Done!!!");
@@ -234,7 +234,7 @@ println("Done!!!");
 
 ### Catching
 cache_file = "toy_model_cache.jls"
-serialize(cache_file, boundle)
+serialize(cache_file, bundle)
 println(relpath(cache_file), " created!!!")
 
 # ### Deleting temporal caches

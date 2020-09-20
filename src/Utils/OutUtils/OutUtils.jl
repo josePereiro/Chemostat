@@ -1,7 +1,7 @@
 include("base.jl")
 include("getters.jl")
 include("marginal.jl")
-include("norm_abs_stoi_err.jl")
+include("norm_stoi_err.jl")
 include("pdf_maxval.jl")
 include("queries.jl")
 include("itrs.jl")

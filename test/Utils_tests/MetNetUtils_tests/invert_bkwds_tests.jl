@@ -8,7 +8,7 @@ function tests_invert_bkwds()
         @test all(new_model.S[:,rxn_i] .== -model.S[:,rxn_i])
         @test new_model.lb[rxn_i] == abs(model.ub[rxn_i])
         @test new_model.ub[rxn_i] == abs(model.lb[rxn_i])
-        @test new_model.rxns[rxn_i] == model.rxns[rxn_i] * Chemostat.Utils.bkwd_prefix
+        @test new_model.rxns[rxn_i] == model.rxns[rxn_i] * Chemostat.Utils.BKWD_SUFFIX
         @test new_model.rxnNames[rxn_i] == model.rxnNames[rxn_i]
     end
 end

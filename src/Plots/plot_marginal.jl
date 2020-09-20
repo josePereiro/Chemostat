@@ -59,14 +59,14 @@ function plot_marginal!(p, metnet::MetNet, outs::Vector, ider::IDER_TYPE; kwargs
     return p
 end
 
-# Boundle
-function plot_marginal!(p, boundle::ChstatBoundle, 
+# Bundle
+function plot_marginal!(p, bundle::ChstatBundle, 
         ξ::Real, β::Real, data_keys::Vector,
         ider::IDER_TYPE, metnet_data_key::Symbol = metnet_data_key; 
         kwargs...)
 
-    metnet = boundle[ξ, metnet_data_key]
-    outs = collect_data(d -> d isa AbstractOut, boundle, ξ, β, data_keys)
+    metnet = bundle[ξ, metnet_data_key]
+    outs = collect_data(d -> d isa AbstractOut, bundle, ξ, β, data_keys)
     plot_marginal!(p, metnet, outs, ider; kwargs...)
     return p
 end

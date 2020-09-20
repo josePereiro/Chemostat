@@ -1,7 +1,7 @@
 
 include("AbstractEPMat.jl")
 include("AbstractOut.jl")
-include("ChstatBoundle.jl")
+include("ChstatBundle.jl")
 include("echelonize.jl")
 include("EPAlgs.jl")
 include("EPFields.jl")

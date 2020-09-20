@@ -16,35 +16,35 @@ plot_ξs!(p, ξs::Vector, models::Vector, outs::Vector,
         [plot_ξs!(p, ξs, models, outs, ider; lw = lw, color = color, kwargs...) 
             for ider in iders]
 
-function plot_ξs!(p, ξs::Vector, β::Real, boundle::ChstatBoundle, 
+function plot_ξs!(p, ξs::Vector, β::Real, bundle::ChstatBundle, 
     ider::Union{AbstractString, Integer}; 
     lw = 3, kwargs...)
 
     try 
-        plot_ξs!(p, ξs, get_metnet(boundle, ξs),
-                get_epout(boundle, ξs, β), 
+        plot_ξs!(p, ξs, get_metnet(bundle, ξs),
+                get_epout(bundle, ξs, β), 
                 ider; lw = lw, color = ep_color, label = "EP", kwargs...)
     catch KeyError end
     try 
-        plot_ξs!(p, ξs, get_metnet(boundle, ξs),
-                get_hrout(boundle, ξs, β), 
+        plot_ξs!(p, ξs, get_metnet(bundle, ξs),
+                get_hrout(bundle, ξs, β), 
                 ider; lw = lw, color = hr_color, label = "HR", kwargs...)
     catch KeyError end
     try 
-        plot_ξs!(p, ξs, get_metnet(boundle, ξs),
-                get_fbaout(boundle, ξs), 
+        plot_ξs!(p, ξs, get_metnet(bundle, ξs),
+                get_fbaout(bundle, ξs), 
                 ider; lw = lw, color = fba_color, label = "FBA", kwargs...)
     catch KeyError end
 end
 
-plot_ξs(ξs::Vector, β::Real, boundle::ChstatBoundle, 
+plot_ξs(ξs::Vector, β::Real, bundle::ChstatBundle, 
     ider::Union{AbstractString, Integer}; 
     lw = 3, kwargs...) = 
-        plot_ξs!(plot(), ξs, β, boundle, ider; lw = lw, kwargs...)
+        plot_ξs!(plot(), ξs, β, bundle, ider; lw = lw, kwargs...)
 
-plot_ξs(ξs::Vector, β::Real, boundle::ChstatBoundle, 
+plot_ξs(ξs::Vector, β::Real, bundle::ChstatBundle, 
     iders::Vector; lw = 3, kwargs...) = 
-        [plot_ξs(ξs, β, boundle, ider; lw = lw, kwargs...)
+        [plot_ξs(ξs, β, bundle, ider; lw = lw, kwargs...)
             for ider in iders]
 
 function plot_ξs_legend(β; digits = 3, lw = 3, legend = :best, kwargs...)

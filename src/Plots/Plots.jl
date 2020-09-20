@@ -3,7 +3,7 @@
 """
 module Plots
 
-import ..Utils: logspace, rxnindex, marginal, rxns, ChstatBoundle,
+import ..Utils: logspace, rxnindex, marginal, rxns, ChstatBundle,
     lb, ub, MetNet, EPout, HRout, hists, μ, σ, FBAout, pdf_maxval, av, va,
     parse_β, parse_ξ, metnet_data_key, AbstractOut, IDER_TYPE, met_rxns, collect_data
 import Distributions: mean, var, pdf, std, truncated, Normal, Truncated

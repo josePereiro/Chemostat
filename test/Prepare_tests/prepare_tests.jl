@@ -62,9 +62,9 @@ function create_fbaout_cache()
 end
 create_fbaout_cache()
 
-#Boundle
-const BOUNDLE_CACHE_FILE = joinpath(TEST_CACHE_DIR, "chstat_boundle.jls")
-function create_boundle_cache()
+#Bundle
+const BOUNDLE_CACHE_FILE = joinpath(TEST_CACHE_DIR, "chstat_bundle.jls")
+function create_bundle_cache()
     # This is a whole workflow
 
     βs = [0.0; Chemostat.Utils.logspace(-2,5, 10)];
@@ -77,7 +77,7 @@ function create_boundle_cache()
     );
     obj_ider = "biom"; 
 
-    boundle = Chemostat.Utils.ChstatBoundle();
+    bundle = Chemostat.Utils.ChstatBundle();
 
     verbose_ = false
     for (ξi, ξ) in enumerate(ξs)
@@ -90,9 +90,9 @@ function create_boundle_cache()
         # FBA
         fbaout = Chemostat.LP.fba(model, obj_ider)
         
-        # Add to boundle
-        boundle[ξ, :net] =  model
-        boundle[ξ, :fba] = fbaout
+        # Add to bundle
+        bundle[ξ, :net] =  model
+        bundle[ξ, :fba] = fbaout
         
         # MaxEnt-EP
         βv = zeros(size(model, 2))
@@ -104,16 +104,16 @@ function create_boundle_cache()
                 
             βv[obj_idx] = β
             epout = Chemostat.MaxEntEP.maxent_ep(model; alpha = 1e11, beta_vec = βv, verbose = verbose_)
-            boundle[ξ, β, :ep] = epout
+            bundle[ξ, β, :ep] = epout
             @test true
         end
     end
     println("Done                              ");
 
-    serialize(BOUNDLE_CACHE_FILE, boundle)
+    serialize(BOUNDLE_CACHE_FILE, bundle)
     flush(stdout)
     println("created $BOUNDLE_CACHE_FILE")
     @test true
 
 end
-create_boundle_cache()
+create_bundle_cache()

@@ -6,7 +6,7 @@ module SimulationUtils
     import SparseArrays: spzeros, SparseMatrixCSC, SparseVector
     import ..Chemostat.Utils: EPModel, EPout,
                               rxnindex, struct_to_dict, compress_dict, 
-                              av, norm_abs_stoi_err, update_solution!
+                              av, norm1_stoi_err, update_solution!
     import ..Chemostat.Test: empty_epout
     import ..Chemostat.MaxEntEP: converge_ep!
     import ..Chemostat.LP: fba

@@ -199,7 +199,7 @@ function cached_simulation(;
                     # COMPUTING STOI ERR
                     model = load_cache(model_id; verbose = false);
                     isnothing(model) && error(string("Model cache is missing, model_id: ", model_id))
-                    stoierr = norm_abs_stoi_err(model[:S], epout.av, model[:b])
+                    stoierr = norm1_stoi_err(model[:S], epout.av, model[:b])
                     min_stoierr, mean_stoierr, max_stoierr = minimum(stoierr), mean(stoierr), maximum(stoierr)
                     ep_objval = epout.av[objidx]
 

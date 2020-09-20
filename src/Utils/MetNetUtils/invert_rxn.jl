@@ -1,5 +1,5 @@
 function invert_rxn!(metnet::MetNet, ider::IDER_TYPE;
-        rename = true)
+        rename = true, bkwd_prefix = BKWD_SUFFIX)
     idx = rxnindex(metnet, ider)
     metnet.S[:,idx] .*= -1
     lb_ = abs(metnet.ub[idx])
