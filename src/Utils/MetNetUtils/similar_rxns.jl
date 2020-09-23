@@ -5,14 +5,15 @@
     This method only use the information in the binary S. 
     Bounds are not relevant either.
 """
-function similar_rxns(model::MetNet; verbose = true)
+function similar_rxns(model::MetNet, 
+        iders = eachindex(model.rxns); verbose = true)
 
-    M, N = size(model)
+    idxs = [rxnindex(model, ider) for ider in iders]
     # collecting react and prods hashs
     # (prods_hash, react_hash) => reaction idxs
     # (react_hash, prods_hash) => reaction idxs
     hash_table = Dict{Tuple{UInt64,UInt64}, Vector{Int}}()
-    for rxni in 1:N
+    for rxni in idxs
         rhash = hash(Set(rxn_reacts(model, rxni)))
         phash = hash(Set(rxn_prods(model, rxni)))
         rxnis = get!(hash_table, (rhash, phash), Int[])
