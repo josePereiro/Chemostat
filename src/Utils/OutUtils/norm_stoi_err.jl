@@ -7,7 +7,7 @@ norm1_stoi_err(metnet::MetNet, out::AbstractOut, ider::IDER_TYPE) =
 
 function norm2_stoi_err(model, out; 
     xfun = av)
-    errs = stoi_err(model, epout)
+    errs = stoi_err(model, out)
     x = xfun(out)
     max_abs_flxs = []
     for meti in eachindex(model.mets)
