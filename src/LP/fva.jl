@@ -14,12 +14,11 @@ function fva(S, b, lb, ub, idxs = eachindex(lb);
     end
     
     n = length(idxs)
+    prog = Progress(n; desc = "Doing FVA  ")
     for (i, idx) in enumerate(idxs)
-
+        
+        verbose && update!(prog, i)
         for (fva_col, sense) in [(fvalb, 1), (fvaub, -1)]
-
-            show_progress = verbose && sense == 1 && (i == 1 || i % upfrec == 0 || i == n)
-            show_progress && (print("fva[$i / $n]        \r"); flush(stdout))
             
             sv[idx] = sense
             sol = linprog(
@@ -62,8 +61,8 @@ function fva(S, b, lb, ub, idxs = eachindex(lb);
         end
     end
 
-    verbose && (println("done!!!", " "^100); flush(stdout))
-    
+    verbose && finish!(prog)
+
     return fvalb[idxs], fvaub[idxs]
 end
 

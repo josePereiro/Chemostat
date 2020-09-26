@@ -12,13 +12,12 @@ function norm2_stoi_err(model, out;
     max_abs_flxs = []
     for meti in eachindex(model.mets)
         rxnis = met_rxns(model, meti)
-        xs = x[rxnis]
-        push!(max_abs_flxs, maximum(abs.(xs)))
+        push!(max_abs_flxs, isempty(rxnis) ? 1.0 : maximum(abs.(x[rxnis])))
     end
     norm_errs =[]
     for (err, norm) in zip(errs, max_abs_flxs)
         norm_err = err == 0.0 ? 0.0 :
-            err / norm
+            abs(err) / norm
         push!(norm_errs, norm_err)
     end
     norm_errs
