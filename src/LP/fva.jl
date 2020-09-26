@@ -70,7 +70,7 @@ function fva(model::MetNet, iders = eachindex(model.lb);
         check_obj = nothing, kwargs...) 
     obj_idx = isnothing(check_obj) ? nothing : rxnindex(model, check_obj)
     idxs = [rxnindex(model, idx) for idx in iders]
-    return fva(model.S, model.b, model.lb, model.ub, idxs; 
+    return fva(_extract_dense(model, [:S, :b, :lb, :ub])..., idxs; 
         check_obj = obj_idx, kwargs...);
 end
 

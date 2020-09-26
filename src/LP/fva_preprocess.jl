@@ -40,8 +40,9 @@ function fva_preprocess(metnet::MetNet;
     ignored = map((r) -> rxnindex(metnet, r), ignored)
     protected = map((r) -> rxnindex(metnet, r), protected)
 
-    S_, b_, lb_, ub_, rxns_, blocked = fva_preprocess(metnet.S, metnet.b, metnet.lb, 
-        metnet.ub, metnet.rxns; verbose = verbose, eps = eps, ignored = ignored);
+    S_, b_, lb_, ub_, rxns_, blocked = fva_preprocess(
+        _extract_dense(metnet, [:S, :b, :lb, :ub])..., metnet.rxns; 
+        verbose = verbose, eps = eps, ignored = ignored);
     
     metnet = MetNet(metnet; S = S_, b = b_, lb = lb_, ub = ub_, rxns = rxns_)
     return return_blocked ? (metnet, blocked) : metnet
