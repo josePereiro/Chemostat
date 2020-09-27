@@ -1,9 +1,9 @@
 module Chemostat
 
+import UtilsJL
 import Requires: @require
 
 include("Utils/Utils.jl")
-
 include("LP/LP.jl")
 include("Test/Test.jl")
 include("SteadyState/SteadyState.jl")

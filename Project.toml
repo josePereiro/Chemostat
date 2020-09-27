@@ -21,6 +21,7 @@ Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+UtilsJL = "1d417f3e-fd42-11ea-18da-dda57c9b97b2"
 
 [compat]
 Clp = "= 0.7.1"

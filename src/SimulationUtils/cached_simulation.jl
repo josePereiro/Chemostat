@@ -288,7 +288,7 @@ function cached_simulation(;
     return simdata
 end
 
-_compress(obj) = obj |> struct_to_dict |> compress_dict
+_compress(obj) = obj |> struct_to_dict |> compressed_copy
 
 
 ## Handling beta vec
