@@ -48,9 +48,9 @@ println("betas: ", bundle.βs)
 # will be more probables (more prob density around the large values of biom). The rest of the fluxes will change 
 # depending in its covarianze with biom
 
-ξ = bundle.ξs[4] # Select ξ to plot
-metnet = Ch.Utils.get_data(bundle, ξ, :net)
-fbaout = Ch.Utils.get_data(bundle, ξ, :fba)
+ξ = bundle.ξs[1] # Select ξ to plot
+metnet = bundle[ξ, :net]
+fbaout = bundle[ξ, :fba]
 ps = []
 βs_ = bundle.βs[6:end] # Select βs to plot
 βs_ = [βs_; reverse(βs_)]
@@ -109,7 +109,7 @@ iders_ = metnet.rxns # Select rxn iders
 function plot2(iders, ξ, β, ξ0)
     ps = []
     
-    metnet0 = Ch.Utils.get_data(bundle, ξ0, :net)
+    metnet0 = bundle[ξ0, :net]
     
     for ider in iders
         ξstr = round(ξ, digits = 1)
