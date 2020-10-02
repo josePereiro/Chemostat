@@ -236,7 +236,7 @@ function cached_simulation(;
                 end,
 
                 onerr = function(epout, err)
-                    tagprintln_inmw("ERROR DURING EP\n", string_err(err))
+                    tagprintln_inmw("ERROR DURING EP\n", err_str(err))
                     !isfile(best_epout_cfile) && error("EP could not recover from error. Best epout file is missing!!")
                     return true, load_cache(best_epout_id, verbose = verbose;
                             headline = "BEST EPOUT LOADED AND RETURNED")
