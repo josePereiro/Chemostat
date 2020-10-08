@@ -8,11 +8,12 @@ function medium_conc(model::MetNet, out::AbstractOut, xi::Real, rxn::IDER_TYPE;
         feed_c = () -> get(get(intake_info, rxn, Dict()), "c", 0.0)
     )
     rxn = rxns(model, rxn)
-    @show u = sense * av(model, out, rxn)
-    @show c = feed_c()
-    @show s = c + u*xi
-    println()
-    return force_pos ? max(s, 0.0) : s
+    u = sense * av(model, out, rxn)
+    uerr = sense * sqrt(va(model, out, rxn))
+    c = feed_c()
+    s = c + u * xi
+    serr = uerr * xi
+    return force_pos ? (max(s, 0.0), serr) : (s, serr)
 end
 
 function medium_conc(bundle::ChstatBundle, xi::Real, k, rxn::IDER_TYPE; 
