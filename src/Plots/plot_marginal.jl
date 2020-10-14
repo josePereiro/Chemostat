@@ -3,22 +3,23 @@ const fba_color = :blue
 const hr_color = :black
 
 function plot_marginal!(p, μ::Real, σ::Real, lb::Real, ub::Real;
+        av = nothing, 
         h = 1, lw = 5,
         color = :black,
         label = "", kwargs...)
-
+        
     sσ = sqrt(σ)
     tN = Truncated(Normal(μ, sσ), lb, ub) 
-    global_max_ = μ <= lb ? lb : μ >= ub ? ub : μ 
+    global_max_ = isnothing(av) ? clamp(μ, lb, ub) : av
     margin_ = abs(ub - lb) * 0.1
     if sσ == 0.0 || !(-Inf < pdf(tN, global_max_) < Inf)
         plot!(p, [lb - margin_, ub + margin_], [0.0, 0.0]; 
             label = "")
-        plot!(p, [μ, μ], [0.0, h]; 
-            label = label, color = color, lw = lw, kwargs...)
+        plot!(p, [global_max_, global_max_], [0.0, h]; 
+            lw, label, color, kwargs...)
     else
         plot!(p, x -> pdf(tN, x), lb - margin_, ub + margin_; 
-            lw = lw, label = label, color = color, kwargs...)
+            lw, label, color, kwargs...)
     end
     return plot!(p; kwargs...)
 end
@@ -32,8 +33,9 @@ function plot_marginal!(p, metnet::MetNet, out::Union{FBAout, EPout}, ider;
     ub_ = ub(metnet, ider)
 
     μ_ = μ(metnet, out, ider);
+    av_ = av(metnet, out, ider);
     σ_ = σ(metnet, out, ider);
-    plot_marginal!(p, μ_, σ_, lb_, ub_; color = color, label = label, kwargs...)
+    plot_marginal!(p, μ_, σ_, lb_, ub_; av = av_, color, label, kwargs...)
 end
 
 
@@ -47,7 +49,7 @@ function plot_marginal!(p, metnet::MetNet, out::HRout, ider;
     hist = hists(metnet, out, ider)
     plot!(p, normalize(hist, mode = :pdf); 
         xaxis = [lb_ - margin_, ub_ + margin_],
-        label = label, color = color, kwargs...)
+        label, color, kwargs...)
 end
 
 function plot_marginal!(p, metnet::MetNet, outs::Vector, ider::IDER_TYPE; kwargs...)
