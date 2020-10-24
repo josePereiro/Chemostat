@@ -4,11 +4,17 @@ isrev(metnet::MetNet, ider::IDER_TYPE) = (indx = rxnindex(metnet, ider);
 isblock(metnet::MetNet, ider::IDER_TYPE) = (indx = rxnindex(metnet, ider); 
     metnet.lb[indx] == 0.0 && metnet.ub[indx] == 0.0)
 
-isfwd(metnet::MetNet, ider::IDER_TYPE) = (indx = rxnindex(metnet, ider); 
+isfwd_bounded(metnet::MetNet, ider::IDER_TYPE) = (indx = rxnindex(metnet, ider); 
     metnet.lb[indx] >= 0.0 && metnet.ub[indx] > 0.0)
 
-isbkwd(metnet::MetNet, ider::IDER_TYPE) = (indx = rxnindex(metnet, ider); 
+isbkwd_bounded(metnet::MetNet, ider::IDER_TYPE) = (indx = rxnindex(metnet, ider); 
     metnet.lb[indx] < 0.0 && metnet.ub[indx] <= 0.0)
+
+isfwd_defined(metnet::MetNet, ider::IDER_TYPE) = (indx = rxnindex(metnet, ider); 
+    length(rxn_reacts(metnet, indx)) > 0)
+
+isbkwd_defined(metnet::MetNet, ider::IDER_TYPE) = (indx = rxnindex(metnet, ider); 
+    length(rxn_prods(metnet, indx)) > 0) 
 
 isfixxed(metnet::MetNet, ider::IDER_TYPE) = (indx = rxnindex(metnet, ider); 
     metnet.lb[indx] == metnet.ub[indx] != 0.0)
@@ -19,16 +25,16 @@ revscount(metnet::MetNet) = length(revs(metnet))
 blocks(metnet::MetNet) = findall((metnet.lb .== 0.0) .& (metnet.ub .== 0.0))
 blockscount(metnet::MetNet) = length(blocks(metnet))
 
-fwds(metnet::MetNet) = findall((metnet.lb .>= 0.0) .& (metnet.ub .> 0.0))
-fwdscount(metnet::MetNet) = length(fwds(metnet))
+fwds_bounded(metnet::MetNet) = findall((metnet.lb .>= 0.0) .& (metnet.ub .> 0.0))
+fwds_boundedcount(metnet::MetNet) = length(fwds_bounded(metnet))
 
-bkwds(metnet::MetNet) = findall((metnet.lb .< 0.0) .& (metnet.ub .<= 0.0))
-bkwdscount(metnet::MetNet) = length(bkwds(metnet))
+bkwds_bounded(metnet::MetNet) = findall((metnet.lb .< 0.0) .& (metnet.ub .<= 0.0))
+bkwds_boundedcount(metnet::MetNet) = length(bkwds_bounded(metnet))
 
 fixxeds(metnet::MetNet) = findall((metnet.lb .== metnet.ub .!= 0.0))
 fixxedscount(metnet::MetNet) = length(fixxeds(metnet))
 
-allfwd(metnet::MetNet) = fwdscount(metnet) == rxnscount(metnet)
+allfwd(metnet::MetNet) = fwds_boundedcount(metnet) == rxnscount(metnet)
 
 function is_exchange(metnet::MetNet, ider::IDER_TYPE)
     reacts = rxn_reacts(metnet, ider)

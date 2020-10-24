@@ -1,8 +1,8 @@
 function rxn_str(metnet::MetNet, ider::IDER_TYPE)
     ridx = rxnindex(metnet, ider)
     arrow_str = isblock(metnet, ridx) ? " >< " : 
-                isbkwd(metnet, ridx) ? " <== " :
-                isfwd(metnet, ridx) ? " ==> " : " <==> " 
+                isbkwd_bounded(metnet, ridx) ? " <== " :
+                isfwd_bounded(metnet, ridx) ? " ==> " : " <==> " 
     
     reacts = rxn_reacts(metnet, ridx)
     react_str = join([string("(", S(metnet, react, ridx), ") ", 

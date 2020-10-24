@@ -58,8 +58,8 @@ function _summary_bound_state(metnet::MetNet)
 
 
     revscount(metnet) > 0 && printstyled("revscount: $(revscount(metnet))", "\n", color = warn_color)
-    fwdscount(metnet) > 0 && printstyled("fwds: $(fwdscount(metnet))", "\n", color = info_color)
-    bkwdscount(metnet) > 0 && printstyled("bkwds: $(bkwdscount(metnet))", "\n", color = warn_color)
+    fwds_boundedcount(metnet) > 0 && printstyled("fwds_bounded: $(fwds_boundedcount(metnet))", "\n", color = info_color)
+    bkwds_boundedcount(metnet) > 0 && printstyled("bkwds_bounded: $(bkwds_boundedcount(metnet))", "\n", color = warn_color)
     blockscount(metnet) > 0 && printstyled("blocks: $(blockscount(metnet))", "\n", color = warn_color)
     fixxedscount(metnet) > 0 && printstyled("fixxed: $(fixxedscount(metnet))", "\n", color = info_color)
 

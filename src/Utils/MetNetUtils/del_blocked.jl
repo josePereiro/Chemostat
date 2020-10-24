@@ -1,10 +1,10 @@
-function del_blocked(S, b, lb, ub, rxns; eps = 0.0, protected = [])
+function del_blocked(S, b, lb, ub, rxns; eps = 0.0, protect = [])
 
     lb, ub = (lb, ub) .|> copy # local copy
     m, n = size(S)
 
     _bidx = trues(n)
-    _bidx[protected] .= false
+    _bidx[protect] .= false
     non_protected = findall(_bidx)
 
     blocked = falses(n)
@@ -21,10 +21,9 @@ function del_blocked(S, b, lb, ub, rxns; eps = 0.0, protected = [])
         lb[unblocked], ub[unblocked], rxns[unblocked], findall(blocked)
 end
 
-function del_blocked(model::MetNet; eps = 0.0, protected = [])
-    protected = map((r) -> rxnindex(model, r), protected)
-    S, b, lb, ub, rxns = model.S, model.b, model.lb, model.ub, model.rxns
-    S_, b_, lb_, ub_, rxns_, blocked = 
-        del_blocked(S, b, lb, ub, rxns; eps = eps, protected = protected)
-    return MetNet(model; reshape = true, S = S_, b = b_, lb = lb_, ub = ub_, rxns = rxns_)
+function del_blocked(model::MetNet; eps = 0.0, protect = [])
+    protect = map((r) -> rxnindex(model, r), protect)
+    S, b, lb, ub, rxns, blocked = 
+        del_blocked(model.S, model.b, model.lb, model.ub, model.rxns; eps, protect)
+    return MetNet(model; reshape = true, S, b, lb, ub, rxns)
 end

@@ -1,7 +1,7 @@
 function tests_invert_bkwds()
     model = deserialize(METNET_CACHE_FILE)
     
-    bkwd_idxs = Chemostat.Utils.bkwds(model)
+    bkwd_idxs = Chemostat.Utils.bkwds_bounded(model)
     new_model = Chemostat.Utils.invert_bkwds(model)
 
     for rxn_i in bkwd_idxs
