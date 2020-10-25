@@ -1,11 +1,12 @@
 function invert_rxn!(metnet::MetNet, ider::IDER_TYPE;
-        rename = true, bkwd_prefix = BKWD_SUFFIX)
+        rename::Union{String,Function} = (rxn) -> string(rxn)
+    )
     idx = rxnindex(metnet, ider)
     metnet.S[:,idx] .*= -1
-    lb_ = abs(metnet.ub[idx])
-    ub_ = abs(metnet.lb[idx])
+    ub_ = -metnet.lb[idx]
+    lb_ = -metnet.ub[idx]
     metnet.ub[idx] = ub_
     metnet.lb[idx] = lb_
-    rename && (metnet.rxns[idx] *= bkwd_prefix) 
+    metnet.rxns[idx] = rename isa Function ? rename(metnet.rxns[idx]) : rename
     return metnet
 end
