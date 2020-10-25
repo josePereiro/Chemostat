@@ -1,5 +1,5 @@
 function test_out_getters()
-    bundle = deserialize(BOUNDLE_CACHE_FILE)
+    bundle = deserialize(BUNDLE_CACHE_FILE)
 
     getters = [Chemostat.Utils.av, Chemostat.Utils.va, 
         Chemostat.Utils.μ, Chemostat.Utils.σ]

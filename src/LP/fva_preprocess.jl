@@ -1,54 +1,45 @@
 # Code derived from metabolicEP (https://github.com/anna-pa-m/Metabolic-EP)
-function fva_preprocess(S,b,lb,ub,rxns; 
+function fva_preprocess(S, b, lb, ub, rxns; 
         check_obj = nothing,
-        verbose = false, eps = 0.0, 
-        ignored = [], # rxns skip preprocess
-        protected = [], # rxns skip blocking
-        upfrec = 10)
-        
-    fvalb, fvaub = (lb, ub) .|> copy
+        verbose = true, eps = 0.0, 
+        ignore = [], # rxns skip preprocess
+        protect = [], # rxns skip blocking
+    )
 
     m, n = size(S)
     ei = zeros(n)
     blocked = falses(n)
-    upfrec = floor(Int, n/upfrec)
 
     # FVA
     _bidx = trues(n)
-    _bidx[ignored] .= false
+    _bidx[ignore] .= false
     non_ignored = findall(_bidx)
     nn = length(non_ignored) 
 
-    prog = Progress(nn; desc = "Doing FVA  ")
-    for i in non_ignored
-        fvalb[i], fvaub[i] = fva(S, b, fvalb, fvaub, i; 
-            check_obj = check_obj,
-            verbose = false) .|> first
-        verbose && update!(prog, i)
-    end
+    fvalb, fvaub = (lb, ub) .|> copy
+    fvalb[non_ignored], fvaub[non_ignored] = 
+        fva(S, b, lb, ub, non_ignored; check_obj, verbose)
 
-    verbose && finish!(prog)
-
-    return del_blocked(S, b, fvalb, fvaub, rxns; 
-                    eps = eps, protected = protected)
+    return del_blocked(S, b, fvalb, fvaub, rxns; eps, protect)
 end
 
 
 function fva_preprocess(metnet::MetNet; 
             check_obj = nothing,
-            verbose = false, eps = 0.0, return_blocked = false,
-            ignored = [], # rxns skip preprocess
-            protected = [] # rxns skip blocking
+            verbose = true, eps = 0.0, return_blocked = false,
+            ignore = [], # rxns skip preprocess
+            protect = [] # rxns skip blocking
         )
-    ignored = map((r) -> rxnindex(metnet, r), ignored)
-    protected = map((r) -> rxnindex(metnet, r), protected)
+    ignore = map((r) -> rxnindex(metnet, r), ignore)
+    protect = map((r) -> rxnindex(metnet, r), protect)
     check_obj = isnothing(check_obj) ? nothing : rxnindex(metnet, check_obj)
     
-    S_, b_, lb_, ub_, rxns_, blocked = fva_preprocess(
-        _extract_dense(metnet, [:S, :b, :lb, :ub])..., metnet.rxns; 
-        check_obj = check_obj, verbose = verbose, 
-        eps = eps, ignored = ignored);
+    model_fields = _extract_dense(metnet, [:S, :b, :lb, :ub])
+    rxns = eachindex(metnet.rxns)
+    S, b, lb, ub, rxnis, blocked = fva_preprocess(model_fields..., rxns; 
+                                        check_obj, verbose, eps, ignore, protect);
     
-    metnet = MetNet(metnet; S = S_, b = b_, lb = lb_, ub = ub_, rxns = rxns_)
+    rxns = metnet.rxns[rxnis]
+    metnet = MetNet(metnet; S, b, lb, ub, rxns)
     return return_blocked ? (metnet, blocked) : metnet
 end

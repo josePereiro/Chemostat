@@ -22,6 +22,8 @@ function simple_toy_MetNet()
     
     return MetNet(;net...)
 end
+const TOY_MODEL_BIOMASS_IDER = "biom"
+const TOY_MODEL_COST_IDER = "tot_cost"
 
 function  toy_model(;resp_cost::Real = -0.1, E_demand::Real = 5.0)
     @assert resp_cost <= 0.0
@@ -46,5 +48,5 @@ function  toy_model(;resp_cost::Real = -0.1, E_demand::Real = 5.0)
     # Add cost met
     set_met!(model, M + 1, Met("cost"; rxns = ["resp"], S = [resp_cost]))
     set_rxn!(model, N + 1, Rxn("tot_cost"; mets = ["cost"], S = [1.0], lb = 0.0, ub = 1.0))
-    return fva_preprocess(model)
+    return fva_preprocess(model; verbose = false)
 end

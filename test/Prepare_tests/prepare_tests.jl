@@ -63,7 +63,7 @@ end
 create_fbaout_cache()
 
 #Bundle
-const BOUNDLE_CACHE_FILE = joinpath(TEST_CACHE_DIR, "chstat_bundle.jls")
+const BUNDLE_CACHE_FILE = joinpath(TEST_CACHE_DIR, "chstat_bundle.jls")
 function create_bundle_cache()
     # This is a whole workflow
 
@@ -110,9 +110,9 @@ function create_bundle_cache()
     end
     println("Done                              ");
 
-    serialize(BOUNDLE_CACHE_FILE, bundle)
+    serialize(BUNDLE_CACHE_FILE, bundle)
     flush(stdout)
-    println("created $BOUNDLE_CACHE_FILE")
+    println("created $BUNDLE_CACHE_FILE")
     @test true
 
 end
