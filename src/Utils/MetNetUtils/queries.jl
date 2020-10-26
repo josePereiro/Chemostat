@@ -4,6 +4,8 @@ isrev(metnet::MetNet, ider::IDER_TYPE) = (indx = rxnindex(metnet, ider);
 isblock(metnet::MetNet, ider::IDER_TYPE) = (indx = rxnindex(metnet, ider); 
     metnet.lb[indx] == 0.0 && metnet.ub[indx] == 0.0)
 
+isopen(metnet::MetNet, ider::IDER_TYPE) = !isblock(metnet::MetNet, ider::IDER_TYPE)
+
 isfwd_bounded(metnet::MetNet, ider::IDER_TYPE) = (indx = rxnindex(metnet, ider); 
     metnet.lb[indx] >= 0.0 && metnet.ub[indx] > 0.0)
 
