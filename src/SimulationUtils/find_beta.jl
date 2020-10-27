@@ -1,5 +1,7 @@
-_store_if_something!(container::Nothing, key, value) = nothing
-_store_if_something!(container::Dict, key, value) = container[key] = value
+_set_if_something!(container::Nothing, key, value)::EPout = value
+_set_if_something!(container::Dict, key, value)::EPout = container[key] = value
+_get_if_something(f, container::Nothing, key)::EPout = f()
+_get_if_something(f, container::Dict, key)::EPout = get(container, key, f())
 
 function find_beta(model::MetNet; obj_ider::IDER_TYPE, target_objval::Real,
         beta0::Real, beta1::Real,
@@ -16,11 +18,15 @@ function find_beta(model::MetNet; obj_ider::IDER_TYPE, target_objval::Real,
     # Computing sense
     verbose && println("Computing seed")
     beta_vec[obj_idx] = beta0
-    epout0 = maxent_ep(model; beta_vec, verbose)
-    _store_if_something!(epouts, beta0, epout0)
+    epout0 = _get_if_something(epouts, beta0) do
+        epout_ = maxent_ep(model; beta_vec, verbose)
+        _set_if_something!(epouts, beta0, epout_)
+    end
     beta_vec[obj_idx] = beta1
-    epout1 = maxent_ep(model; solution = epout0, beta_vec, verbose)
-    _store_if_something!(epouts, beta1, epout1)
+    epout1 = _get_if_something(epouts, beta1) do
+        epout_ = maxent_ep(model; solution = epout0, beta_vec, verbose)
+        _set_if_something!(epouts, beta1, epout_)
+    end
     objval0 = av(model, epout0, obj_idx)
     objval1 = av(model, epout1, obj_idx)
     sense = objval0 < objval1 ? 1.0 : -1.0
@@ -39,10 +45,12 @@ function find_beta(model::MetNet; obj_ider::IDER_TYPE, target_objval::Real,
 
         beta = abs(beta0 - beta1)/2 + beta0
         beta_vec[obj_idx] = beta
-        epout = maxent_ep(model; beta_vec, verbose = false, 
-            solution = epout_seed
-        )
-        _store_if_something!(epouts, beta, epout)
+        epout = _get_if_something(epouts, beta) do
+            epout_ = maxent_ep(model; beta_vec, verbose = false, 
+                solution = epout_seed
+            )
+            _set_if_something!(epouts, beta, epout_)
+        end
         curr_objval = av(model, epout, obj_idx)
         epout_seed = epout
 
