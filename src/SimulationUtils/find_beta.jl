@@ -3,28 +3,36 @@ _set_if_something!(container::Dict, key, value)::EPout = container[key] = value
 _get_if_something(f, container::Nothing, key)::EPout = f()
 _get_if_something(f, container::Dict, key)::EPout = get(container, key, f())
 
-function find_beta(model::MetNet; obj_ider::IDER_TYPE, target_objval::Real,
+function find_beta(model::MetNet; 
+        obj_ider::IDER_TYPE, target_objval::Real,
         beta0::Real, beta1::Real,
         verbose = true,
-        epouts::Union{Nothing, Dict} = nothing, # a container for the computed epouts
+        epouts::Union{Nothing, Dict} = nothing, # a container/cache for the computed epouts
+        maxiters::Real = 100,   
         errorth::Real = 0.01,
-        maxiters::Real = 100   
+
+        # maxent_ep kwargs
+        alpha::Real=1e7, damp::Real=0.9,
+        epsconv::Real=1e-6, ep_maxiter::Int=2000,   
+        maxvar::Real=1e50, minvar::Real=1e-50,  
+        expval=nothing
     )
 
     M, N = size(model)
     obj_idx = rxnindex(model, obj_ider)
     beta_vec = zeros(N)
+    maxent_ep_kwarg = (;verbose, maxiter = ep_maxiter, alpha, damp, epsconv, maxvar, minvar, expval)
     
     # Computing sense
     verbose && println("Computing seed")
     beta_vec[obj_idx] = beta0
     epout0 = _get_if_something(epouts, beta0) do
-        epout_ = maxent_ep(model; beta_vec, verbose)
+        epout_ = maxent_ep(model; beta_vec, maxent_ep_kwarg...)
         _set_if_something!(epouts, beta0, epout_)
     end
     beta_vec[obj_idx] = beta1
     epout1 = _get_if_something(epouts, beta1) do
-        epout_ = maxent_ep(model; solution = epout0, beta_vec, verbose)
+        epout_ = maxent_ep(model; solution = epout0, beta_vec, maxent_ep_kwarg...)
         _set_if_something!(epouts, beta1, epout_)
     end
     objval0 = av(model, epout0, obj_idx)
@@ -46,7 +54,8 @@ function find_beta(model::MetNet; obj_ider::IDER_TYPE, target_objval::Real,
         beta = abs(beta0 - beta1)/2 + beta0
         beta_vec[obj_idx] = beta
         epout = _get_if_something(epouts, beta) do
-            epout_ = maxent_ep(model; beta_vec, verbose = false, 
+            epout_ = maxent_ep(model; beta_vec, maxent_ep_kwarg..., 
+                verbose = false, 
                 solution = epout_seed
             )
             _set_if_something!(epouts, beta, epout_)
