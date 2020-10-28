@@ -12,25 +12,25 @@ function check_newbounds(S, b, lb, ub, newlb, newub,
     ref_obj_val = fba(S, b, lb, ub, check_obj).obj_val
 
     # thread environment (avoid race)
-    env_pool = Dict()
+    env_chn = Channel{Dict}(nths)
     for tid in 1:nths
-        env = get!(env_pool, tid, Dict())
+        env = Dict()
         env[:newlb] = Dict(i => val for (i, val) in enumerate(newlb))
         env[:newub] = Dict(i => val for (i, val) in enumerate(newub))
         env[:wlb] = deepcopy(lb)
         env[:wub] = deepcopy(ub)
+        put!(env_chn, env)
     end
 
     icount = length(idxs)
     batchlen = max(1, min(batchlen, length(idxs)))
     batches = [idxs[i0:(min(i0 + batchlen - 1, icount))] for i0 in 1:batchlen:icount]
-    verbose && (prog = Progress(icount; desc = "Checking bounds  "))
+    verbose && (prog = Progress(icount; desc = "Checking bounds (-t$nths)  "))
     @threads for batch in batches
-        thid = threadid()
-        env = env_pool[thid]
-
-        wlb, wub = env[:wlb], env[:wub]
-        tnewlb, tnewub = env[:newlb], env[:newub]
+        
+        local env = take!(env_chn)
+        local wlb, wub = env[:wlb], env[:wub]
+        local tnewlb, tnewub = env[:newlb], env[:newub]
 
         # Test whole batch
         wlb_bkup, wub_bkup = wlb[batch], wub[batch] # backup
@@ -70,13 +70,16 @@ function check_newbounds(S, b, lb, ub, newlb, newub,
                 verbose && next!(prog)
             end
         end
+
+        put!(env_chn, env)
+
     end # for batch in batches
     verbose && finish!(prog)
+    close(env_chn)
 
     # Collect results
     merged_fvalb, merged_fvaub = Dict{Int, T}(), Dict{Int, T}()
-    for tid in 1:nths
-        env = get(env_pool, tid, Dict())
+    for env in env_chn
         merge!(merged_fvalb, get(env, :newlb, Dict()))
         merge!(merged_fvaub, get(env, :newub, Dict()))
     end
