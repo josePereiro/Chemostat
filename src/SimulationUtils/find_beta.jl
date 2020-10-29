@@ -11,6 +11,9 @@ function find_beta(model::MetNet;
         maxiters::Real = 100,   
         errorth::Real = 0.01,
 
+        # call backs
+        after_maxent_ep::Function = (epout) -> nothing,
+
         # maxent_ep kwargs
         alpha::Real=1e7, damp::Real=0.9,
         epsconv::Real=1e-6, ep_maxiter::Int=2000,   
@@ -30,11 +33,13 @@ function find_beta(model::MetNet;
         epout_ = maxent_ep(model; beta_vec, maxent_ep_kwarg...)
         _set_if_something!(epouts, beta0, epout_)
     end
+    after_maxent_ep(epout0)
     beta_vec[obj_idx] = beta1
     epout1 = _get_if_something(epouts, beta1) do
         epout_ = maxent_ep(model; solution = epout0, beta_vec, maxent_ep_kwarg...)
         _set_if_something!(epouts, beta1, epout_)
     end
+    after_maxent_ep(epout1)
     objval0 = av(model, epout0, obj_idx)
     objval1 = av(model, epout1, obj_idx)
     sense = objval0 < objval1 ? 1.0 : -1.0
@@ -60,6 +65,7 @@ function find_beta(model::MetNet;
             )
             _set_if_something!(epouts, beta, epout_)
         end
+        after_maxent_ep(epout)
         curr_objval = av(model, epout, obj_idx)
         epout_seed = epout
 
