@@ -1,5 +1,5 @@
 function bisection_search(f::Function, x0::Vector, x1::Vector, t::Vector; 
-        toldist::Vector = map((ti) -> ti == 0 ? 1e-5 : 1e-5 * ti, t), 
+        tol::Real = 1e-5, 
         maxiters::Int = 1000,
         verbose = true
     )
@@ -18,7 +18,9 @@ function bisection_search(f::Function, x0::Vector, x1::Vector, t::Vector;
         !(sc*rc0 <= tc <= sc*rc1) && error("target[$i] = $tc not in range: [$(sc*rc0), $(sc*rc1)]")
     end
 
-    verbose && (prog = ProgressThresh(minimum(toldist), "searching:  "))
+    verbose && (prog = ProgressThresh(tol, "searching:  "))
+    xi = x1
+    last_xi = x1
     for it in 1:maxiters
         xi = (x1 - x0)/2 + x0
         ri = f(xi)
@@ -30,13 +32,14 @@ function bisection_search(f::Function, x0::Vector, x1::Vector, t::Vector;
                 ri[c] < t[c] ? (x1[c] = xi[c]) : (x0[c] = xi[c])
         end
         
-        dist = abs.(ri - t)
-        verbose && update!(prog, minimum(dist))
-        if all(dist .< toldist)
+        error = maximum(abs.(ri - t))
+        verbose && update!(prog, error)
+        if all(error < tol)
             verbose && finish!(prog)
             return xi
         end
+        last_xi = xi
     end
     verbose && finish!(prog)
-    return nothing
+    return xi
 end
