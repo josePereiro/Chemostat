@@ -20,4 +20,5 @@ module SimulationUtils
     include("epoch_converge_ep.jl")
     include("find_beta.jl")
     include("bisection_search.jl")
+    include("gradient_descent.jl")
 end
