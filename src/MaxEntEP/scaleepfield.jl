@@ -1,6 +1,6 @@
 # Code derived from metabolicEP (https://github.com/anna-pa-m/Metabolic-EP)
 
-function scaleepfield!(epfields, scalefact, vals...)
+function scaleepfield!(scalefact, epfields, vals...)
     @extract epfields : μ s av va 
     rmul!(μ,scalefact)
     rmul!(s,scalefact^2)

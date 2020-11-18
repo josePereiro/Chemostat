@@ -46,10 +46,9 @@ function maxent_ep(S::AbstractArray{T,2}, b::Array{T,1}, lb::Array{T,1}, ub::Arr
         expval=nothing, # fix posterior probability experimental values for std and mean
     ) where T<:Real
 
-    epmodel = EPModel(S, b, lb, ub; alpha = alpha, beta_vec = beta_vec, solution = solution, expval= expval)
+    epmodel = EPModel(S, b, lb, ub; alpha, beta_vec, solution, expval)
 
-    return converge_ep!(epmodel; verbose = verbose, damp = damp, epsconv = epsconv, 
-        maxiter = maxiter, maxvar = maxvar, minvar = minvar)
+    return converge_ep!(epmodel; verbose, damp, epsconv, maxiter, maxvar, minvar)
 end
 
 function maxent_ep(metnet::MetNet; kwargs...)

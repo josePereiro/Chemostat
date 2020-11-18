@@ -1,3 +1,6 @@
+const UNCONVERGED_STATUS = :unconverged
+const CONVERGED_STATUS = :converged
+
 function converge_ep!(epmodel::EPModel{T};
         verbose::Bool=true,  # output verbosity
         damp::Real=0.9,      # damp ∈ (0,1) newfield = damp * oldfield + (1-damp)* newfield
@@ -10,38 +13,34 @@ function converge_ep!(epmodel::EPModel{T};
         
     ) where {T<:Real}
 
-    @extract epmodel : scalefact updatealg! epfields epmat beta_vec alpha stat
+    # Unpack
+    epfields = epmodel.epfields
+    epmat = epmodel.epmat
+    beta_vec = epmodel.beta_vec
+    alpha = epmodel.alpha
+    stat = epmodel.stat
 
     stat[:converge_init_time] = time()
-    epalg = EPAlg(alpha, beta_vec, minvar, maxvar, epsconv, damp, maxiter, verbose)
+    epalg = EPAlg(alpha, beta_vec, 
+        minvar, maxvar, epsconv, damp, maxiter, verbose)
 
-    #= Here is were all the work is done, this function will 
-    call updatealg till convergence or maxiter is reached =#
-    # returnstatus, iter = epconverge!(epfields, epmat, epalg, updatealg)
-    @extract epalg : maxiter verbose epsconv
-
-    returnstatus = :unconverged
+    returnstatus = UNCONVERGED_STATUS
     iter = iter0
     
     # sweep ep till maxiter is reached or max(errav, errvar) < epsconv
-    # alpha = epalg.alpha epsconv maxiter
     prog = ProgressThresh{typeof(epsconv)}(epsconv; desc =  "EP  ")
     max_beta = findmax(beta_vec)
-    while iter < maxiter
-        iter += 1
+    for iter in iter0:maxiter
+
         # eponesweep! will be eponesweepT0! or eponesweep depending on alpha
         stat[:elapsed_eponesweep] = @elapsed begin
-            (errav, errvar, errμ, errs) = updatealg!(epfields, epalg, epmat, stat)
+            errav, errvar, errμ, errs = epmodel.updatealg!(epfields, epalg, epmat, stat)
         end
 
-        max_err = max(errav, errvar)
-        if max_err < epsconv
-            returnstatus = :converged
-            break
-        end
+        max_err = max(errav, errvar, errμ, errs)
+        max_err < epsconv && (returnstatus = CONVERGED_STATUS; break)
 
         if verbose 
-            stat = epmodel.stat
             sweep_time = time() - stat[:elapsed_eponesweep]
             inv_time = stat[:elapsed_eponesweep_inv]
             inv_frac = round(inv_time * 100/ sweep_time; digits = 3)
@@ -57,18 +56,17 @@ function converge_ep!(epmodel::EPModel{T};
         end
     end
 
-    verbose && (finish!(prog); flush(stderr))
+    verbose && finish!(prog)
 
     #= Scale back μ, s, av, va of epfields and lub, llb and Y =#
-    scaleepfield!(epfields, scalefact)
-    if alpha < Inf
-        μ, σ = epfields.μ, epfields.s
-        av, va = epfields.av, epfields.va
-    else
+    scaleepfield!(epmodel.scalefact, epfields)
+    μ, σ = epfields.μ, epfields.s
+    av, va = epfields.av, epfields.va
+    if isinf(alpha)
         idx = epmat.idx
-        μ, σ = epfields.μ[idx], epfields.s[idx]
-        av ,va = epfields.av[idx], epfields.va[idx]
+        μ, σ, av, va = μ[idx], σ[idx], av[idx], va[idx]
     end
+    
     sol = drop_epfields ? nothing : epfields
     return  EPout(μ, σ, av, va, sol, returnstatus, iter)
 end

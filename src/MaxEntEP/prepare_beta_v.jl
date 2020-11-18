@@ -8,8 +8,8 @@ function prepare_βv(epmat::EPMat{T}, βv::AbstractVector{T}) where T
 end
 
 function prepare_βv(epmat::EPMatT0{T}, βv::AbstractVector{T}) where T
-        M = length(epmat.vy) # Number of dependent variables
-        N = length(epmat.vy) + length(epmat.vw)
+        M = length(epmat.vd) # Number of dependent variables
+        N = M + length(epmat.vi)
 
         isempty(βv) && return spzeros(T, N - M) # same length as independent variables
         length(βv) != N && error("βv lenght != $N")

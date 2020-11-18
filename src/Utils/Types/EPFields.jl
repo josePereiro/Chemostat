@@ -4,7 +4,7 @@ struct EPFields{T<:AbstractFloat}
     av::Vector{T}
     va::Vector{T}
     a::Vector{T}
-    b::Vector{T}
+    d::Vector{T}
     μ::Vector{T}
     s::Vector{T}
     siteflagave::BitArray{1}
