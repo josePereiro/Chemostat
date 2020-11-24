@@ -18,8 +18,12 @@ function eponesweepT0!(epfields::EPFields, epalg::EPAlg, epmatT0::EPMatT0, stat 
     μd,μi = view(μ,idxy), view(μ,idxw)     # dep and ind untruncated marginals mean (epfields)
     avd,avi = view(av,idxy), view(av,idxw) # dep and ind truncated marginals mean (epfields)
     vad,vai = view(va,idxy), view(va,idxw) # dep and ind truncated marginals variance (epfields)
+    βd, βi = view(beta_vec,idxy), view(beta_vec, idxw)
     errav, errva, errμ, errs = fill(typemin(eltype(av)), 4)
     Gt = G'
+
+    # Test
+    # @show sum(beta_vec)  
     
     # All fields in epmat are updated from the epfields of last sweep
     # (?) covariance matrix of independent variables (epmat)
@@ -33,9 +37,9 @@ function eponesweepT0!(epfields::EPFields, epalg::EPAlg, epmatT0::EPMatT0, stat 
     # Original ep
     # mul!(vi,Σi, ai ./ di - G'*(ad ./ dd)) # (?) mean vector of independent variables (epmat)
     # ep-maxent
-    vi = Σi * (ai ./ di - Gt * (ad ./ dd)) + Σi * beta_vec
+    vi .= Σi * (Gt * Dd * (Y - ad) + Di * ai - Gt * βd + βi)
 
-    # vd = -Gvi + d
+    # vd = -Gvi + b'
     mul!(vd, G, vi) # (?) mean vector of dependent variables (epmat)
     vd .= Y - vd
 
@@ -55,13 +59,13 @@ function eponesweepT0!(epfields::EPFields, epalg::EPAlg, epmatT0::EPMatT0, stat 
         vai[i] = newvaw
 
         newai,newbi = matchmom(μi[i], si[i], avi[i], vai[i], minvar, maxvar)
-        ai[i] = damp * ai[i] + (1.0-damp)*newai # modify a in epfields
-        di[i] = damp * di[i] + (1.0-damp)*newbi # modify d in epfields
+        ai[i] = damp * ai[i] + (1.0-damp) * newai # modify a in epfields
+        di[i] = damp * di[i] + (1.0-damp) * newbi # modify d in epfields
     end
 
     for i in eachindex(μd)   # loop  1:M
 
-        newμd,newsd = newμs(Σd[i,i],ad[i],dd[i], vd[i],lb[i],ub[i],minvar,maxvar)
+        newμd,newsd = newμs(Σd[i,i], ad[i], dd[i], vd[i], lb[i], ub[i], minvar, maxvar)
         errμ = max(errμ, abs(μd[i]-newμd))
         errs = max(errs, abs(sd[i]-newsd))
         μd[i] = newμd # modify μ in epfields

@@ -6,7 +6,7 @@ function EPModel(S::AbstractArray{T,2}, b::AbstractArray{T}, lb::AbstractArray{T
     ) where {T<:Real}
 
     # Some checks
-    M,N = size(S)
+    M, N = size(S)
     M > N && @warn("M = $M ≥ N = $N")
     any(lb .> ub) && error("lower bound fluxes > upper bound fluxes. Consider swapping lower and upper bounds")
 
@@ -32,7 +32,7 @@ function EPModel(S::AbstractArray{T,2}, b::AbstractArray{T}, lb::AbstractArray{T
     # One iteration of EP
     updatealg! = alpha == Inf ? eponesweepT0! : eponesweep!
 
-    beta_vec = prepare_βv(epmat, beta_vec)
+    beta_vec = prepare_βv(N, beta_vec)
 
     return EPModel{T}(scalefact, updatealg!, epfields, epmat, alpha, beta_vec, Dict())
 
