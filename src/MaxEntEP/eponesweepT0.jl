@@ -18,7 +18,7 @@ function eponesweepT0!(epfields::EPFields, epalg::EPAlg, epmatT0::EPMatT0, stat 
     μd,μi = view(μ,idxy), view(μ,idxw)     # dep and ind untruncated marginals mean (epfields)
     avd,avi = view(av,idxy), view(av,idxw) # dep and ind truncated marginals mean (epfields)
     vad,vai = view(va,idxy), view(va,idxw) # dep and ind truncated marginals variance (epfields)
-    βd, βi = view(beta_vec,idxy), view(beta_vec, idxw)
+    βd, βi = view(beta_vec, idxy), view(beta_vec, idxw)
     errav, errva, errμ, errs = fill(typemin(eltype(av)), 4)
     Gt = G'
 

@@ -32,7 +32,7 @@ function EPModel(S::AbstractArray{T,2}, b::AbstractArray{T}, lb::AbstractArray{T
     # One iteration of EP
     updatealg! = alpha == Inf ? eponesweepT0! : eponesweep!
 
-    beta_vec = prepare_βv(N, beta_vec)
+    beta_vec = prepare_βv(epmat, beta_vec)
 
     return EPModel{T}(scalefact, updatealg!, epfields, epmat, alpha, beta_vec, Dict())
 

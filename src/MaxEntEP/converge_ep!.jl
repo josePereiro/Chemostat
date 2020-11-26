@@ -28,7 +28,7 @@ function converge_ep!(epmodel::EPModel{T};
     iter = iter0
     
     # sweep ep till maxiter is reached or max(errav, errvar) < epsconv
-    prog = ProgressThresh{typeof(epsconv)}(epsconv; desc =  "EP  ")
+    prog = ProgressThresh{typeof(epsconv)}(epsconv; desc =  "EP  ", dt = 0.5)
     max_beta = findmax(beta_vec)
     for iter in iter0:maxiter
 
@@ -41,7 +41,7 @@ function converge_ep!(epmodel::EPModel{T};
         max_err < epsconv && (returnstatus = CONVERGED_STATUS; break)
 
         if verbose 
-            sweep_time = time() - stat[:elapsed_eponesweep]
+            sweep_time = stat[:elapsed_eponesweep]
             inv_time = stat[:elapsed_eponesweep_inv]
             inv_frac = round(inv_time * 100/ sweep_time; digits = 3)
 
@@ -63,8 +63,8 @@ function converge_ep!(epmodel::EPModel{T};
     μ, σ = epfields.μ, epfields.s
     av, va = epfields.av, epfields.va
     if isinf(alpha)
-        idx = epmat.idx
-        μ, σ, av, va = μ[idx], σ[idx], av[idx], va[idx]
+        sperm = sortperm(epmat.usperm)
+        μ, σ, av, va = μ[sperm], σ[sperm], av[sperm], va[sperm]
     end
     
     sol = drop_epfields ? nothing : epfields
