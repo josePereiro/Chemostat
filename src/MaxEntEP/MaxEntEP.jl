@@ -36,5 +36,6 @@ module MaxEntEP
     include("utils.jl")
     include("converge_ep!.jl")
     include("EPModel.jl")
+    include("toy_maxent_ep.jl")
 
 end

@@ -3,28 +3,29 @@
 function eponesweep!(epfields::EPFields{T}, epalg::EPAlg, epmat::EPMat, stat) where T
     @extract epfields : av va a d μ s siteflagave siteflagvar
     @extract epalg : alpha beta_vec minvar maxvar epsconv damp
-    @extract epmat : KKc dKKbk invKKPD lb ub KY v
+    @extract epmat : αStS αStS_diag Σ lb ub αStb v
 
-    # KK = βF'F
-    # KK = KKc if diag(KKc) = dKKbk
-    # Σ^-1 = (KK + D)
-    KKdi = diagind(KKc);
-    KKc[KKdi] = dKKbk + (1.0 ./ d)
+
+    # Parameters of the approximated join
+    # We rebuild αStS and add D
+    # αStS = αStS if diag(αStS) = αStS_diag
+    # Σ^-1 = (αStS + D)
+    αStS[diagind(αStS)] = αStS_diag + inv.(d)
     
-    # Σ
-    stat[:elapsed_eponesweep_inv] = @elapsed inplaceinverse!(invKKPD,KKc)
+    # Σ = inv(Σ^-1)
+    stat[:elapsed_eponesweep_inv] = @elapsed inplaceinverse!(Σ, αStS)
 
-    # KY = βF'y
-    # v¯ = Σ(KY + Da) (original ep)
-    # mul!(v, invKKPD, (KY + a./d))
-    # v¯ = Σ(KY + Da) + Σ * beta_vec (maxent-ep)
-    v .= invKKPD * (KY + a./d) + invKKPD * beta_vec
+    # αStb = βF'y
+    # v¯ = Σ(αStb + Da) (original ep)
+    # mul!(v, Σ, (αStb + a./d))
+    # v¯ = Σ(αStb + Da) + Σ * beta_vec (maxent-ep)
+    v .= Σ * (αStb + a./d) + Σ * beta_vec
 
     errav = errva = errμ = errs = typemin(T)
     for i in eachindex(av)
 
         # Parameters of the normal part of the tilted
-        newμ,news = newμs(invKKPD[i,i],a[i],d[i],v[i],lb[i],ub[i],minvar, maxvar)
+        newμ,news = newμs(Σ[i,i],a[i],d[i],v[i],lb[i],ub[i],minvar, maxvar)
         errμ = max(errμ, abs(μ[i]-newμ))
         errs = max(errs, abs(s[i]-news))
         μ[i] = newμ

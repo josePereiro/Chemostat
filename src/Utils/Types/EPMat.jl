@@ -1,17 +1,25 @@
 struct EPMat{T<:AbstractFloat} <: AbstractEPMat
-    KKc::SparseMatrixCSC{T,Int64} # A container of KK = βF'F (Its diag will change)
-    dKKbk::AbstractArray{T} # Store the original diag of KK = βF'F
-    invKKPD::Matrix{T} # Enforced to be dense 
-    KY::AbstractArray{T}
+    αStS::SparseMatrixCSC{T,Int64} # A container of KK = βS'S (Its diag will change)
+    αStS_diag::AbstractArray{T} # Store the original diag of KK = βS'S
+    αStb::AbstractArray{T}
+    Σ::Matrix{T} # ΣQ Enforced to be dense 
     v::AbstractArray{T}
     lb::AbstractArray{T}
     ub::AbstractArray{T}
 end
 
-function EPMat(K::AbstractArray{T}, Y::AbstractArray{T}, lb::AbstractArray{T}, ub::AbstractArray{T}, alpha::T) where T <: Real
+function EPMat(S::AbstractArray{T}, b::AbstractArray{T}, 
+        lb::AbstractArray{T}, ub::AbstractArray{T}, alpha::T) where T <: Real
     alpha == Inf && error("For Inf alpha use 'EPMatT0'")
-    M,N = size(K)
-    Kt = K'
-    KKc = sparse(alpha * Kt * K)
-    return EPMat(KKc, diag(KKc), zeros(T,N,N), alpha * Kt * Y, zeros(T,N), lb, ub)
+    M, N = size(S)
+    αStS = sparse(alpha * S' * S)
+    return EPMat(   
+                    #= αStS      =# αStS, 
+                    #= αStS_diag =# diag(αStS), 
+                    #= αStb      =# alpha * S' * b, 
+                    #= Σ         =# zeros(T,N,N), 
+                    #= v         =# zeros(T,N), 
+                    #= lb        =# lb, 
+                    #= ub        =# ub
+                )
 end

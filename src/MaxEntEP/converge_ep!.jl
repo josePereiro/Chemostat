@@ -8,7 +8,7 @@ function converge_ep!(epmodel::EPModel{T};
         maxiter::Int=2000,   # maximum iteration count
         maxvar::Real=1e50,   # maximum numerical variance
         minvar::Real=1e-50,  # minimum numerical variance
-        iter0 = 0,           # the started iteration count
+        iter0 = 1,           # the started iteration count
         drop_epfields = false  # if the final EPout object will export the epfields
         
     ) where {T<:Real}
@@ -30,7 +30,7 @@ function converge_ep!(epmodel::EPModel{T};
     # sweep ep till maxiter is reached or max(errav, errvar) < epsconv
     prog = ProgressThresh{typeof(epsconv)}(epsconv; desc =  "EP  ", dt = 0.5)
     max_beta = findmax(beta_vec)
-    for iter in iter0:maxiter
+    for outer iter in iter0:maxiter
 
         # eponesweep! will be eponesweepT0! or eponesweep depending on alpha
         stat[:elapsed_eponesweep] = @elapsed begin

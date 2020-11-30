@@ -34,21 +34,21 @@ Input (optional arguments).
 """
 
 function maxent_ep(S::AbstractArray{T,2}, b::Array{T,1}, lb::Array{T,1}, ub::Array{T,1};
-        alpha::Real=1e7,      # inverse temperature
-        beta_vec::AbstractVector{T} = T[], # maxent inverse temperature vector
-        verbose::Bool=true,  # output verbosity
-        damp::Real=0.9,      # damp ∈ (0,1) newfield = damp * oldfield + (1-damp)* newfield
-        epsconv::Real=1e-6,  # convergence criterion
-        maxiter::Int=2000,   # maximum iteration count
-        maxvar::Real=1e50,   # maximum numerical variance
-        minvar::Real=1e-50,  # minimum numerical variance
+        alpha::Real=1e7,                             # inverse temperature
+        beta_vec::AbstractVector{T} = T[],           # maxent inverse temperature vector
+        verbose::Bool=true,                          # output verbosity
+        damp::Real=0.9,                              # damp ∈ (0,1) newfield = damp * oldfield + (1-damp)* newfield
+        epsconv::Real=1e-6,                          # convergence criterion
+        maxiter::Int=2000,                           # maximum iteration count
+        maxvar::Real=1e50,                           # maximum numerical variance
+        minvar::Real=1e-50,                          # minimum numerical variance
         solution::Union{EPout{T}, Nothing}=nothing,  # start from a solution
-        expval=nothing, # fix posterior probability experimental values for std and mean
+        expval=nothing,                              # fix posterior probability experimental values for std and mean
+        iter0 = 0                                    # the started iteration count
     ) where T<:Real
 
     epmodel = EPModel(S, b, lb, ub; alpha, beta_vec, solution, expval)
-
-    return converge_ep!(epmodel; verbose, damp, epsconv, maxiter, maxvar, minvar)
+    return converge_ep!(epmodel; verbose, damp, epsconv, maxiter, maxvar, minvar, iter0)
 end
 
 function maxent_ep(metnet::MetNet; kwargs...)

@@ -8,7 +8,7 @@ end
 function _parseexpval!(expval::Tuple, siteflagave::BitArray{1},siteflagvar::BitArray{1})
 
     N = length(siteflagave)
-    length(expval) == 3 || error("We expect a 3-uple here")
+    length(expval) == 3 || error("We expect a 3-Tuple here")
 
     mean, var, expsite = expval
     1 <= expsite <= N || error("expsite = $expsite not ∈ 1,...,$N")
