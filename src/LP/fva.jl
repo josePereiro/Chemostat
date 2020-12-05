@@ -3,44 +3,45 @@ function fva(S, b, lb, ub, idxs = eachindex(lb);
         check_obj_atol::Real = 1e-4,
         verbose = true, batchlen::Int = 50,
         zeroth::Real = 1e-10,
-        on_empty_sol::Function = (idx, sense) -> error("FBA failed, empty solution returned!!!"))
+        on_empty_sol::Function = (idx, sense) -> error("FBA failed, empty solution returned!!!")
+    )
 
     M, N = size(S)
     T = eltype(S)
     nths = nthreads()
 
     # Channels (avoid race)
-    env_chn = Channel{Dict}(nths)
+    env_pool = Dict()
     for tid in 1:nths
-        env = Dict()
-        env[:sv] = zeros(T, N)
-        env[:fvalb] = Dict{Int, T}()
-        env[:fvaub] = Dict{Int, T}()
-        put!(env_chn, env)
+        get!(env_pool, tid, 
+            (
+                tsv = zeros(T, N), 
+                tfvalb = Dict{Int, T}(), 
+                tfvaub = Dict{Int, T}()
+            )
+        )
     end
 
     icount = length(idxs)
     batchlen = max(1, min(batchlen, length(idxs)))
     batches = [idxs[i0:(min(i0 + batchlen - 1, icount))] for i0 in 1:batchlen:icount]
-    verbose && (prog = Progress(icount; desc = "Doing FVA (-t$nths)  "))
+    verbose && (prog = Progress(length(batches); desc = "Doing FVA (-t$nths)  "))
     @threads for batch in batches
-
+        
         # checks
-        thid = threadid()
+        tid = threadid()
     
         # get environment
-        local env = take!(env_chn)
-        local fvalb, fvaub = env[:fvalb], env[:fvaub]
-        local sv = env[:sv]
-
+        tsv, tfvalb, tfvaub = env_pool[tid]
+        
         verbose && next!(prog)
-        for (fvacol, sense) in [(fvalb, one(T)), (fvaub, -one(T))]
+        for (fvacol, sense) in [(tfvalb, one(T)), (tfvaub, -one(T))]
             
             for idx in batch
 
-                sv[idx] = sense
+                tsv[idx] = sense
                 sol = linprog(
-                    sv, # Opt sense vector 
+                    tsv, # Opt sense vector 
                     S, # Stoichiometric matrix
                     b, # row lb
                     b, # row ub
@@ -50,26 +51,23 @@ function fva(S, b, lb, ub, idxs = eachindex(lb);
                 )
                 x = isempty(sol.sol) ? on_empty_sol(idx, sense) : sol.sol[idx]
                 fvacol[idx] = abs(x) < zeroth ? zero(x) : x
-                sv[idx] = zero(sense)
+                tsv[idx] = zero(sense)
 
             end
             
         end # for idx in idxs
-
-        put!(env_chn, env)
     end
     verbose && finish!(prog)
-    close(env_chn)
 
     # Collect results
     merged_fvalb, merged_fvaub = Dict{Int, T}(), Dict{Int, T}()
-    for env in env_chn
-        merge!(merged_fvalb, get(env, :fvalb, Dict()))
-        merge!(merged_fvaub, get(env, :fvaub, Dict()))
+    for (tid, (tsv, tfvalb, tfvaub)) in env_pool
+        merge!(merged_fvalb, tfvalb)
+        merge!(merged_fvaub, tfvaub)
     end
 
     # return just the indexed bounds
-    fvalb, fvaub = [merged_fvalb[idx] for idx in idxs], [merged_fvaub[idx] for idx in idxs]
+    fvalb, fvaub = getindex.([merged_fvalb], idxs), getindex.([merged_fvaub], idxs)
 
     # Check bounds
     if !isnothing(check_obj)
@@ -82,7 +80,8 @@ function fva(S, b, lb, ub, idxs = eachindex(lb);
 end
 
 function fva(model::MetNet, iders = eachindex(model.lb); 
-        check_obj = nothing, kwargs...) 
+        check_obj = nothing, kwargs...
+    ) 
     obj_idx = isnothing(check_obj) ? nothing : rxnindex(model, check_obj)
     idxs = [rxnindex(model, idx) for idx in iders]
     model_fields = _extract_dense(model, [:S, :b, :lb, :ub])

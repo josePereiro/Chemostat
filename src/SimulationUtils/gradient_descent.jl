@@ -5,23 +5,25 @@ function grad_desc(f;
         C::Vector = abs.(x0 - x1), th = 1e-5,
         maxiters = 1000, 
         toshow::Vector = [],
-        Err = (fᵢ) -> abs.(target .- fᵢ) ./ ifelse.(iszero.(target), 1.0, abs.(target))
+        Err = (fᵢ) -> abs.(target .- fᵢ) ./ ifelse.(iszero.(target), 1.0, abs.(target)),
+        verbose = true
     )
 
     # initializing
     xᵢ₋₁, xᵢ = x0, x1
     fᵢ₋₁ = f(xᵢ₋₁)
     ϵᵢ₋₁ = Err(fᵢ₋₁)
+    Δx = zero(xᵢ)
     sense = ones(length(target))
 
-    prog = ProgressThresh(th, "Grad desc: ")
+    verbose && (prog = ProgressThresh(th, "Grad desc: "))
     for it in 1:maxiters
         
+        xᵢ += Δx
         fᵢ = f(xᵢ)
         ϵᵢ = Err(fᵢ)
         sense .*= -sign.(ϵᵢ .- ϵᵢ₋₁)
         Δx = sense .* C .* ϵᵢ
-        xᵢ += Δx
 
         maxϵᵢ = maximum(ϵᵢ)
         maxϵᵢ < th && break
@@ -29,7 +31,7 @@ function grad_desc(f;
         xᵢ₋₁ =  xᵢ
         ϵᵢ₋₁ = ϵᵢ
 
-        update!(prog, maxϵᵢ; showvalues = vcat(
+        verbose && update!(prog, maxϵᵢ; showvalues = vcat(
                 [
                     ("it", it),
                     ("maxϵᵢ", maxϵᵢ),
@@ -42,7 +44,7 @@ function grad_desc(f;
             )
         )
     end
-    finish!(prog)
+    verbose && finish!(prog)
 
     return xᵢ
 end
