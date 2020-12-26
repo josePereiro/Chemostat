@@ -13,11 +13,11 @@ function expanded_model(metnet::MetNet{T}, newM::Int, newN::Int) where T
         return newcol
     end
     
-    
     net = Dict()
 
     net[:S] = similar(metnet.S, newM, newN)
-    net[:S][M:end, N:end] .= zero(T)
+    net[:S][M:end, :] .= zero(T)
+    net[:S][:, N:end] .= zero(T)
     net[:S][1:M, 1:N] .= metnet.S
 
     net[:b] = _similar_copy(metnet.b, 0, newM)
@@ -30,10 +30,10 @@ function expanded_model(metnet::MetNet{T}, newM::Int, newN::Int) where T
     return MetNet(metnet; reshape = false, net...)
 end
 
-function findempty(metnet::MetNet, field::Symbol)
-    spot = findfirst(isequal(EMPTY_SPOT), getfield(metnet, field))
-    isnothing(spot) && error("Not $field empty spot found!!!")
-    return spot
+function findempty(metnet::MetNet, field::Symbol; check = false) 
+    idx = findfirst(isequal(EMPTY_SPOT), getfield(metnet, field))
+    check && isnothing(idx) && error("no empty spot found in $(field) ")
+    idx
 end
 
 function compacted_model(metnet::MetNet)
