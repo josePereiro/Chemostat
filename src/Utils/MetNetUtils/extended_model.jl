@@ -36,17 +36,17 @@ function findempty(metnet::MetNet, field::Symbol; check = false)
     idx
 end
 
+is_compacted(metnet::MetNet) = !isnothing(findempty(metnet, :mets)) && !isnothing(findempty(metnet, :rxns))
+
 function compacted_model(metnet::MetNet)
 
     empty_mets = findall(metnet.mets .== EMPTY_SPOT)
     met_idxs = trues(size(metnet, 1))
     met_idxs[empty_mets] .= false
-    M = count(met_idxs)
 
     empty_rxns = findall(metnet.rxns .== EMPTY_SPOT)
     rxn_idxs = trues(size(metnet, 2))
     rxn_idxs[empty_rxns] .= false
-    N = count(rxn_idxs)
     
     net = Dict()
     net[:S] = metnet.S[met_idxs, rxn_idxs]
@@ -57,6 +57,6 @@ function compacted_model(metnet::MetNet)
     net[:rxns] = metnet.rxns[rxn_idxs]
     net[:mets] = metnet.mets[met_idxs]
     
-    return MetNet(metnet; net...)
+    return MetNet(metnet; reshape = false, net...)
     
 end
