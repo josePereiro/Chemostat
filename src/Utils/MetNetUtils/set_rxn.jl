@@ -15,4 +15,10 @@ function set_rxn!(metnet::MetNet, rxni::Int, rxn::Rxn)
     end
     return metnet
 end
+
+set_rxn!(metnet::MetNet, rxn::Rxn) = 
+    set_rxn!(metnet, findempty(metnet, :rxns; check = true), rxn)
+    
 set_rxn!(metnet::MetNet, rxni::Int, id::String) = set_rxn!(metnet, rxni, Rxn(id))
+set_rxn!(metnet::MetNet, id::String) = 
+    set_rxn!(metnet, findempty(metnet, :rxns; check = true), id)

@@ -23,6 +23,7 @@ function grad_desc(f;
         fᵢ = f(xᵢ)
         ϵᵢ = Err(fᵢ)
         sense .*= -sign.(ϵᵢ .- ϵᵢ₋₁)
+        sense == 0.0 && error("sense == 0. Descend gets stocked, target unreachable!!!")
         Δx = sense .* C .* ϵᵢ
 
         maxϵᵢ = maximum(ϵᵢ)

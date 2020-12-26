@@ -10,4 +10,10 @@ function set_met!(metnet::MetNet, meti::Int, met::Met)
     metnet.b[meti] = met.b
     return metnet
 end
+
+set_met!(metnet::MetNet, met::Met) = 
+    set_met!(metnet, findempty(metnet, :mets; check = true), met)
+
 set_met!(metnet::MetNet, meti::Int, id::String) = set_met!(metnet, meti, Met(id))
+set_met!(metnet::MetNet, id::String) = 
+    set_met!(metnet, findempty(metnet, :mets; check = true), id)

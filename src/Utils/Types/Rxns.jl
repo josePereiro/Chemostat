@@ -6,17 +6,16 @@ struct Rxn{T<:Real}
     lb::T
     ub::T
 
-    function Rxn{T}(id::String; kwargs...) where {T<:Real}
-        kwargs = Dict(kwargs)
-        S = get(kwargs, :S, T[])
-        mets = get(kwargs, :mets, [])
+    function Rxn{T}(id::String; 
+            mets = [],
+            S = T[],
+            c = zero(T),
+            lb = zero(T),
+            ub = zero(T)
+        ) where {T<:Real}
+        
         length(S) != length(mets) && error("'S' and 'mets' must have the same length")
-
-        new{T}(id, S, mets,
-            get(kwargs, :c, zero(T)),
-            get(kwargs, :lb, zero(T)),
-            get(kwargs, :ub, zero(T)),
-        )
+        new{T}(id, S, mets, c, lb, ub)
     end
 end
 
