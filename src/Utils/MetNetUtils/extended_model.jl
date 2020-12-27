@@ -4,6 +4,7 @@ const EMPTY_SPOT = ""
 function expanded_model(metnet::MetNet{T}, newM::Int, newN::Int) where T
     M, N = size(metnet)
     @assert all((newM, newN) .>= (M, N))
+    check_dims(metnet)
 
     function _similar_copy(col, fill, newdim)
         L = length(col)
@@ -12,7 +13,7 @@ function expanded_model(metnet::MetNet{T}, newM::Int, newN::Int) where T
         newcol[1:L] .= col[1:L]
         return newcol
     end
-    
+
     net = Dict()
 
     net[:S] = similar(metnet.S, newM, newN)
@@ -20,10 +21,10 @@ function expanded_model(metnet::MetNet{T}, newM::Int, newN::Int) where T
     net[:S][:, N:end] .= zero(T)
     net[:S][1:M, 1:N] .= metnet.S
 
-    net[:b] = _similar_copy(metnet.b, 0, newM)
-    net[:c] = _similar_copy(metnet.c, 0, newN)
-    net[:lb] = _similar_copy(metnet.lb, 0, newN)
-    net[:ub] = _similar_copy(metnet.ub, 0, newN)
+    net[:b] = _similar_copy(metnet.b, 0.0, newM)
+    net[:c] = _similar_copy(metnet.c, 0.0, newN)
+    net[:lb] = _similar_copy(metnet.lb, 0.0, newN)
+    net[:ub] = _similar_copy(metnet.ub, 0.0, newN)
     net[:rxns] = _similar_copy(metnet.rxns, EMPTY_SPOT, newN)
     net[:mets] = _similar_copy(metnet.mets, EMPTY_SPOT, newM)
     
