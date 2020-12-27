@@ -187,9 +187,9 @@ version = "4.3.1+4"
 
 [[FileIO]]
 deps = ["Pkg"]
-git-tree-sha1 = "cad2e71389ecb2f4480e0de74faab04af13d7929"
+git-tree-sha1 = "fee8955b9dfa7bec67117ef48085fb2b559b9c22"
 uuid = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
-version = "1.4.4"
+version = "1.4.5"
 
 [[FillArrays]]
 deps = ["LinearAlgebra", "Random", "SparseArrays"]
@@ -494,9 +494,9 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[Mustache]]
 deps = ["Printf", "Tables"]
-git-tree-sha1 = "f5d718790ff475b5b8ab9c1599ed105f0f24f253"
+git-tree-sha1 = "773f6b09547486e9c1905e3749e5c41bcd089189"
 uuid = "ffc61752-8dc7-55ee-8c37-f3e9cdd09e70"
-version = "1.0.8"
+version = "1.0.9"
 
 [[MutableArithmetics]]
 deps = ["LinearAlgebra", "SparseArrays", "Test"]
@@ -776,11 +776,9 @@ uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 
 [[UtilsJL]]
 deps = ["BSON", "Dates", "Distributed", "DrWatson", "PkgTemplates", "Serialization", "SparseArrays"]
-git-tree-sha1 = "33459518f3328880671f6b5bda95d4aab15f7c8a"
-repo-rev = "master"
-repo-url = "https://github.com/josePereiro/UtilsJL.git"
+git-tree-sha1 = "14e247d1dccf013a5fd0b08148fd199e4b1f7932"
 uuid = "1d417f3e-fd42-11ea-18da-dda57c9b97b2"
-version = "0.2.3"
+version = "0.3.0"
 
 [[Wayland_jll]]
 deps = ["Artifacts", "Expat_jll", "JLLWrappers", "Libdl", "Libffi_jll", "Pkg", "XML2_jll"]
