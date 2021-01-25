@@ -9,12 +9,14 @@ module LP
     import SparseArrays: issparse
     import ProgressMeter: Progress, update!, finish!, next!
     import Base.Threads: nthreads, threadid, @threads
+    import JuMP, GLPK
 
     include("utils.jl")
     include("fba.jl")
     include("fva.jl")
     include("fva_preprocess.jl")
     include("check_newbounds.jl")
+    include("yLP.jl")
     
 end
 
