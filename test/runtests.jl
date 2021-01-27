@@ -11,7 +11,6 @@ using ProgressMeter
         include("Prepare_tests/prepare_tests.jl")
         include("Utils_tests/Utils_tests.jl")
         include("LP_tests/LP_tests.jl")
-        include("SimulationsUtils_tests/SimulationsUtils_tests.jl")
     catch err
         rethrow(err)
     finally
