@@ -11,9 +11,7 @@ function epoch_converge_ep!(epmodel::EPModel;
     epout = nothing
     curr_iter = 0
 
-    try
-
-        
+    try 
         while (isnothing(epout) || epout.iter == 0) || # First time
                 (maxiter > curr_iter && # Till maxiter 
                 epout.status != :converged) # Or converged

@@ -1,5 +1,5 @@
 function EPModel(S::AbstractArray{T,2}, b::AbstractArray{T}, lb::AbstractArray{T}, ub::AbstractArray{T};
-        alpha::Real=1e7,      # inverse temperature
+        alpha::Real=Inf,      # inverse temperature
         beta_vec::AbstractVector{T} = spzeros(T, size(S, 2)), # maxent inverse temperature vector
         solution::Union{EPout{T}, Nothing} = nothing,  # start from a solution
         expval = nothing # fix posterior probability experimental values for std and mean

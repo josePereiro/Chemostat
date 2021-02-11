@@ -34,7 +34,7 @@ Input (optional arguments).
 """
 
 function maxent_ep(S::AbstractArray{T,2}, b::Array{T,1}, lb::Array{T,1}, ub::Array{T,1};
-        alpha::Real=1e7,                             # inverse temperature
+        alpha::Real=Inf,                             # inverse temperature
         beta_vec::AbstractVector{T} = T[],           # maxent inverse temperature vector
         verbose::Bool=true,                          # output verbosity
         damp::Real=0.9,                              # damp ∈ (0,1) newfield = damp * oldfield + (1-damp)* newfield
@@ -44,13 +44,16 @@ function maxent_ep(S::AbstractArray{T,2}, b::Array{T,1}, lb::Array{T,1}, ub::Arr
         minvar::Real=1e-50,                          # minimum numerical variance
         solution::Union{EPout{T}, Nothing}=nothing,  # start from a solution
         expval=nothing,                              # fix posterior probability experimental values for std and mean
-        iter0 = 0                                    # the started iteration count
+        iter0 = 0,                                   # the started iteration count
+        # callbacks
+        oniter::Function = (it, epmodel) -> (false, nothing)
     ) where T<:Real
 
     epmodel = EPModel(S, b, lb, ub; alpha, beta_vec, solution, expval)
-    return converge_ep!(epmodel; verbose, damp, epsconv, maxiter, maxvar, minvar, iter0)
+    return converge_ep!(epmodel; verbose, damp, epsconv, 
+        maxiter, maxvar, minvar, iter0, oniter
+    )
 end
 
-function maxent_ep(metnet::MetNet; kwargs...)
-    return maxent_ep(metnet.S, metnet.b, metnet.lb, metnet.ub; kwargs...)
-end
+maxent_ep(metnet::MetNet; kwargs...) = 
+    maxent_ep(metnet.S, metnet.b, metnet.lb, metnet.ub; kwargs...)

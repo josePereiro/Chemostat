@@ -19,7 +19,9 @@ function cached_simulation(;
         verbose = true,
         clear_cache = true,
         cache_dir = nothing,
-        use_seed = true
+        use_seed = true, 
+        before_epoch = (epout) -> (false, nothing),
+        on_betaiter = (epout) -> false,
     )
 
     # ------------------------------------------------------------------
@@ -28,7 +30,7 @@ function cached_simulation(;
 
     # ------------------------------------------------------------------
     # TOP LEVEL CACHE
-    cached_data = load_cache(sim_id; verbose = verbose)
+    cached_data = load_cache(sim_id; verbose)
     !isnothing(cached_data) && return cached_data
 
     verbose && tagprintln_inmw("STARTING SIMULATION\n", "sim id: ", sim_id, "\n")
@@ -36,13 +38,12 @@ function cached_simulation(;
     # ------------------------------------------------------------------
     # MODEL  
     model = get_model()
-
     T = eltype(model.S)
     M, N = size(model)
 
     # ------------------------------------------------------------------
-    # SIMDATA
-    simdata = Dict{Any, Any}()
+    # CACHE_INDEX
+    cindex = Dict{Any, Any}()
     
     # ------------------------------------------------------------------
     # FBA
@@ -64,9 +65,8 @@ function cached_simulation(;
     # ------------------------------------------------------------------
     # SAVE AND DROP FBAOUT
     fbaout_id = (:FBAOUT_ID, sim_id)
-    simdata[:fba] = fbaout_id
-    save_cache(fbaout_id, fbaout; 
-        verbose = verbose, headline = "FBAOUT SAVED")
+    cindex[:fba] = fbaout_id
+    save_cache(fbaout_id, fbaout; verbose, headline = "FBAOUT SAVED")
     fbaout = nothing
     GC.gc()
 
@@ -82,7 +82,7 @@ function cached_simulation(;
     # epfields
     epfield_seed_id = (:EFIRLD_SEED, sim_id)
     if !use_seed
-        save_cache(epfield_seed_id, epmodel.epfields; verbose = verbose, 
+        save_cache(epfield_seed_id, epmodel.epfields; verbose, 
             headline = "EPFIELD SEED SAVED")
     end
 
@@ -96,7 +96,7 @@ function cached_simulation(;
     # EP could be memory consuming, so we drop what is not required
     model_id = (:MODEL, sim_id)
     save_cache(model_id, model |> _compress; 
-        verbose = verbose, headline = "MODEL SAVED")
+        verbose, headline = "MODEL SAVED")
     model = nothing
     GC.gc()
 
@@ -116,12 +116,13 @@ function cached_simulation(;
         # This just add the desire betas to the vector
         _update_beta_vec!(βi, beta_vec, beta_info)
         epmodel.beta_vec .= beta_vec #TODO: package this
-
+        
         # ------------------------------------------------------------------
         # TOP LEVEL BETA CACHE
         # It contains a epout. It will be loaded on demand
-        top_epout_id = (:TOP_EPOUT, hash(beta_vec), sim_id)
-        simdata[(:ep, βi)] = top_epout_id
+        curr_betas = _curr_betas(βi, beta_info)
+        top_epout_id = (:TOP_EPOUT, hash(curr_betas), sim_id)
+        cindex[(:ep, curr_betas...)] = top_epout_id
         top_epout_cfile = temp_cache_file(top_epout_id)
         isfile(top_epout_cfile) && continue
 
@@ -150,7 +151,7 @@ function cached_simulation(;
         
         use_epout_seed = use_seed && !isnothing(seed_id)
         if use_epout_seed
-            seed = load_cache(seed_id; verbose = verbose, 
+            seed = load_cache(seed_id; verbose, 
                 headline = "EPOUT SEED LOADED")
         end
 
@@ -181,12 +182,8 @@ function cached_simulation(;
 
         cur_epout_cfile = nothing
         epout = epoch_converge_ep!(epmodel;
-                epconv_kwargs...,
-                epochlen = epochlen,
-
-                before_epoch = function(epout)
-                    return (false, nothing)
-                end,
+                epconv_kwargs..., epochlen,
+                before_epoch,
 
                 after_epoch = function(epout)
 
@@ -231,15 +228,19 @@ function cached_simulation(;
                         "\nep status:                   ", epout.status,
                         "\nlast sweep time(s):          ", sweep_time,
                         "\nlast inv! time(s):            ", inv_time, " [", inv_frac, " % of the sweep time]",
-                        "\n")
+                        "\n"
+                    )
+
                     return (false, nothing)
                 end,
 
                 onerr = function(epout, err)
                     tagprintln_inmw("ERROR DURING EP\n", err_str(err))
-                    !isfile(best_epout_cfile) && error("EP could not recover from error. Best epout file is missing!!")
-                    return true, load_cache(best_epout_id, verbose = verbose;
-                            headline = "BEST EPOUT LOADED AND RETURNED")
+                    !isfile(best_epout_cfile) && 
+                        error("EP could not recover from error. Best epout file is missing!!")
+                    _best_epout = load_cache(best_epout_id; verbose, 
+                        headline = "BEST EPOUT LOADED AND RETURNED")
+                    return true, _best_epout
                 end
 
         ) # epoch_converge_ep!
@@ -263,6 +264,8 @@ function cached_simulation(;
             "\n\n\n\n\n\n\n\n\n\n"
         )
 
+        on_betaiter(epout) && break
+
     end # for βi in 1:bcount
 
     # ------------------------------------------------------------------
@@ -273,19 +276,22 @@ function cached_simulation(;
     # ------------------------------------------------------------------
     # LOAD RESULTS
     verbose && tagprintln_inmw("RELOADING RESULTS", 
-        "\nCount: ", length(simdata), "\n")
-    for (k, dat_id) in simdata
-        simdata[k] = load_cache(dat_id; verbose = false)
+        "\nCount: ", length(cindex), "\n")
+    sim_dat = Dict{Any, Any}()
+    for (k, dat_id) in cindex
+        sim_dat[k] = load_cache(dat_id; verbose = false)
     end
 
     # ------------------------------------------------------------------
     # CLEAR CACHES
-    clear_cache && verbose && tagprintln_inmw("CLEARING CACHES", 
-        "\ncache_dir: ", cache_dir
-    )
-    clear_cache && delete_temp_caches(verbose = verbose)
+    if clear_cache
+        verbose && tagprintln_inmw("CLEARING CACHES", 
+            "\ncache_dir: ", cache_dir
+        )
+        delete_temp_caches(verbose = verbose)
+    end
 
-    return simdata
+    return sim_dat
 end
 
 _compress(obj) = obj |> struct_to_dict |> compressed_copy
@@ -295,7 +301,8 @@ _compress(obj) = obj |> struct_to_dict |> compressed_copy
 function _beta_count(beta_info)
     beta_vecs = map(last, beta_info)
     l = length(first(beta_vecs))
-    !all(map(length, beta_vecs) .== l) && error("Not all beta vec has the same length")
+    !all(map(length, beta_vecs) .== l) && 
+        error("Not all beta vec has the same length")
     return l
 end
 
@@ -307,9 +314,18 @@ function _indexed_beta_info(model, beta_info)
     return new_beta_info
 end
 
-function _update_beta_vec!(i, beta_vec, beta_info)
+function _update_beta_vec!(βi, beta_vec, beta_info)
     for (idx, betas) in beta_info
-        beta_vec[idx] = betas[i]
+        beta_vec[idx] = betas[βi]
     end
     return beta_vec
+end
+
+function _curr_betas(βi, beta_info)
+    curr_betas = []
+    for (idx, betas) in beta_info
+        beta = betas[βi]
+        push!(curr_betas, beta)
+    end
+    curr_betas
 end

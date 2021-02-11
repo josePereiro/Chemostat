@@ -9,8 +9,9 @@ function converge_ep!(epmodel::EPModel{T};
         maxvar::Real=1e50,   # maximum numerical variance
         minvar::Real=1e-50,  # minimum numerical variance
         iter0 = 1,           # the started iteration count
-        drop_epfields = false  # if the final EPout object will export the epfields
-        
+        drop_epfields = false,  # if the final EPout object will export the epfields
+        # callbacks
+        oniter::Function = (it, epmodel) -> (false, nothing)
     ) where {T<:Real}
 
     # Unpack
@@ -34,10 +35,16 @@ function converge_ep!(epmodel::EPModel{T};
 
         # eponesweep! will be eponesweepT0! or eponesweep depending on alpha
         stat[:elapsed_eponesweep] = @elapsed begin
-            errav, errvar, errμ, errs = epmodel.updatealg!(epfields, epalg, epmat, stat)
+            errs = epmodel.updatealg!(epfields, epalg, epmat, stat)
         end
 
-        max_err = max(errav, errvar, errμ, errs)
+        max_err = stat[:max_err] = maximum(errs)
+
+        # call back
+        ret, val = oniter(iter, epmodel)
+        ret && return val
+
+        # Converged
         max_err < epsconv && (returnstatus = CONVERGED_STATUS; break)
 
         if verbose 
