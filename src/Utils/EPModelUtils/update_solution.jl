@@ -14,3 +14,7 @@ function update_solution!(epmodel::EPModel, epout::EPout)
 
     return update_solution!(epmodel, src_epfield)
 end
+
+update_solution!(epmodel_dest::EPModel, epmodel_source::EPModel) = 
+    update_solution!(epmodel_dest, epmodel_source.epfields)
+    
