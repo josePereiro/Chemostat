@@ -21,7 +21,7 @@ function cached_simulation(;
         cache_dir = nothing,
         use_seed = true, 
         before_epoch = (epout) -> (false, nothing),
-        on_betaiter = (epout) -> false,
+        on_betaiter = (epout, beta_vec) -> false,
     )
 
     # ------------------------------------------------------------------
@@ -264,7 +264,7 @@ function cached_simulation(;
             "\n\n\n\n\n\n\n\n\n\n"
         )
 
-        on_betaiter(epout) && break
+        on_betaiter(epout, beta_vec) && break
 
     end # for βi in 1:bcount
 
