@@ -7,3 +7,10 @@ function del_met!(metnet::MetNet, met::IDER_TYPE)
     
     return metnet
 end
+
+function del_met!(metnet::MetNet, mets::Vector)
+    for met in mets
+        del_met!(metnet, met)
+    end
+    return metnet
+end

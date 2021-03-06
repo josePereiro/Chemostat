@@ -5,7 +5,7 @@ function epoch_converge_ep!(epmodel::EPModel;
         onerr = (epout, err) -> rethrow(err),
         before_epoch = (epout) -> (false, nothing),
         after_epoch = (epout) -> (false, nothing),
-        kwargs...
+        epkwargs...
     )
     
     epout = nothing
@@ -13,8 +13,8 @@ function epoch_converge_ep!(epmodel::EPModel;
 
     try 
         while (isnothing(epout) || epout.iter == 0) || # First time
-                (maxiter > curr_iter && # Till maxiter 
-                epout.status != :converged) # Or converged
+                (maxiter > curr_iter &&                # Till maxiter 
+                epout.status != :converged)            # Or converged
             
             # For fast feed back the first epoch has length 1
             epochlen_ = (isnothing(epout) || epout.iter == 0) ? 1 : epochlen
@@ -22,7 +22,7 @@ function epoch_converge_ep!(epmodel::EPModel;
             ret, dat = before_epoch(epout)
             ret && return dat
 
-            epout = converge_ep!(epmodel; kwargs...,
+            epout = converge_ep!(epmodel; epkwargs...,
                         verbose = false,
                         iter0 = curr_iter,
                         maxiter = curr_iter + epochlen_, 

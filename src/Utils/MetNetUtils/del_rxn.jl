@@ -9,3 +9,10 @@ function del_rxn!(metnet::MetNet, rxn::IDER_TYPE)
     
     return metnet
 end
+
+function del_rxn!(metnet::MetNet, rxns::Vector)
+    for rxn in rxns
+        del_rxn!(metnet, rxn)
+    end
+    return metnet
+end

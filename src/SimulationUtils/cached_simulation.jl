@@ -212,24 +212,26 @@ function cached_simulation(;
 
                     # ------------------------------------------------------------------
                     # stats
-                    stat = epmodel.stat
-                    sweep_time = stat[:elapsed_eponesweep]
-                    inv_time = stat[:elapsed_eponesweep_inv]
-                    inv_frac = round(inv_time * 100/ sweep_time; digits = 3)
+                    if verbose
+                        stat = epmodel.stat
+                        sweep_time = stat[:elapsed_eponesweep]
+                        inv_time = stat[:elapsed_eponesweep_inv]
+                        inv_frac = round(inv_time * 100/ sweep_time; digits = 3)
 
-                    verbose && tagprintln_inmw("EPOCH FINISHED", 
-                        "\nsim id:                      ", sim_id, 
-                        "\nmodel size:                  ", (M, N),
-                        "\nep iter:                     ", epout.iter,
-                        "\nmax beta:                    ", maximum(beta_vec), 
-                        "\nep stoi err (min/mean/max):  ", (min_stoierr, mean_stoierr, max_stoierr),
-                        "\nfba_objval:                  ", fba_objval,
-                        "\nep_objval:                   ", ep_objval,
-                        "\nep status:                   ", epout.status,
-                        "\nlast sweep time(s):          ", sweep_time,
-                        "\nlast inv! time(s):            ", inv_time, " [", inv_frac, " % of the sweep time]",
-                        "\n"
-                    )
+                        tagprintln_inmw("EPOCH FINISHED", 
+                            "\nsim id:                      ", sim_id, 
+                            "\nmodel size:                  ", (M, N),
+                            "\nep iter:                     ", epout.iter,
+                            "\nmax beta:                    ", maximum(beta_vec), 
+                            "\nep stoi err (min/mean/max):  ", (min_stoierr, mean_stoierr, max_stoierr),
+                            "\nfba_objval:                  ", fba_objval,
+                            "\nep_objval:                   ", ep_objval,
+                            "\nep status:                   ", epout.status,
+                            "\nlast sweep time(s):          ", sweep_time,
+                            "\nlast inv! time(s):            ", inv_time, " [", inv_frac, " % of the sweep time]",
+                            "\n"
+                        )
+                    end
 
                     return (false, nothing)
                 end,
