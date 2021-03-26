@@ -1,3 +1,5 @@
+update_solution!(epmodel::EPModel, ::Nothing) = epmodel
+
 function update_solution!(epmodel::EPModel, src_epfield::EPFields)
     dest_epfield = epmodel.epfields
     for f in fieldnames(EPFields)
@@ -5,6 +7,7 @@ function update_solution!(epmodel::EPModel, src_epfield::EPFields)
         dest = getfield(dest_epfield, f)
         copyto!(dest, src)
     end
+    epmodel
 end
     
 function update_solution!(epmodel::EPModel, epout::EPout)
