@@ -38,5 +38,7 @@ jobs:
             ${{ runner.os }}-test-${{ env.cache-name }}-
             ${{ runner.os }}-test-
             ${{ runner.os }}-
+      - name: Install Custom Registry
+        run: julia -e 'import Pkg; Pkg.Registry.add(Pkg.RegistrySpec(;url="https://github.com/josePereiro/CSC_Registry.jl"))'
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
