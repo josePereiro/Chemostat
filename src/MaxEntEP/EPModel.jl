@@ -11,7 +11,7 @@ function EPModel(S::AbstractArray{T,2}, b::AbstractArray{T}, lb::AbstractArray{T
     any(lb .> ub) && error("lower bound fluxes > upper bound fluxes. Consider swapping lower and upper bounds")
 
     # The scalefactor is just the maximum absolute bound (lb or ub).
-    scalefact = max(maximum(abs.(lb)), maximum(abs.(ub)))
+    scalefact = get_scalefactor(lb, ub)
 
     # Create EPFields, If a solution is not given, the EPfields will be fresh
     epfields = isnothing(solution) ? EPFields(N, expval, eltype(S)) : 

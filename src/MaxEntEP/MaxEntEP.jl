@@ -37,5 +37,6 @@ module MaxEntEP
     include("converge_ep!.jl")
     include("EPModel.jl")
     include("toy_maxent_ep.jl")
+    include("get_scalefactor.jl")
 
 end
