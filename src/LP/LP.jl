@@ -11,6 +11,7 @@ module LP
     import Base.Threads: nthreads, threadid, @threads
     import JuMP, GLPK
 
+    include("const.jl")
     include("utils.jl")
     include("fba.jl")
     include("fva.jl")
