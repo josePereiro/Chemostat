@@ -32,7 +32,7 @@ function eponesweepT0!(epfields::EPFields, epalg::EPAlg, epmatT0::EPMatT0, stat 
         Dd = Diagonal(1.0 ./ dd)
         Σi = inv(Di + Gt * Dd * G) 
     end
-    #fast_similarity_inv!(Σi, di,  dd, G)
+    # fast_similarity_inv!(Σi, di,  dd, G)
     mul!(Σd, G*Σi, Gt) # (?) covariance matrix of dependent variables (epmat)
     # Original ep
     # mul!(vi,Σi, ai ./ di - G'*(ad ./ dd)) # (?) mean vector of independent variables (epmat)

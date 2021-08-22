@@ -5,7 +5,7 @@ module SimulationUtils
     import SparseArrays
     import ProgressMeter: ProgressThresh, Progress, next!, finish!, update!
     import SparseArrays: spzeros, SparseMatrixCSC, SparseVector
-    import ..Chemostat.Utils: MetNet, EPModel, EPout,IDER_TYPE,
+    import ..Chemostat.Utils: MetNet, EPModel, EPout, IDER_TYPE,
                               rxnindex, av, norm1_stoi_err, update_solution!,
                               set_cache_dir, load_cache, save_cache,
                               tagprintln_inmw, temp_cache_file, delete_temp_caches,

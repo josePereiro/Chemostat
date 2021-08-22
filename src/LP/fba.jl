@@ -1,5 +1,7 @@
-function fba(S, b, lb, ub, obj_idx::Integer; sense = MAX_SENSE, 
-        on_empty_sol = () -> error("FBA failed, empty solution returned!!!"))
+function fba(S, b, lb, ub, obj_idx::Integer; 
+        sense = MAX_SENSE, 
+        on_empty_sol = () -> error("FBA failed, empty solution returned!!!")
+    )
     sv = zeros(size(S, 2));
     sv[obj_idx] = sense
     sol = linprog(
@@ -27,8 +29,9 @@ function fba(S, b, lb, ub, idx1::Integer, idx2::Integer;
     # fix obj
     lb_ = copy(lb)
     ub_ = copy(ub)
-    ub_[idx1] = obj_val * (1.0 - btol)
-    lb_[idx1] = obj_val * (1.0 + btol)
+    dflux = abs(obj_val * btol)
+    lb_[idx1] = obj_val - dflux
+    ub_[idx1] = obj_val + dflux
     # minimize cost
     return fba(S, b, lb_, ub_, idx2; 
         sense = sense2, on_empty_sol
