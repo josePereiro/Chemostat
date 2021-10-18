@@ -2,9 +2,9 @@
 """
     Example of 'intake_info' = Dict("gt" => Dict("ub" => 100.0, "c" => 10.0))
 """
-function apply_bound!(metnet::MetNet, ξ, intake_info::Dict = Dict();
+function apply_bound!(metnet::MetNet, xi, intake_info::Dict = Dict();
         emptyfirst = false, ignore_miss = false)
-    ξ < 0 && error("ξ must be positive")
+    xi < 0 && error("xi must be positive")
 
     emptyfirst && empty!(metnet.intake_info)
     for (exch, exch_info) in intake_info
@@ -21,10 +21,10 @@ function apply_bound!(metnet::MetNet, ξ, intake_info::Dict = Dict();
         
         if haskey(exch_info, "ub")
             ub = exch_info["ub"]
-            ub!(metnet, exch, stst_bound(c, ξ, ub))
+            ub!(metnet, exch, stst_bound(c, xi, ub))
         elseif haskey(exch_info, "lb")
             lb = exch_info["lb"]
-            lb!(metnet, exch, stst_bound(c, ξ, lb))
+            lb!(metnet, exch, stst_bound(c, xi, lb))
         else
             error("neither 'lb' or 'ub' defined for exchange '$(rxns(metnet, exch))'")
         end
