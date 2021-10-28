@@ -9,5 +9,6 @@ import Pkg
         println("Tesing: ", pkg)
         Pkg.test(pkg)
         println()
+        @test true
     end
 end
